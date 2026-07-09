@@ -2,6 +2,8 @@
 # Copyright (C) 2026 Christos Bouronikos
 # This file is covered by the GNU General Public License version 2.
 # See the file COPYING.txt for more details.
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 
 """MathML parser: turns MathML markup into a navigable tree of MathNode objects.
 
@@ -11,6 +13,7 @@ so that the whole speech engine can be unit-tested outside NVDA.
 
 import re
 import unicodedata
+from html.entities import html5 as HTML5_ENTITIES
 from xml.etree import ElementTree
 
 # Named MathML/HTML entities commonly found in real-world MathML.
@@ -228,8 +231,13 @@ def _replace_entities(mathml):
 		char = NAMED_ENTITIES.get(name)
 		if char is not None:
 			return char
-		# Unknown named entity: drop it rather than crash the XML parser.
-		return ""
+		# The project dictionary covers common MathML entities. Fall back to the
+		# standard HTML5 entity table so uncommon but valid mathematical symbols
+		# keep their meaning instead of being silently removed from the formula.
+		# Look up the complete name, including its semicolon. html.unescape is
+		# deliberately permissive and could partially decode an invalid name such
+		# as ``&notAMathEntity;`` as the valid ``&not;`` prefix.
+		return HTML5_ENTITIES.get(f"{name};", match.group(0))
 	return _ENTITY_RE.sub(repl, mathml)
 
 
@@ -287,10 +295,16 @@ def _convert(element, parent):
 		return
 
 	if tag == "maction":
-		# Speak the selected (first) child only.
+		# MathML counts maction choices from one. Invalid or absent selections
+		# intentionally fall back to the first child, which is the MathML default.
 		children = list(element)
 		if children:
-			_convert(children[0], parent)
+			try:
+				selection = int(element.attrib.get("selection", "1"))
+			except ValueError:
+				selection = 1
+			selected = children[selection - 1] if 1 <= selection <= len(children) else children[0]
+			_convert(selected, parent)
 		return
 
 	if tag in ("mstyle", "mpadded", "none"):
@@ -307,13 +321,15 @@ def _convert(element, parent):
 		node = MathNode("mrow", {"_from_mfenced": "1"}, parent=parent)
 		open_fence = element.attrib.get("open", "(")
 		close_fence = element.attrib.get("close", ")")
-		separators = element.attrib.get("separators", ",").replace(" ", "") or ","
+		# An empty separators attribute deliberately means no separators; when a
+		# shorter non-empty list is provided, MathML repeats its last separator.
+		separators = element.attrib.get("separators", ",").replace(" ", "")
 		if open_fence:
 			node.append(MathNode("mo", {"fence": "true"}, open_fence))
 		children = list(element)
 		for i, child in enumerate(children):
 			_convert(child, node)
-			if i < len(children) - 1:
+			if i < len(children) - 1 and separators:
 				sep = separators[min(i, len(separators) - 1)]
 				node.append(MathNode("mo", {"separator": "true"}, sep))
 		if close_fence:
@@ -469,9 +485,10 @@ def parse_mathml(mathml):
 		root = MathNode("math", dict(root_element.attrib))
 		for child in root_element:
 			_convert(child, root)
+	# Remove redundant presentation-only wrappers while retaining the ``math``
+	# root. The stable root gives interactive navigation one predictable outer
+	# level even when a producer wraps its entire expression in a single mrow.
 	root = _simplify(root)
-	# If the math element ended up with a single mrow child, keep it: the tree
-	# stays faithful for navigation, and speech handles mrows naturally.
 	_reindex(root)
 	_group_fences(root)
 	_reindex(root)

@@ -1,4 +1,6 @@
 
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 import codecs
 import gettext
 from functools import partial

@@ -2,6 +2,8 @@
 # Greek Math Reader for NVDA
 # Copyright (C) 2026 Christos Bouronikos
 # This file is covered by the GNU General Public License version 2.
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 
 """NVDA math presentation provider backed by the Greek speech engine."""
 

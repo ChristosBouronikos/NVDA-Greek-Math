@@ -52,3 +52,13 @@ NVDA 2024.1 through 2026.1.1. In NVDA 2026.1 and later, this add-on takes priori
 ## Feedback
 
 Please report issues and terminology suggestions at the project repository. Terminology (how each symbol and structure is worded in Greek) lives in two easily editable files, and corrections from teachers and students are very welcome.
+
+## Support
+
+Greek Math Reader is free software. If it makes mathematics more accessible for
+you, please consider making a kind, optional donation to support its continued
+development.
+
+* Author: Bouronikos Christos
+* Email: [chrisbouronikos@gmail.com](mailto:chrisbouronikos@gmail.com)
+* PayPal: [Make a donation](https://paypal.me/christosbouronikos)

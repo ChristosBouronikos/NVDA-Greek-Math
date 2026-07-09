@@ -1,3 +1,5 @@
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 """
 This tool generates NVDA extensions.
 
@@ -31,6 +33,7 @@ from .docs import md2html
 
 
 def generate(env: Environment):
+	"""Register the SCons builders used by this add-on's release build."""
 	env.SetDefault(excludePatterns=tuple())
 
 	addonAction = env.Action(
@@ -61,7 +64,8 @@ def generate(env: Environment):
 	env["BUILDERS"]["NVDAManifest"] = Builder(
 		action=manifestAction,
 		suffix=".ini",
-		src_siffix=".ini.tpl"
+		# SCons uses this to infer manifest.ini.tpl when only a target is given.
+		src_suffix=".ini.tpl"
 	)
 
 	translatedManifestAction = env.Action(
@@ -79,10 +83,12 @@ def generate(env: Environment):
 	env["BUILDERS"]["NVDATranslatedManifest"] = Builder(
 		action=translatedManifestAction,
 		suffix=".ini",
-		src_siffix=".ini.tpl"
+		src_suffix=".ini.tpl"
 	)
 
-	env.SetDefault(mdExtensions = {})
+	# Markdown receives an iterable of extension names; an empty tuple avoids a
+	# mutable default and documents the expected SCons value type.
+	env.SetDefault(mdExtensions=tuple())
 
 	mdAction = env.Action(
 		lambda target, source, env: md2html(

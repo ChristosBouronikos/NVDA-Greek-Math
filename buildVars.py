@@ -1,5 +1,7 @@
 # Build customizations for the Greek Math Reader NVDA add-on.
 # Change this file instead of sconstruct or manifest files, whenever possible.
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 
 from site_scons.site_tools.NVDATool.typings import AddonInfo, BrailleTables, SymbolDictionaries
 
@@ -36,7 +38,7 @@ and three verbosity levels (terse, smart, verbose)."""
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_("""Initial release: Greek speech for MathML, interactive navigation, settings panel."""),
 	# Author(s)
-	addon_author="Christos Bouronikos <chrisbouronikos@gmail.com>",
+	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",
 	# URL for the add-on documentation support
 	addon_url="https://github.com/chrisbouronikos/NVDA-Greek-Math",
 	# URL for the add-on repository where the source code can be found

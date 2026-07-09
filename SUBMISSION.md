@@ -29,7 +29,7 @@ Use these values in the **Add-on registration** form:
 | Add-on version | `1.0.0` |
 | Channel | `stable` |
 | Display name | `Greek Math Reader` |
-| Publisher | `Christos Bouronikos` |
+| Publisher | `Bouronikos Christos` |
 | Homepage | `https://github.com/chrisbouronikos/NVDA-Greek-Math` |
 | Source URL | `https://github.com/chrisbouronikos/NVDA-Greek-Math` |
 | Download URL | GitHub release asset URL ending in `.nvda-addon` |

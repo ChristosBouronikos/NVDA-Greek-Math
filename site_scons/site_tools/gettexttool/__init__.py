@@ -1,3 +1,5 @@
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 """This tool allows generation of gettext .mo compiled files, pot files from source code files
 and pot files for merging.
 

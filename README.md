@@ -150,6 +150,16 @@
 
 Όλη η ελληνική ορολογία βρίσκεται σε δύο αρχεία δεδομένων με σχόλια στα ελληνικά: [`symbols_el.py`](addon/globalPlugins/greekMathReader/engine/symbols_el.py) (σύμβολα, γράμματα, συναρτήσεις) και [`grammar_el.py`](addon/globalPlugins/greekMathReader/engine/grammar_el.py) (δυνάμεις, ρίζες, τακτικά, κλάσματα). Αν κάποια απόδοση δεν ταιριάζει με τη διδακτική πρακτική, ανοίξτε ένα ζήτημα (issue) — οι παρατηρήσεις εκπαιδευτικών και μαθητών είναι πολύτιμες. Δείτε το [CONTRIBUTING.md](CONTRIBUTING.md).
 
+### Υποστήριξη
+
+Το Greek Math Reader είναι ελεύθερο λογισμικό. Αν σας βοηθά να κάνετε τα
+μαθηματικά πιο προσβάσιμα, μπορείτε να κάνετε μια ευγενική, προαιρετική δωρεά
+για τη συνέχιση της ανάπτυξής του.
+
+* Δημιουργός: Bouronikos Christos
+* Email: [chrisbouronikos@gmail.com](mailto:chrisbouronikos@gmail.com)
+* PayPal: [Κάντε μια δωρεά](https://paypal.me/christosbouronikos)
+
 ---
 
 ## English
@@ -271,6 +281,19 @@ python3 -m unittest discover tests   # ~140 exact-wording tests
 python3 preview.py --demo            # preview readings in the terminal
 python3 build.py                     # build greekMathReader-<version>.nvda-addon
 ```
+
+Development note: AI-assisted tools were used for limited code, documentation,
+and build-automation support. The maintainer reviews the resulting changes.
+
+### Support
+
+Greek Math Reader is free software. If it makes mathematics more accessible for
+you, please consider making a kind, optional donation to support its continued
+development.
+
+* Author: Bouronikos Christos
+* Email: [chrisbouronikos@gmail.com](mailto:chrisbouronikos@gmail.com)
+* PayPal: [Make a donation](https://paypal.me/christosbouronikos)
 
 ### License
 

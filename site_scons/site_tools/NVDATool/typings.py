@@ -1,3 +1,5 @@
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 from typing import TypedDict, Protocol
 
 

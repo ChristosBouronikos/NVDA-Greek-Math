@@ -1,13 +1,11 @@
-
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 import gettext
 from pathlib import Path
 
 import markdown
 
 from .typings import AddonInfo
-
-
-
 def md2html(
 		source: str | Path,
 		dest: str | Path,
@@ -23,6 +21,8 @@ def md2html(
 	if isinstance(moFile, str):
 		moFile = Path(moFile)
 
+	# English documentation has no compiled catalogue. For a translated
+	# document, use its catalogue only to localize the HTML page title.
 	try:
 		with moFile.open("rb") as f:
 			_ = gettext.GNUTranslations(f).gettext

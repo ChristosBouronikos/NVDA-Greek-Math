@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 """Dependency-free builder for the Greek Math Reader NVDA add-on.
 
 Produces greekMathReader-<version>.nvda-addon without requiring SCons.

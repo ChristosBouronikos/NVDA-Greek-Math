@@ -2,6 +2,8 @@
 # Greek Math Reader for NVDA
 # Copyright (C) 2026 Christos Bouronikos
 # This file is covered by the GNU General Public License version 2.
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 
 """Greek Math Reader: reads MathML in natural Greek.
 
@@ -32,6 +34,8 @@ CONFIG_SPEC = {
 
 config.conf.spec["greekMathReader"] = CONFIG_SPEC
 
+# NVDA keeps one global provider per presentation mode. Keep the providers we
+# displaced so disabling this add-on restores exactly the previous behaviour.
 _provider = None
 _previousSpeechProvider = None
 _previousInteractionProvider = None
@@ -39,6 +43,13 @@ _registered = False
 
 
 def _register():
+	"""Install one shared provider for speech and interaction.
+
+	The provider object is intentionally reused across enable/disable cycles;
+	only NVDA's global slots are changed. This avoids repeatedly constructing
+	stateful NVDA objects while still preserving whatever provider was active
+	immediately before this add-on was enabled.
+	"""
 	global _provider, _previousSpeechProvider, _previousInteractionProvider, _registered
 	if _registered:
 		return
@@ -52,7 +63,14 @@ def _register():
 
 
 def _unregister():
-	global _registered
+	"""Restore provider slots still owned by this add-on and release our state.
+
+	Another add-on may replace either slot after ours is registered. We must not
+	overwrite that newer provider, but we must *always* clear ``_registered``;
+	otherwise a later re-enable would incorrectly believe this provider was
+	already active.
+	"""
+	global _registered, _previousSpeechProvider, _previousInteractionProvider
 	if not _registered:
 		return
 	# There is no official unregister API; restore what was there before us,
@@ -63,6 +81,10 @@ def _unregister():
 	if mathPres.interactionProvider is _provider:
 		mathPres.interactionProvider = _previousInteractionProvider
 	_registered = False
+	# The next registration must snapshot the providers active at that time,
+	# rather than accidentally retaining providers from an earlier cycle.
+	_previousSpeechProvider = None
+	_previousInteractionProvider = None
 	log.info("Greek Math Reader: provider unregistered")
 
 

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 """Δοκιμές της μηχανής ελληνικής εκφώνησης μαθηματικών.
 
 Εκτέλεση:  python3 -m unittest discover tests -v
@@ -699,9 +701,26 @@ class TestParser(unittest.TestCase):
 	def test_named_entities(self):
 		self.assertEqual(spoken(math("<mi>&alpha;</mi><mo>&le;</mo><mi>&beta;</mi>")), "άλφα μικρότερο ή ίσο του βήτα")
 
+	def test_html5_math_entity_preserves_its_meaning(self):
+		# &NotLess; is valid in HTML5 MathML but is outside the small fast-path map.
+		self.assertEqual(spoken(math("<mi>x</mi><mo>&NotLess;</mo><mi>y</mi>")), "χι όχι μικρότερο του ψι")
+
+	def test_unknown_named_entity_is_not_silently_removed(self):
+		with self.assertRaises(MathMLParseError):
+			parse_mathml(math("<mi>x</mi><mo>&notAMathEntity;</mo><mi>y</mi>"))
+
 	def test_mfenced_normalization(self):
 		mathml = math("<mfenced><mi>x</mi><mi>y</mi></mfenced>")
 		self.assertEqual(spoken(mathml), "παρένθεση χι κόμμα ψι κλείνει η παρένθεση")
+
+	def test_mfenced_with_empty_separators(self):
+		# MathML's explicit empty value means adjacent fenced items, not a comma.
+		mathml = math('<mfenced separators=""><mi>x</mi><mi>y</mi></mfenced>')
+		self.assertEqual(spoken(mathml), "παρένθεση χι ψι κλείνει η παρένθεση")
+
+	def test_maction_honours_its_selected_child(self):
+		mathml = math('<maction selection="2"><mi>x</mi><mi>y</mi></maction>')
+		self.assertEqual(spoken(mathml), "ψι")
 
 	def test_semantics_annotation_skipped(self):
 		mathml = math(

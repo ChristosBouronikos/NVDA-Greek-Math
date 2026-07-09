@@ -1,3 +1,5 @@
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 import zipfile
 from collections.abc import Iterable
 from pathlib import Path

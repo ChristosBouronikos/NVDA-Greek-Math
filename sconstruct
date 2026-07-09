@@ -2,6 +2,8 @@
 # Copyright (C) 2012-2025 Rui Batista, Noelia Martinez, Joseph Lee
 # This file is covered by the GNU General Public License.
 # See the file COPYING.txt for more details.
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# Optional support: https://paypal.me/christosbouronikos
 
 import os
 import os.path
@@ -148,4 +150,6 @@ env.Depends(manifest, "buildVars.py")
 
 env.Depends(addon, manifest)
 env.Default(addon)
-env.Clean(addon, [".sconsign.dblite", "addon/doc/" + buildVars.baseLanguage + "/"])
+# Generated HTML files are already registered as build targets. Do not clean
+# their containing directory: it also contains the tracked Markdown sources.
+env.Clean(addon, ".sconsign.dblite")
