@@ -1,0 +1,44 @@
+name: Release
+
+# Publishing a version tag (v1.0.0) builds the add-on and attaches it to the
+# GitHub release. The release asset URL (ending in .nvda-addon) is what gets
+# submitted to the NVDA Add-on Store — see SUBMISSION.md.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and attach add-on to release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Run engine tests
+        run: python3 -m unittest discover tests -v
+
+      - name: Build add-on package
+        run: python3 build.py
+
+      - name: Compute SHA256 for the store submission form
+        run: shasum -a 256 *.nvda-addon | tee sha256.txt
+
+      - name: Create release and attach add-on
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            *.nvda-addon
+            sha256.txt
+          generate_release_notes: true

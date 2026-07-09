@@ -1,0 +1,23 @@
+# Generated at build time (python3 build.py / scons)
+manifest.ini
+*.html
+*.mo
+*.pot
+*.nvda-addon
+
+# Python
+*.py[co]
+__pycache__/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# SCons
+.sconsign.dblite
+
+# macOS
+.DS_Store
+
+# Local assistant/editor state
+.claude/
+.codex/

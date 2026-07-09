@@ -1,0 +1,141 @@
+# Greek translation of the Greek Math Reader NVDA add-on UI.
+# Copyright (C) 2026 Christos Bouronikos
+# This file is distributed under the same license as the greekMathReader package.
+msgid ""
+msgstr ""
+"Project-Id-Version: greekMathReader 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-09 12:00+0300\n"
+"PO-Revision-Date: 2026-07-09 12:00+0300\n"
+"Last-Translator: Christos Bouronikos <chrisbouronikos@gmail.com>\n"
+"Language-Team: Greek\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Translators: Summary/title for this add-on
+msgid "Greek Math Reader"
+msgstr "Ελληνική Ανάγνωση Μαθηματικών"
+
+#. Translators: Long description to be shown for this add-on on add-on information from add-on store
+msgid ""
+"Reads mathematical content (MathML) aloud in natural Greek, following the dictation\n"
+"conventions used in Greek schools and universities.\n"
+"Supports fractions, powers, roots, integrals, sums, products, limits, derivatives,\n"
+"matrices, determinants, systems of equations, set notation, trigonometric functions\n"
+"(with Greek naming), and much more.\n"
+"Includes interactive navigation to explore complex expressions part by part,\n"
+"and three verbosity levels (terse, smart, verbose)."
+msgstr ""
+"Εκφωνεί μαθηματικό περιεχόμενο (MathML) σε φυσικά ελληνικά, ακολουθώντας τον τρόπο\n"
+"υπαγόρευσης των ελληνικών σχολείων και πανεπιστημίων.\n"
+"Υποστηρίζει κλάσματα, δυνάμεις, ρίζες, ολοκληρώματα, αθροίσματα, γινόμενα, όρια,\n"
+"παραγώγους, πίνακες, ορίζουσες, συστήματα εξισώσεων, συμβολισμό συνόλων,\n"
+"τριγωνομετρικές συναρτήσεις (με την ελληνική ονομασία) και πολλά ακόμη.\n"
+"Περιλαμβάνει διαδραστική πλοήγηση για εξερεύνηση σύνθετων παραστάσεων μέρος-μέρος\n"
+"και τρία επίπεδα λεπτομέρειας εκφώνησης (σύντομη, έξυπνη, αναλυτική)."
+
+#. Translators: what's new content for the add-on version to be shown in the add-on store
+msgid "Initial release: Greek speech for MathML, interactive navigation, settings panel."
+msgstr "Πρώτη έκδοση: ελληνική εκφώνηση MathML, διαδραστική πλοήγηση, πίνακας ρυθμίσεων."
+
+#. Translators: Spoken when the MathML markup of an equation cannot be parsed.
+msgid "Invalid mathematical content"
+msgstr "Μη έγκυρο μαθηματικό περιεχόμενο"
+
+#. Translators: Spoken when an unexpected error occurs while reading an equation.
+msgid "Error reading mathematical content"
+msgstr "Σφάλμα κατά την ανάγνωση μαθηματικού περιεχομένου"
+
+#. Translators: Announced when entering math interaction mode.
+msgid "Math interaction. Use the arrow keys to explore, escape to exit."
+msgstr "Αλληλεπίδραση μαθηματικών. Χρησιμοποιήστε τα βέλη για εξερεύνηση και escape για έξοδο."
+
+#. Translators: Describes a command in math interaction mode.
+msgid "Move into the current part of the expression"
+msgstr "Μετακίνηση μέσα στο τρέχον μέρος της παράστασης"
+
+#. Translators: Describes a command in math interaction mode.
+msgid "Move out to the containing part of the expression"
+msgstr "Μετακίνηση έξω, στο μέρος που περιέχει το τρέχον"
+
+#. Translators: Describes a command in math interaction mode.
+msgid "Move to the next part of the expression"
+msgstr "Μετακίνηση στο επόμενο μέρος της παράστασης"
+
+#. Translators: Describes a command in math interaction mode.
+msgid "Move to the previous part of the expression"
+msgstr "Μετακίνηση στο προηγούμενο μέρος της παράστασης"
+
+#. Translators: Describes a command in math interaction mode.
+msgid "Return to the whole expression"
+msgstr "Επιστροφή σε ολόκληρη την παράσταση"
+
+#. Translators: Describes a command in math interaction mode.
+msgid "Repeat the current part of the expression"
+msgstr "Επανάληψη του τρέχοντος μέρους της παράστασης"
+
+#. Translators: Describes a command in math interaction mode.
+msgid "Copy the Greek reading of the expression to the clipboard"
+msgstr "Αντιγραφή της ελληνικής εκφώνησης της παράστασης στο πρόχειρο"
+
+#. Translators: Announced when the current math part has no inner parts.
+msgid "No inner parts"
+msgstr "Δεν υπάρχουν εσωτερικά μέρη"
+
+#. Translators: Announced when already at the outermost math part.
+msgid "At the outermost level"
+msgstr "Βρίσκεστε στο εξωτερικό επίπεδο"
+
+#. Translators: Announced when there is no next math part.
+msgid "End"
+msgstr "Τέλος"
+
+#. Translators: Announced when there is no previous math part.
+msgid "Start"
+msgstr "Αρχή"
+
+#. Translators: Announced when the reading of the expression was copied.
+msgid "Copied"
+msgstr "Αντιγράφηκε"
+
+#. Translators: Label of a checkbox in the settings panel.
+msgid "&Read mathematics in Greek (replaces the default math reader)"
+msgstr "&Ανάγνωση μαθηματικών στα ελληνικά (αντικαθιστά τον προεπιλεγμένο αναγνώστη μαθηματικών)"
+
+#. Translators: Label of a combo box in the settings panel.
+msgid "Speech &verbosity:"
+msgstr "&Λεπτομέρεια εκφώνησης:"
+
+#. Translators: A verbosity level: minimal structural announcements.
+msgid "Terse (chi square)"
+msgstr "Σύντομη (χι τετράγωνο)"
+
+#. Translators: A verbosity level: announcements only for complex structures.
+msgid "Smart — recommended (announces structure only when needed)"
+msgstr "Έξυπνη — προτείνεται (αναγγέλλει τη δομή μόνο όταν χρειάζεται)"
+
+#. Translators: A verbosity level: full structural announcements.
+msgid "Verbose (full begin and end announcements)"
+msgstr "Αναλυτική (πλήρεις αναγγελίες αρχής και τέλους)"
+
+#. Translators: Label of a checkbox in the settings panel.
+msgid "Read the decimal &point as a Greek decimal comma (3.14 as 3,14)"
+msgstr "Ανάγνωση της &υποδιαστολής ως ελληνικό δεκαδικό κόμμα (το 3.14 ως 3,14)"
+
+#. Translators: Label of a checkbox in the settings panel.
+msgid "Switch the synthesizer &language to Greek while reading math"
+msgstr "Εναλλαγή της &γλώσσας του συνθέτη σε ελληνικά κατά την ανάγνωση μαθηματικών"
+
+#. Translators: Describes the toggle command in the input gestures dialog.
+msgid "Toggles reading mathematics in Greek on or off"
+msgstr "Ενεργοποιεί ή απενεργοποιεί την ανάγνωση μαθηματικών στα ελληνικά"
+
+#. Translators: Announced when Greek math reading is turned on.
+msgid "Greek math reading on"
+msgstr "Ανάγνωση μαθηματικών στα ελληνικά: ενεργή"
+
+#. Translators: Announced when Greek math reading is turned off.
+msgid "Greek math reading off"
+msgstr "Ανάγνωση μαθηματικών στα ελληνικά: ανενεργή"

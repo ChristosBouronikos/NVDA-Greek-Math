@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-build:
+    name: Test and build add-on
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Run engine tests
+        run: python3 -m unittest discover tests -v
+
+      - name: Run demo preview
+        run: python3 preview.py --demo
+
+      - name: Build add-on package
+        run: python3 build.py
+
+      - name: Inspect package contents
+        run: python3 -m zipfile --list greekMathReader-1.0.0.nvda-addon
+
+      - name: Upload add-on artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: greekMathReader-1.0.0
+          path: greekMathReader-1.0.0.nvda-addon
