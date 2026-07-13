@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
-# Optional support: https://paypal.me/christosbouronikos
+# Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
+# Greek Math Reader is free, open-source software. If it helps make
+# mathematics more accessible for you, please consider a kind, optional
+# donation — it directly supports continued development. Thank you!
+#   PayPal: https://paypal.me/christosbouronikos
 """Dependency-free builder for the Greek Math Reader NVDA add-on.
 
 Produces greekMathReader-<version>.nvda-addon without requiring SCons.
@@ -238,11 +242,14 @@ def package() -> Path:
 	excluded_suffixes = {".po", ".pot"}
 	with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zf:
 		for path in sorted(ADDON.rglob("*")):
+			relativePath = path.relative_to(ADDON)
 			if path.is_dir() or path.suffix in excluded_suffixes:
 				continue
 			if "__pycache__" in path.parts:
 				continue
-			zf.write(path, path.relative_to(ADDON))
+			if any(part.startswith(".") for part in relativePath.parts):
+				continue
+			zf.write(path, relativePath)
 	print(f"\npackaged: {out.name} ({out.stat().st_size // 1024} KB)")
 	return out
 

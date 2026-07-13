@@ -5,9 +5,10 @@ This is the exact process, based on the official submission guide
 
 The store submission itself must be completed from the maintainer's GitHub
 account because the issue form records who is authorized to publish this add-on
-ID. The release asset must still be public and directly downloadable, even
-though the README presents the NVDA Add-on Store as the only supported
-installation channel.
+ID. The release asset must still be public and directly downloadable. The
+README currently documents manual installation of the unpublished 1.1.5
+diagnostic build; after publication, normal users should install from the
+NVDA Add-on Store.
 
 ## Before you submit (one-time setup)
 
@@ -16,7 +17,7 @@ installation channel.
    repository URL differs, then rebuild.
 2. **Test on Windows with real NVDA** (see checklist below).
 3. **Create a GitHub Release** on your repository and attach the built
-   `greekMathReader-1.0.0.nvda-addon` file. Copy the asset's download URL — it
+   `greekMathReader-1.1.5.nvda-addon` file. Copy the asset's download URL — it
    must start with `https://` and end with `.nvda-addon`.
 
 ## Issue form values
@@ -26,7 +27,7 @@ Use these values in the **Add-on registration** form:
 | Field | Value |
 |---|---|
 | Add-on ID | `greekMathReader` |
-| Add-on version | `1.0.0` |
+| Add-on version | `1.1.5` |
 | Channel | `stable` |
 | Display name | `Greek Math Reader` |
 | Publisher | `Bouronikos Christos` |
@@ -37,7 +38,7 @@ Use these values in the **Add-on registration** form:
 | Last tested NVDA version | `2026.1.1` |
 | License | `GPL v2` |
 | License URL | `https://www.gnu.org/licenses/old-licenses/gpl-2.0.html` |
-| SHA256 | `77b2b40860169670326f16c943fd5bb1ecb822e053b87e20668cbbecfaa8a60f` for the locally rebuilt `greekMathReader-1.0.0.nvda-addon`; recalculate after uploading the GitHub release asset |
+| SHA256 | `4ce245b0a16018667b3b79889b73550358ceb3ce89b80e9ce2d366b61aa8dd73` |
 
 ## Submission steps
 
@@ -55,7 +56,7 @@ Use these values in the **Add-on registration** form:
 ## What the automated validation checks (already satisfied by this project)
 
 * `name` = `greekMathReader` — letters/numbers only ✔
-* `version` `major.minor.patch` ✔ (`1.0.0`)
+* `version` `major.minor.patch` ✔ (`1.1.5`)
 * `minimumNVDAVersion` = 2024.1.0 and `lastTestedNVDAVersion` = 2026.1.1 —
   both real NVDA API versions ✔
 * All URLs are HTTPS ✔
@@ -71,7 +72,7 @@ Use these values in the **Add-on registration** form:
       numerator/denominator/root; Escape exits.
 - [ ] Settings → Greek Math Reader — change verbosity; equation reading changes
       accordingly.
-- [ ] NVDA+Alt+G toggles between Greek reading and the built-in reader.
+- [ ] NVDA+Alt+G repairs and reasserts exclusive Greek reading.
 - [ ] With NVDA UI language set to Greek, the settings panel and messages
       appear in Greek.
 - [ ] In NVDA 2026.1.1 specifically: disable the add-on and confirm math reading

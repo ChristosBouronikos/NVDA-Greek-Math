@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
-# Optional support: https://paypal.me/christosbouronikos
+# Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
+# Greek Math Reader is free, open-source software. If it helps make
+# mathematics more accessible for you, please consider a kind, optional
+# donation — it directly supports continued development. Thank you!
+#   PayPal: https://paypal.me/christosbouronikos
 """Δοκιμές της μηχανής ελληνικής εκφώνησης μαθηματικών.
 
 Εκτέλεση:  python3 -m unittest discover tests -v
@@ -99,6 +103,18 @@ class TestTokens(unittest.TestCase):
 class TestPowers(unittest.TestCase):
 	def test_square(self):
 		self.assertEqual(spoken(math("<msup><mi>x</mi><mn>2</mn></msup>")), "χι στο τετράγωνο")
+
+	def test_english_word_fallback_mtext_is_normalized_to_greek(self):
+		self.assertEqual(
+			spoken(math("<mtext>χ squared plus 1</mtext>")),
+			"χ στο τετράγωνο συν 1",
+		)
+
+	def test_english_word_fallback_has_no_untranslated_structure_terms(self):
+		self.assertEqual(
+			spoken(math("<mtext>limit x superscript 2 plus root gamma</mtext>")),
+			"όριο x άνω δείκτης 2 συν ρίζα γάμα",
+		)
 
 	def test_cube(self):
 		self.assertEqual(spoken(math("<msup><mi>x</mi><mn>3</mn></msup>")), "χι στον κύβο")
@@ -490,7 +506,7 @@ class TestAccents(unittest.TestCase):
 
 	def test_bar(self):
 		mathml = math("<mover><mi>x</mi><mo>¯</mo></mover>")
-		self.assertEqual(spoken(mathml), "χι παύλα")
+		self.assertEqual(spoken(mathml), "μέσος όρος του χι")
 
 	def test_hat(self):
 		mathml = math("<mover><mi>x</mi><mo>^</mo></mover>")
@@ -651,7 +667,7 @@ class TestExpandedSymbols(unittest.TestCase):
 		)
 
 	def test_increment_delta(self):
-		self.assertEqual(spoken(math("<mi>∆</mi><mi>x</mi>")), "δέλτα χι")
+		self.assertEqual(spoken(math("<mi>∆</mi><mi>x</mi>")), "μεταβολή του χι")
 
 	def test_micro_sign(self):
 		self.assertEqual(spoken(math("<mi>µ</mi>")), "μι")
@@ -684,6 +700,199 @@ class TestExpandedSymbols(unittest.TestCase):
 		self.assertEqual(spoken(math("<mi>ϝ</mi>")), "δίγαμμα")
 
 
+class TestLinearAlgebra(unittest.TestCase):
+	def test_matrix_inverse(self):
+		mathml = math("<msup><mi>A</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup>")
+		self.assertEqual(spoken(mathml), "αντίστροφος πίνακας άλφα")
+
+	def test_transpose_still_works(self):
+		self.assertEqual(spoken(math("<msup><mi>A</mi><mi>T</mi></msup>")), "ανάστροφος του άλφα")
+
+	def test_lowercase_inverse_is_not_matrix(self):
+		# Πεζό γράμμα με εκθέτη −1: όχι αντίστροφος πίνακας.
+		self.assertEqual(
+			spoken(math("<msup><mi>a</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup>")),
+			"α στη δύναμη μείον 1",
+		)
+
+	def test_capital_p_inverse_is_still_a_matrix(self):
+		mathml = math("<msup><mi>P</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup>")
+		self.assertEqual(spoken(mathml), "αντίστροφος πίνακας πι")
+
+	def test_inner_product(self):
+		mathml = math("<mrow><mo>⟨</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>⟩</mo></mrow>")
+		self.assertEqual(spoken(mathml), "εσωτερικό γινόμενο χι με ψι")
+
+	def test_trace_and_rank(self):
+		mathml = math(
+			"<mi>tr</mi><mrow><mo>(</mo><mi>A</mi><mo>)</mo></mrow>"
+			"<mo>+</mo><mi>rank</mi><mrow><mo>(</mo><mi>A</mi><mo>)</mo></mrow>"
+		)
+		self.assertEqual(spoken(mathml), "ίχνος του άλφα συν βαθμός του άλφα")
+
+
+class TestProbabilityAndStatistics(unittest.TestCase):
+	def test_mean_bar(self):
+		self.assertEqual(
+			spoken(math("<mover><mi>x</mi><mo>¯</mo></mover>")),
+			"μέσος όρος του χι",
+		)
+
+	def test_probability(self):
+		mathml = math("<mi>P</mi><mrow><mo>(</mo><mi>A</mi><mo>)</mo></mrow>")
+		self.assertEqual(spoken(mathml), "πιθανότητα του άλφα")
+
+	def test_conditional_probability(self):
+		mathml = math(
+			"<mi>P</mi><mrow><mo>(</mo><mi>A</mi><mo>|</mo><mi>B</mi><mo>)</mo></mrow>"
+		)
+		self.assertEqual(spoken(mathml), "πιθανότητα του άλφα δεδομένου του βήτα")
+
+	def test_expected_value(self):
+		mathml = math("<mi>E</mi><mrow><mo>(</mo><mi>X</mi><mo>)</mo></mrow>")
+		self.assertEqual(spoken(mathml), "μέση τιμή του χι")
+
+	def test_variance(self):
+		mathml = math(
+			"<mi>Var</mi><mrow><mo>(</mo><mi>X</mi><mo>)</mo></mrow>"
+			"<mo>=</mo><msup><mi>σ</mi><mn>2</mn></msup>"
+		)
+		self.assertEqual(spoken(mathml), "διακύμανση του χι ίσον σίγμα στο τετράγωνο")
+
+
+class TestGeometryAndNumberTheory(unittest.TestCase):
+	def test_named_angle(self):
+		self.assertEqual(spoken(math("<mo>∠</mo><mi>ABΓ</mi>")), "γωνία άλφα βήτα γάμα")
+
+	def test_arc(self):
+		self.assertEqual(
+			spoken(math("<mover><mi>AB</mi><mo>⌢</mo></mover>")),
+			"τόξο άλφα βήτα",
+		)
+
+	def test_perpendicular_and_parallel(self):
+		mathml = math("<mi>α</mi><mo>⊥</mo><mi>β</mi><mo>∥</mo><mi>γ</mi>")
+		self.assertEqual(spoken(mathml), "άλφα κάθετο στο βήτα παράλληλο στο γάμα")
+
+	def test_divisibility(self):
+		self.assertEqual(spoken(math("<mi>a</mi><mo>∣</mo><mi>b</mi>")), "α διαιρεί το μπε")
+
+	def test_gcd(self):
+		mathml = math("<mi>gcd</mi><mrow><mo>(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>)</mo></mrow>")
+		self.assertEqual(spoken(mathml), "μέγιστος κοινός διαιρέτης του α κόμμα μπε")
+
+
+class TestComplexAndAdvancedCalculus(unittest.TestCase):
+	def test_complex_conjugate_bar(self):
+		self.assertEqual(
+			spoken(math("<mover><mi>z</mi><mo>¯</mo></mover>")),
+			"συζυγής του ζήτα",
+		)
+
+	def test_complex_modulus(self):
+		self.assertEqual(
+			spoken(math("<mrow><mo>|</mo><mi>z</mi><mo>|</mo></mrow>")),
+			"μέτρο του ζήτα",
+		)
+
+	def test_mixed_partial_derivative(self):
+		mathml = math(
+			"<mfrac><mrow><msup><mo>∂</mo><mn>2</mn></msup><mi>f</mi></mrow>"
+			"<mrow><mo>∂</mo><mi>x</mi><mo>∂</mo><mi>y</mi></mrow></mfrac>"
+		)
+		self.assertEqual(
+			spoken(mathml),
+			"δεύτερη μερική παράγωγος του εφ ως προς χι και ψι",
+		)
+
+	def test_supremum_with_condition(self):
+		mathml = math(
+			"<munder><mi>sup</mi><mrow><mi>x</mi><mo>∈</mo><mi>A</mi></mrow></munder>"
+			"<mi>f</mi><mrow><mo>(</mo><mi>x</mi><mo>)</mo></mrow>"
+		)
+		self.assertEqual(spoken(mathml), "σουπρέμουμ για χι ανήκει στο άλφα εφ του χι")
+
+
+class TestUnits(unittest.TestCase):
+	def test_multichar_unit_after_number(self):
+		mathml = math("<mn>5</mn><mo>&#x2062;</mo><mi>kg</mi>")
+		self.assertEqual(spoken(mathml), "5 κιλά")
+
+	def test_single_char_unit_requires_normal_variant(self):
+		mathml = math('<mn>5</mn><mo>&#x2062;</mo><mi mathvariant="normal">N</mi>')
+		self.assertEqual(spoken(mathml), "5 νιούτον")
+
+	def test_single_letter_without_normal_stays_variable(self):
+		# "5 m" χωρίς mathvariant: αντιμετωπίζεται ως αλγεβρικός όρος, όχι μονάδα.
+		mathml = math("<mn>5</mn><mo>&#x2062;</mo><mi>m</mi>")
+		self.assertEqual(spoken(mathml), "5 μι")
+
+	def test_unit_in_mtext(self):
+		mathml = math("<mn>9.8</mn><mo>&#x2062;</mo><mtext>m</mtext>")
+		self.assertEqual(spoken(mathml), "9,8 μέτρα")
+
+	def test_unit_needs_preceding_number(self):
+		# Χωρίς προηγούμενο αριθμό δεν ερμηνεύεται ως μονάδα: το διγράμματο mi
+		# διαβάζεται γράμμα-γράμμα, όπως και πριν την προσθήκη μονάδων.
+		self.assertEqual(spoken(math("<mi>kg</mi>")), "κάπα ζε")
+
+	def test_metres_per_second(self):
+		mathml = math(
+			'<mn>3</mn><mfrac><mi mathvariant="normal">m</mi>'
+			'<mi mathvariant="normal">s</mi></mfrac>'
+		)
+		self.assertEqual(spoken(mathml), "3 μέτρα ανά δευτερόλεπτο")
+
+	def test_metres_per_second_squared(self):
+		mathml = math(
+			'<mn>9.8</mn><mfrac><mi mathvariant="normal">m</mi>'
+			'<msup><mi mathvariant="normal">s</mi><mn>2</mn></msup></mfrac>'
+		)
+		self.assertEqual(spoken(mathml), "9,8 μέτρα ανά δευτερόλεπτο στο τετράγωνο")
+
+
+class TestPhysicsNotation(unittest.TestCase):
+	def test_delta_change(self):
+		self.assertEqual(spoken(math("<mi>Δ</mi><mi>x</mi>")), "μεταβολή του χι")
+
+	def test_dot_derivative(self):
+		self.assertEqual(
+			spoken(math("<mover><mi>x</mi><mo>˙</mo></mover>")),
+			"χι τελεία",
+		)
+
+	def test_reduced_planck_constant(self):
+		self.assertEqual(spoken(math("<mi>ℏ</mi><mi>ω</mi>")), "ας μπαρ ωμέγα")
+
+	def test_subscripted_constant(self):
+		self.assertEqual(
+			spoken(math("<msub><mi>ε</mi><mn>0</mn></msub>")),
+			"έψιλον 0",
+		)
+
+	def test_scientific_notation(self):
+		mathml = math("<mn>6.02</mn><mo>×</mo><msup><mn>10</mn><mn>23</mn></msup>")
+		self.assertEqual(spoken(mathml), "6,02 επί 10 στην εικοστή τρίτη")
+
+
+class TestDefinitionAndOrdering(unittest.TestCase):
+	def test_colon_equals_definition(self):
+		self.assertEqual(
+			spoken(math("<mi>y</mi><mo>≔</mo><mn>2</mn>")),
+			"ψι εξ ορισμού ίσο με 2",
+		)
+
+	def test_lesssim_entity(self):
+		self.assertEqual(
+			spoken(math("<mi>a</mi><mo>&lesssim;</mo><mi>b</mi>")),
+			"α μικρότερο ή περίπου ίσο του μπε",
+		)
+
+	def test_langle_rangle_entities(self):
+		mathml = math("<mrow><mo>&langle;</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo>&rangle;</mo></mrow>")
+		self.assertEqual(spoken(mathml), "εσωτερικό γινόμενο ου με βε")
+
+
 class TestParser(unittest.TestCase):
 	def test_rejects_empty(self):
 		with self.assertRaises(MathMLParseError):
@@ -697,6 +906,10 @@ class TestParser(unittest.TestCase):
 		tree = parse_mathml('<m:math xmlns:m="http://www.w3.org/1998/Math/MathML"><m:mi>x</m:mi></m:math>')
 		self.assertEqual(tree.tag, "math")
 		self.assertEqual(tree.children[0].tag, "mi")
+
+	def test_unbound_mml_prefix(self):
+		mathml = "<mml:math><mml:mi>x</mml:mi><mml:mo>+</mml:mo><mml:mn>1</mml:mn></mml:math>"
+		self.assertEqual(spoken(mathml), "χι συν 1")
 
 	def test_named_entities(self):
 		self.assertEqual(spoken(math("<mi>&alpha;</mi><mo>&le;</mo><mi>&beta;</mi>")), "άλφα μικρότερο ή ίσο του βήτα")
@@ -728,6 +941,22 @@ class TestParser(unittest.TestCase):
 			'<annotation encoding="application/x-tex">x^2</annotation></semantics>'
 		)
 		self.assertEqual(spoken(mathml), "χι στο τετράγωνο")
+
+	def test_presentation_annotation_xml_is_used_as_fallback(self):
+		mathml = math(
+			'<semantics><annotation encoding="application/x-tex">x^2</annotation>'
+			'<annotation-xml encoding="MathML-Presentation">'
+			'<msup><mi>x</mi><mn>2</mn></msup>'
+			'</annotation-xml></semantics>'
+		)
+		self.assertEqual(spoken(mathml), "χι στο τετράγωνο")
+
+	def test_invisible_presentation_wrappers(self):
+		mathml = math(
+			"<mstyle><mpadded><mi>x</mi></mpadded><mphantom><mo>+</mo><mn>9</mn>"
+			"</mphantom><mspace width='1em'/><mo>+</mo><mn>1</mn></mstyle>"
+		)
+		self.assertEqual(spoken(mathml), "χι συν 1")
 
 	def test_leading_junk_stripped(self):
 		mathml = '<?xml version="1.0"?>' + math("<mn>1</mn>")

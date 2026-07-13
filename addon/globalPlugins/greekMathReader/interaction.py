@@ -3,7 +3,11 @@
 # Copyright (C) 2026 Christos Bouronikos
 # This file is covered by the GNU General Public License version 2.
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
-# Optional support: https://paypal.me/christosbouronikos
+# Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
+# Greek Math Reader is free, open-source software. If it helps make
+# mathematics more accessible for you, please consider a kind, optional
+# donation — it directly supports continued development. Thank you!
+#   PayPal: https://paypal.me/christosbouronikos
 
 """Interactive navigation of math expressions.
 
@@ -34,9 +38,9 @@ addonHandler.initTranslation()
 class GreekMathInteraction(mathPres.MathInteractionNVDAObject):
 	"""Tree-walking interaction for a math expression, announced in Greek."""
 
-	def __init__(self, provider=None, mathMl=None):
+	def __init__(self, provider=None, mathMl=None, tree=None):
 		super().__init__(provider=provider, mathMl=mathMl)
-		self.tree = parse_mathml(mathMl)
+		self.tree = tree if tree is not None else parse_mathml(mathMl)
 		# Ξεκινάμε από το πρώτο ουσιαστικό επίπεδο κάτω από το <math>.
 		self.pointer = self.tree.children[0] if len(self.tree.children) == 1 else self.tree
 
@@ -46,13 +50,13 @@ class GreekMathInteraction(mathPres.MathInteractionNVDAObject):
 		self._speakPointer(includeRole=False)
 
 	def _speakPointer(self, includeRole=True):
-		sequence = []
+		tokens = []
 		if includeRole:
 			role = role_description(self.pointer)
 			if role:
-				sequence.append(role + ":")
-		sequence.extend(tokensToSpeechSequence(speak_node(self.pointer, getReadingConfig())))
-		speech.speak(sequence)
+				tokens.append(role + ":")
+		tokens.extend(speak_node(self.pointer, getReadingConfig()))
+		speech.speak(tokensToSpeechSequence(tokens))
 
 	def _move(self, target, edgeMessage):
 		if target is None:

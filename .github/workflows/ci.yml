@@ -29,10 +29,10 @@ jobs:
         run: python3 build.py
 
       - name: Inspect package contents
-        run: python3 -m zipfile --list greekMathReader-1.0.0.nvda-addon
+        run: unzip -l greekMathReader-*.nvda-addon
 
       - name: Upload add-on artifact
         uses: actions/upload-artifact@v4
         with:
-          name: greekMathReader-1.0.0
-          path: greekMathReader-1.0.0.nvda-addon
+          name: greekMathReader-package
+          path: greekMathReader-*.nvda-addon
