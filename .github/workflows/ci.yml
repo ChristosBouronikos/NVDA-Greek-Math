@@ -31,6 +31,9 @@ jobs:
       - name: Inspect package contents
         run: unzip -l greekMathReader-*.nvda-addon
 
+      - name: Validate Store metadata and package structure
+        run: python3 tests/validate_package.py greekMathReader-2.0.0.nvda-addon
+
       - name: Upload add-on artifact
         uses: actions/upload-artifact@v4
         with:

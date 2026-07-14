@@ -1,0 +1,76 @@
+name: Bug report
+description: Report incorrect speech, an NVDA integration failure, or another reproducible problem
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve Greek Math Reader. Do not include passwords, private documents, or other sensitive data in diagnostics.
+  - type: input
+    id: nvda-version
+    attributes:
+      label: NVDA version
+      placeholder: 2026.1.1
+    validations:
+      required: true
+  - type: input
+    id: addon-version
+    attributes:
+      label: Greek Math Reader version
+      placeholder: 2.0.0
+    validations:
+      required: true
+  - type: input
+    id: application
+    attributes:
+      label: Application and version
+      description: For example, Microsoft Word 365 build number, Firefox, or Thorium Reader.
+    validations:
+      required: true
+  - type: textarea
+    id: expression
+    attributes:
+      label: Expression or MathML/LaTeX sample
+      description: Use the smallest non-sensitive example that reproduces the problem.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What was spoken or what happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Move focus to ...
+        3. Press ...
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Relevant diagnostics
+      description: Paste only non-sensitive output from Copy diagnostics or the NVDA log.
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I restarted NVDA and the affected application before reproducing the problem.
+          required: true
+        - label: I removed private or sensitive information from the sample and diagnostics.
+          required: true

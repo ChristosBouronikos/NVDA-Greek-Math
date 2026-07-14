@@ -17,13 +17,13 @@ NVDA's built-in math support (MathCAT, since NVDA 2026.1) reads math in English 
 
 ## Installation
 
-Version 1.1.5 is an unpublished diagnostic build for testing the Word fix. Install the exact supplied `greekMathReader-1.1.5.nvda-addon` file manually, accept replacement, then restart both NVDA and Word. After this version is published, use the NVDA Add-on Store for normal installation:
+Once version 2.0.0 is published, install it from the NVDA Add-on Store. For pre-publication testing, install the exact supplied `greekMathReader-2.0.0.nvda-addon` file manually, accept replacement, then restart both NVDA and Word:
 
 1. Open the NVDA menu (NVDA+N) → **Tools** → **Add-on Store**.
 2. In **Available add-ons**, search for **Greek Math Reader**.
 3. Choose **Install** and restart NVDA when prompted.
 
-Do not use an older 1.1.4 file: install 1.1.5 and verify its build identifier with **Copy diagnostics**.
+Do not use an older 1.x file: install 2.0.0 and verify its build identifier with **Copy diagnostics**.
 
 ## Usage
 
@@ -56,14 +56,14 @@ The same applies to eSpeak NG (which has a Greek voice, robotic but functional) 
 
 ## Reading equations in Microsoft Word
 
-Word exposes two accessibility representations inside a modern equation: structural MathML on the enclosing equation and an English linear speech stream such as `χ squared plus 1`. NVDA 2026.1.1 can choose that English stream during character/word movement, current-line reading, typing, selection, or cached Say All speech and skip every math provider. Version 1.1.5 covers both the TextInfo route and NVDA's official final-speech filter.
+Word exposes two accessibility representations inside a modern equation: structural MathML on the enclosing equation and an English linear speech stream such as `χ squared plus 1`. NVDA 2026.1.1 can choose that English stream during character/word movement, current-line reading, typing, selection, or cached Say All speech and skip every math provider. Version 2.0.0 covers both the TextInfo route and NVDA's official final-speech filter.
 
 1. Keep NVDA's **"Use native math support in Word and Outlook" unchecked** (NVDA menu → Preferences → Settings → **Math** → Application support). This keeps NVDA's math-provider framework loaded; it does not by itself disable Word's inner English linear text. The add-on enforces the setting automatically.
-2. Set **Advanced → Use UI Automation to access Microsoft Word document controls** to **Always**. Version 1.1.5 enforces this because recent Word versions expose OMath MathML through UIA. Restart NVDA and Word after reset/installation.
+2. Set **Advanced → Use UI Automation to access Microsoft Word document controls** to **Always**. Version 2.0.0 enforces this because recent Word versions expose OMath MathML through UIA. Restart NVDA and Word after reset/installation.
 3. Greek speech and interaction are exclusive while the add-on is installed. **NVDA+Alt+G** repairs the routing instead of turning Greek reading off.
 4. Use a **normal .docx document** with modern (OMath) equations, in a recent Word 365. Documents in **compatibility mode (.doc)** contain old Equation 3.0 or MathType objects, which Word may not expose as MathML — convert the document (File → Info → Convert) and, if needed, re-create those equations with Insert → Equation.
 
-If Word's UIA custom MathML property is absent, version 1.1.5 uses Word's read-only COM model to confirm the native OMath at the caret. Structured caret routes can also read its `WordOpenXML` and transform OMML to MathML in memory with Office's stylesheet. The final-speech filter changes English math vocabulary only after UIA or OMath confirmation. It does not move the selection, use the clipboard, linearize the equation, edit the document, or touch Undo history.
+If Word's UIA custom MathML property is absent, version 2.0.0 uses Word's read-only COM model to confirm the native OMath at the caret. Structured caret routes can also read its `WordOpenXML` and transform OMML to MathML in memory with Office's stylesheet. The final-speech filter changes English math vocabulary only after UIA or OMath confirmation. It does not move the selection, use the clipboard, linearize the equation, edit the document, or touch Undo history.
 
 If an equation is still not read in Greek, focus that equation and choose **Copy diagnostics** in the Greek Math Reader settings. The copied report distinguishes the TextInfo, UIA-notification, UIA MathML, and native OMath routes. The self-test checks only the Greek engine and voice.
 
@@ -105,4 +105,10 @@ development.
 
 * Author: Bouronikos Christos
 * Email: [chrisbouronikos@gmail.com](mailto:chrisbouronikos@gmail.com)
+* GitHub: [ChristosBouronikos](https://github.com/ChristosBouronikos)
 * PayPal: [Make a donation](https://paypal.me/christosbouronikos)
+
+## License
+
+GNU General Public License v2.0 only (`GPL-2.0-only`). The complete license is
+included in the add-on package as `COPYING.txt`.

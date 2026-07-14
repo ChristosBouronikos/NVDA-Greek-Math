@@ -1,9 +1,12 @@
 # Greek translation of the Greek Math Reader NVDA add-on UI.
 # Copyright (C) 2026 Christos Bouronikos
 # This file is distributed under the same license as the greekMathReader package.
+# Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# GitHub: https://github.com/ChristosBouronikos
+# Optional support: https://paypal.me/christosbouronikos
 msgid ""
 msgstr ""
-"Project-Id-Version: greekMathReader 1.1.5\n"
+"Project-Id-Version: greekMathReader 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-09 12:00+0300\n"
 "PO-Revision-Date: 2026-07-13 12:00+0300\n"

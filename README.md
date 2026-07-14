@@ -22,7 +22,7 @@
 
 Μετά την εγκατάσταση, τα μαθηματικά στις ιστοσελίδες (Βικιπαίδεια, πλατφόρμες τηλεκπαίδευσης, περιεχόμενο MathJax), στα βιβλία EPUB και στις εξισώσεις του Word διαβάζονται αυτόματα στα ελληνικά.
 
-> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση 1.1.5 δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word της 1.1.5 χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
+> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση 2.0.0 δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word της 2.0.0 χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
 
 ### Χρήση
 
@@ -51,7 +51,7 @@
 
 Προτεινόμενα: **Ομιλία** με Windows OneCore και εγκατεστημένο Microsoft Στέφανο, Αυτόματη εναλλαγή γλώσσας ενεργή, αξιόπιστη γλώσσα φωνής ενεργή και κανονικοποίηση Unicode ενεργή. **Ήχος** στη σωστή ή προεπιλεγμένη συσκευή και διαχωρισμός ήχου απενεργοποιημένος για διάγνωση. Στα **Μαθηματικά**, αφήστε τις ρυθμίσεις MathCAT στις προεπιλογές και κρατήστε απενεργοποιημένο το «Use native math support in Word and Outlook».
 
-Το Word εκθέτει μέσα στην ίδια εξίσωση τόσο δομικό MathML όσο και ένα δικό του αγγλικό «γραμμικό» κείμενο, όπως `χ squared plus 1`. Το NVDA 2026.1.1 μπορεί να χρησιμοποιήσει αυτό το αγγλικό κείμενο κατά την κίνηση ανά χαρακτήρα/λέξη, την ανάγνωση τρέχουσας γραμμής, την πληκτρολόγηση ή άλλες διαδρομές που παρακάμπτουν τον πάροχο μαθηματικών. Η 1.1.5 καλύπτει και το τελικό επίσημο φίλτρο ομιλίας του NVDA, αλλά αλλάζει κείμενο μόνο όταν το UIA ή το μόνο-για-ανάγνωση OMath επιβεβαιώσει ότι ο δρομέας βρίσκεται πράγματι σε εξίσωση Word.
+Το Word εκθέτει μέσα στην ίδια εξίσωση τόσο δομικό MathML όσο και ένα δικό του αγγλικό «γραμμικό» κείμενο, όπως `χ squared plus 1`. Το NVDA 2026.1.1 μπορεί να χρησιμοποιήσει αυτό το αγγλικό κείμενο κατά την κίνηση ανά χαρακτήρα/λέξη, την ανάγνωση τρέχουσας γραμμής, την πληκτρολόγηση ή άλλες διαδρομές που παρακάμπτουν τον πάροχο μαθηματικών. Η 2.0.0 καλύπτει και το τελικό επίσημο φίλτρο ομιλίας του NVDA, αλλά αλλάζει κείμενο μόνο όταν το UIA ή το μόνο-για-ανάγνωση OMath επιβεβαιώσει ότι ο δρομέας βρίσκεται πράγματι σε εξίσωση Word.
 
 Σε σελίδες **MathJax 4** που δίνουν στο NVDA μόνο αγγλικό `aria-label`, ανοίξτε το μενού περιβάλλοντος της παράστασης, ενεργοποιήστε **Assistive/Hidden MathML** και απενεργοποιήστε τη δημιουργία **Speech** του MathJax. Χωρίς πραγματικό MathML το πρόσθετο δεν μπορεί να ανακατασκευάσει μια εξίσωση από έτοιμη αγγλική περιγραφή.
 
@@ -174,8 +174,9 @@
 δωρεά**. Κάθε συνεισφορά, όσο μικρή, στηρίζει άμεσα τη συνέχιση της ανάπτυξης και
 δίνει κίνητρο για νέες δυνατότητες. Ευχαριστώ θερμά! 🙏
 
-* **Δημιουργός:** Christos Bouronikos (Χρήστος Μπουρονίκος)
+* **Δημιουργός:** Bouronikos Christos (Χρήστος Μπουρονίκος)
 * **Email:** [chrisbouronikos@gmail.com](mailto:chrisbouronikos@gmail.com)
+* **GitHub:** [ChristosBouronikos](https://github.com/ChristosBouronikos)
 * **PayPal — κάντε μια δωρεά:** **https://paypal.me/christosbouronikos**
 
 ---
@@ -196,7 +197,7 @@ To test before publication, install the `greekMathReader-2.0.0.nvda-addon` file:
 
 After installation, math on web pages (Wikipedia, e-learning platforms, MathJax content), in EPUB books, and in Word equations is automatically read in Greek.
 
-> Requires NVDA 2024.1 or later. Version 1.1.5 declares compatibility through NVDA 2026.1.1. Its final Word speech filter is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
+> Requires NVDA 2024.1 or later. Version 2.0.0 declares compatibility through NVDA 2026.1.1. Its final Word speech filter is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
 
 ### Usage
 
@@ -225,7 +226,7 @@ The **Reset settings and repair Greek math** button restores smart verbosity, de
 
 Recommended: **Speech** using Windows OneCore with Microsoft Stefanos installed, Automatic language switching on, Trust voice language on, and Unicode normalization on. **Audio** using the correct/default device with sound split disabled while troubleshooting. Under **Math**, leave MathCAT speech settings at their defaults and keep “Use native math support in Word and Outlook” unchecked.
 
-Word exposes both structural MathML and its own English “linear” text inside the same equation, such as `χ squared plus 1`. NVDA 2026.1.1 can use that stream during character/word movement, current-line reading, typing, or other routes that bypass the math provider. Version 1.1.5 also covers NVDA's official final-speech filter, but changes text only when UIA or read-only native OMath confirms that the caret is genuinely inside a Word equation.
+Word exposes both structural MathML and its own English “linear” text inside the same equation, such as `χ squared plus 1`. NVDA 2026.1.1 can use that stream during character/word movement, current-line reading, typing, or other routes that bypass the math provider. Version 2.0.0 also covers NVDA's official final-speech filter, but changes text only when UIA or read-only native OMath confirms that the caret is genuinely inside a Word equation.
 
 On **MathJax 4** pages that expose only an English `aria-label`, open the expression's context menu, enable **Assistive/Hidden MathML**, and disable MathJax **Speech** generation. Without real MathML, the add-on cannot reconstruct an equation from a prewritten English description.
 
@@ -316,8 +317,9 @@ python3 preview.py --demo            # preview readings in the terminal
 python3 build.py                     # build greekMathReader-<version>.nvda-addon
 ```
 
-Development note: AI-assisted tools were used for limited code, documentation,
-and build-automation support. The maintainer reviews the resulting changes.
+Development note: AI-assisted tools contributed to code, tests, documentation,
+and build automation. The scope of that assistance and the maintainer's human
+review responsibilities are documented in [AI_DISCLOSURE.md](AI_DISCLOSURE.md).
 
 ### Support
 
@@ -327,10 +329,13 @@ you know — please consider **a kind, optional donation**. Every contribution,
 however small, directly supports continued development and new features. Thank
 you so much! 🙏
 
-* **Author:** Christos Bouronikos
+* **Author:** Bouronikos Christos
 * **Email:** [chrisbouronikos@gmail.com](mailto:chrisbouronikos@gmail.com)
+* **GitHub:** [ChristosBouronikos](https://github.com/ChristosBouronikos)
 * **PayPal — make a donation:** **https://paypal.me/christosbouronikos**
 
 ### License
 
-[GNU General Public License v2](COPYING.txt) — the standard license for NVDA add-ons.
+[GNU General Public License v2.0 only (GPL-2.0-only)](COPYING.txt). This strong
+copyleft license keeps the add-on and redistributed modifications free and
+source-available, and is compatible with NVDA's GPL v2-or-later licensing.

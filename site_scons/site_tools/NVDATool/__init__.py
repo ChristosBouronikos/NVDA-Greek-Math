@@ -1,4 +1,5 @@
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# GitHub: https://github.com/ChristosBouronikos
 # Optional support: https://paypal.me/christosbouronikos
 """
 This tool generates NVDA extensions.
