@@ -17,13 +17,12 @@ NVDA's built-in math support (MathCAT, since NVDA 2026.1) reads math in English 
 
 ## Installation
 
-Once version 2.0.0 is published, install it from the NVDA Add-on Store. For pre-publication testing, install the exact supplied `greekMathReader-2.0.0.nvda-addon` file manually, accept replacement, then restart both NVDA and Word:
+Install Greek Math Reader only from the **NVDA Add-on Store**:
 
-1. Open the NVDA menu (NVDA+N) → **Tools** → **Add-on Store**.
-2. In **Available add-ons**, search for **Greek Math Reader**.
-3. Choose **Install** and restart NVDA when prompted.
-
-Do not use an older 1.x file: install 2.0.0 and verify its build identifier with **Copy diagnostics**.
+1. Press **NVDA+N** to open the NVDA menu.
+2. Choose **Tools → Add-on Store**.
+3. Open **Available add-ons** and search for **Greek Math Reader**.
+4. Select the add-on, choose **Install**, and restart NVDA when prompted.
 
 ## Usage
 
@@ -96,6 +95,10 @@ NVDA 2024.1 through 2026.1.1. The final Word speech filter is used on NVDA 2026.
 ## Feedback
 
 Please report issues and terminology suggestions at the project repository. Terminology (how each symbol and structure is worded in Greek) lives in two easily editable files, and corrections from teachers and students are very welcome.
+
+## Development disclosure
+
+Artificial intelligence (AI) tools were used in the development and documentation of this repository and add-on.
 
 ## Support
 

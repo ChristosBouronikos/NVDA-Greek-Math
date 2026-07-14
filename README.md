@@ -1,4 +1,4 @@
-# Ελληνική Ανάγνωση Μαθηματικών · Greek Math Reader
+# Greek Math Reader
 
 **Πρόσθετο NVDA / NVDA add-on** — εκφωνεί μαθηματικά σε φυσικά ελληνικά · reads mathematics aloud in natural Greek.
 
@@ -12,13 +12,12 @@
 
 ### Εγκατάσταση
 
-Μόλις δημοσιευθεί στο **NVDA Add-on Store**, εγκαταστήστε το από εκεί: μενού NVDA (NVDA+N) → **Εργαλεία** → **Κατάστημα προσθέτων** → αναζήτηση «Greek Math Reader» → **Εγκατάσταση**.
+Εγκαταστήστε το Greek Math Reader μόνο από το **NVDA Add-on Store**:
 
-Για δοκιμή πριν τη δημοσίευση, εγκαταστήστε το αρχείο `greekMathReader-2.0.0.nvda-addon`:
-
-1. Ανοίξτε το `greekMathReader-2.0.0.nvda-addon` στα Windows.
-2. Επιβεβαιώστε εγκατάσταση/αντικατάσταση και την πρόσθετη προειδοποίηση για ήδη εγκατεστημένη έκδοση.
-3. Επανεκκινήστε το NVDA· για εξισώσεις Word επανεκκινήστε και το Word.
+1. Πατήστε **NVDA+N** για να ανοίξετε το μενού του NVDA.
+2. Επιλέξτε **Εργαλεία → Κατάστημα προσθέτων**.
+3. Ανοίξτε την καρτέλα **Διαθέσιμα πρόσθετα** και αναζητήστε **Greek Math Reader**.
+4. Επιλέξτε το πρόσθετο, πατήστε **Εγκατάσταση** και επανεκκινήστε το NVDA όταν σας ζητηθεί.
 
 Μετά την εγκατάσταση, τα μαθηματικά στις ιστοσελίδες (Βικιπαίδεια, πλατφόρμες τηλεκπαίδευσης, περιεχόμενο MathJax), στα βιβλία EPUB και στις εξισώσεις του Word διαβάζονται αυτόματα στα ελληνικά.
 
@@ -41,7 +40,7 @@
 
 ### Ρυθμίσεις
 
-Μενού NVDA → Προτιμήσεις → Ρυθμίσεις → **Ελληνική Ανάγνωση Μαθηματικών**: επίπεδο λεπτομέρειας (σύντομη / έξυπνη / αναλυτική), δεκαδικό κόμμα, δοκιμή, επαναφορά/επιδιόρθωση και αντιγραφή διαγνωστικών.
+Μενού NVDA → Προτιμήσεις → Ρυθμίσεις → **Greek Math Reader**: επίπεδο λεπτομέρειας (σύντομη / έξυπνη / αναλυτική), δεκαδικό κόμμα, δοκιμή, επαναφορά/επιδιόρθωση και αντιγραφή διαγνωστικών.
 
 Στο NVDA 2026.1.1 η λίστα **Μαθηματικά → Γλώσσα** δεν διαθέτει «Αυτόματα» και προεπιλέγει κανονικά τα αγγλικά. Ανήκει στο MathCAT και παρακάμπτεται από το Greek Math Reader.
 
@@ -187,13 +186,12 @@ NVDA reads mathematics (via the built-in MathCAT) in English and several other l
 
 ### Installation
 
-Once published to the **NVDA Add-on Store**, install it from there: NVDA menu (NVDA+N) → **Tools** → **Add-on Store** → search "Greek Math Reader" → **Install**.
+Install Greek Math Reader only from the **NVDA Add-on Store**:
 
-To test before publication, install the `greekMathReader-2.0.0.nvda-addon` file:
-
-1. Open `greekMathReader-2.0.0.nvda-addon` on Windows.
-2. Confirm installation/replacement and the additional already-installed-version prompt.
-3. Restart NVDA; restart Word as well before testing Word equations.
+1. Press **NVDA+N** to open the NVDA menu.
+2. Choose **Tools → Add-on Store**.
+3. Open **Available add-ons** and search for **Greek Math Reader**.
+4. Select the add-on, choose **Install**, and restart NVDA when prompted.
 
 After installation, math on web pages (Wikipedia, e-learning platforms, MathJax content), in EPUB books, and in Word equations is automatically read in Greek.
 
@@ -317,9 +315,8 @@ python3 preview.py --demo            # preview readings in the terminal
 python3 build.py                     # build greekMathReader-<version>.nvda-addon
 ```
 
-Development note: AI-assisted tools contributed to code, tests, documentation,
-and build automation. The scope of that assistance and the maintainer's human
-review responsibilities are documented in [AI_DISCLOSURE.md](AI_DISCLOSURE.md).
+Artificial intelligence (AI) tools were used in the development and
+documentation of this repository and add-on.
 
 ### Support
 

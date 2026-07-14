@@ -63,6 +63,30 @@ and enter:
 
 Suggested issue title suffix: `Greek Math Reader 2.0.0`.
 
+## Suggested submission text
+
+The registration form is primarily a set of structured fields. If a short
+introduction is useful in a follow-up comment or during review, the following
+text is ready to use:
+
+> Hello NVDA Add-on Store team,
+>
+> I would kindly like to submit Greek Math Reader 2.0.0 for inclusion in the
+> NVDA Add-on Store. Greek Math Reader helps Greek-speaking blind and visually
+> impaired users access mathematical content in natural Greek. It supports
+> MathML on webpages and in EPUB books, modern Microsoft Word equations, and
+> selected or copied LaTeX. It also provides interactive navigation so users
+> can explore an expression one part at a time.
+>
+> The repository includes English and Greek documentation, automated tests,
+> release metadata, and the GPL-2.0-only license. Artificial intelligence tools
+> were used in the development and documentation of the repository and add-on.
+> The add-on is developed and maintained by Bouronikos Christos
+> (chrisbouronikos@gmail.com).
+>
+> Thank you very much for your time and for maintaining the NVDA Add-on Store.
+> I appreciate your review and welcome any feedback or requested improvements.
+
 After submission, the Store automation creates a pull request and validates the
 download URL, package manifest, unique add-on ID, versions, URLs, SHA256, and
 VirusTotal result. If validation fails, correct the release or manifest and
