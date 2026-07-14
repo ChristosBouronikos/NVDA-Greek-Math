@@ -32,7 +32,10 @@ jobs:
       - name: Build add-on package
         run: python3 build.py
 
-      - name: Compute SHA256 for the store submission form
+      - name: Validate Store metadata and package structure
+        run: python3 tests/validate_package.py greekMathReader-2.0.0.nvda-addon
+
+      - name: Compute SHA256 for release integrity
         run: shasum -a 256 *.nvda-addon | tee sha256.txt
 
       - name: Create release and attach add-on

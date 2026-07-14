@@ -2,8 +2,14 @@
 # Copyright (C) 2026 Christos Bouronikos
 # This file is covered by the GNU General Public License version 2.
 # See the file COPYING.txt for more details.
+# SPDX-License-Identifier: GPL-2.0-only
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
-# Optional support: https://paypal.me/christosbouronikos
+# GitHub: https://github.com/ChristosBouronikos
+# Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
+# Greek Math Reader is free, open-source software. If it helps make
+# mathematics more accessible for you, please consider a kind, optional
+# donation — it directly supports continued development. Thank you!
+#   PayPal: https://paypal.me/christosbouronikos
 
 """MathML parser: turns MathML markup into a navigable tree of MathNode objects.
 
@@ -145,6 +151,27 @@ NAMED_ENTITIES = {
 	"frac12": "½", "frac13": "⅓", "frac23": "⅔", "frac14": "¼", "frac34": "¾",
 	"half": "½",
 	"sup2": "²", "sup3": "³", "sup1": "¹",
+	# Brackets and bars (LaTeX-style names emitted by some generators)
+	"langle": "⟨", "rangle": "⟩",
+	"lVert": "‖", "rVert": "‖", "lvert": "|", "rvert": "|",
+	"lbrace": "{", "rbrace": "}",
+	# Logic and definition
+	"land": "∧", "lor": "∨", "lnot": "¬",
+	"implies": "⇒", "impliedby": "⇐", "iff2": "⇔",
+	"models": "⊨", "vdash": "⊢", "top": "⊤", "bot": "⊥",
+	"coloneq": "≔", "coloneqq": "≔", "Coloneqq": "≔", "eqcolon": "≕",
+	"colon": ":",
+	# Analysis and letters
+	"partial": "∂", "hslash": "ℏ", "varnothing": "∅",
+	"varpi": "ϖ", "varkappa": "ϰ", "varrho": "ϱ",
+	"digamma": "ϝ",
+	"nparallel": "∦", "parallel2": "∥",
+	# Multiple integrals and vector operators
+	"iint": "∬", "iiint": "∭", "oint": "∮", "oiint": "∯",
+	"bigoplus": "⨁", "bigotimes": "⨂",
+	# Ordering and approx
+	"lesssim": "≲", "gtrsim": "≳", "approxeq": "≈",
+	"triangleq": "≜", "eqdef": "≜",
 }
 
 _ENTITY_RE = re.compile(r"&(#x?[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);")
@@ -241,6 +268,14 @@ def _replace_entities(mathml):
 	return _ENTITY_RE.sub(repl, mathml)
 
 
+_MML_TAG_PREFIX_RE = re.compile(r"<(/?)mml:", re.IGNORECASE)
+
+
+def _strip_mml_tag_prefix(mathml):
+	"""Accept fragments with ``mml:`` tags even when the prefix is unbound."""
+	return _MML_TAG_PREFIX_RE.sub(r"<\1", mathml)
+
+
 def _strip_ns(tag):
 	return tag.rsplit("}", 1)[-1].lower()
 
@@ -287,11 +322,21 @@ def _convert(element, parent):
 		return
 
 	if tag == "semantics":
-		# Speak only the first child (the presentation MathML); annotations are skipped.
+		# Prefer the presentation child. Some conversion pipelines put presentation
+		# MathML only inside annotation-xml, which must not be discarded.
 		for child in element:
 			if _strip_ns(child.tag) not in ("annotation", "annotation-xml"):
 				_convert(child, parent)
-				break
+				return
+		for child in element:
+			if _strip_ns(child.tag) != "annotation-xml":
+				continue
+			encoding = child.attrib.get("encoding", "").lower()
+			if "mathml-presentation" not in encoding and "presentation" not in encoding:
+				continue
+			for presentation_child in child:
+				_convert(presentation_child, parent)
+			return
 		return
 
 	if tag == "maction":
@@ -467,7 +512,7 @@ def parse_mathml(mathml):
 	"""
 	if not mathml or not mathml.strip():
 		raise MathMLParseError("empty MathML input")
-	prepared = _replace_entities(mathml)
+	prepared = _strip_mml_tag_prefix(_replace_entities(mathml))
 	# Strip anything before the opening <math> tag (some sources prepend XML decls).
 	start = prepared.find("<math")
 	if start > 0:

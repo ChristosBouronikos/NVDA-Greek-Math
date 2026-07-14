@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-2.0-only
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
-# Optional support: https://paypal.me/christosbouronikos
+# GitHub: https://github.com/ChristosBouronikos
+# Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
+# Greek Math Reader is free, open-source software. If it helps make
+# mathematics more accessible for you, please consider a kind, optional
+# donation — it directly supports continued development. Thank you!
+#   PayPal: https://paypal.me/christosbouronikos
 """Dependency-free builder for the Greek Math Reader NVDA add-on.
 
 Produces greekMathReader-<version>.nvda-addon without requiring SCons.
-The SCons build (sconstruct) remains the canonical build for CI/releases;
-this script is a convenience for local development on any OS.
+This dependency-free path is used by CI and releases; `sconstruct` remains
+available for contributors who use the full NVDA Add-on Template toolchain.
 
 Steps:
   1. Generate addon/manifest.ini from manifest.ini.tpl + buildVars.py
@@ -231,6 +237,12 @@ def build_docs() -> None:
 		print(f"generated {html_file.relative_to(ROOT)}")
 
 
+def install_license() -> None:
+	"""Include the complete GPL text in the distributable add-on bundle."""
+	shutil.copyfile(ROOT / "COPYING.txt", ADDON / "COPYING.txt")
+	print("copied COPYING.txt into add-on bundle")
+
+
 def package() -> Path:
 	version = buildVars.addon_info["addon_version"]
 	name = buildVars.addon_info["addon_name"]
@@ -238,11 +250,14 @@ def package() -> Path:
 	excluded_suffixes = {".po", ".pot"}
 	with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zf:
 		for path in sorted(ADDON.rglob("*")):
+			relativePath = path.relative_to(ADDON)
 			if path.is_dir() or path.suffix in excluded_suffixes:
 				continue
 			if "__pycache__" in path.parts:
 				continue
-			zf.write(path, path.relative_to(ADDON))
+			if any(part.startswith(".") for part in relativePath.parts):
+				continue
+			zf.write(path, relativePath)
 	print(f"\npackaged: {out.name} ({out.stat().st_size // 1024} KB)")
 	return out
 
@@ -251,4 +266,5 @@ if __name__ == "__main__":
 	generate_manifest()
 	compile_translations()
 	build_docs()
+	install_license()
 	package()

@@ -4,6 +4,7 @@ manifest.ini
 *.mo
 *.pot
 *.nvda-addon
+/addon/COPYING.txt
 
 # Python
 *.py[co]

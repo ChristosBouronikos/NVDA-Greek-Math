@@ -2,6 +2,12 @@
 
 Greek Math Reader is primarily a terminology-sensitive NVDA add-on. Small wording changes matter because users hear the result directly.
 
+Maintainer: **Bouronikos Christos** ·
+[chrisbouronikos@gmail.com](mailto:chrisbouronikos@gmail.com) ·
+[GitHub](https://github.com/ChristosBouronikos). If the add-on helps you, a
+[kind, optional PayPal donation](https://paypal.me/christosbouronikos) supports
+continued development.
+
 ## What to Report
 
 Please open an issue for:
@@ -38,3 +44,8 @@ The built `*.nvda-addon` file is a release artifact and is intentionally ignored
 ## Release Policy
 
 Public releases are submitted to the NVDA Add-on Store from a stable GitHub release asset. Do not distribute ad-hoc `.nvda-addon` builds as an installation path; they should only be used for local testing and store submission.
+
+AI-assisted contributions are welcome when they are disclosed and carefully
+reviewed. Contributors remain responsible for correctness, licensing, privacy,
+and tests. See [AI_DISCLOSURE.md](AI_DISCLOSURE.md) for this project's use of
+AI-assisted tools.

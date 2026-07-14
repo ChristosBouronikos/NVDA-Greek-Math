@@ -3,6 +3,7 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING.txt for more details.
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
+# GitHub: https://github.com/ChristosBouronikos
 # Optional support: https://paypal.me/christosbouronikos
 
 import os
@@ -84,6 +85,11 @@ env.Append(**env["addon_info"])
 
 addonFile = env.File("${addon_name}-${addon_version}.nvda-addon")
 addon = env.NVDAAddon(addonFile, env.Dir(addonDir), excludePatterns=buildVars.excludedFiles)
+
+# Ship the complete GPL text inside the installable bundle. The copy under
+# addon/ is a generated artifact and is ignored by Git.
+licenseTarget = env.Command(str(addonDir / "COPYING.txt"), "COPYING.txt", Copy("$TARGET", "$SOURCE"))
+env.Depends(addon, licenseTarget)
 
 langDirs: list[FS.Dir] = [env.Dir(d) for d in env.Glob(localeDir/"*/") if d.isdir()]
 

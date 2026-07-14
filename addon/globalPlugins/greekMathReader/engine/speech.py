@@ -2,8 +2,14 @@
 # Greek Math Reader for NVDA
 # Copyright (C) 2026 Christos Bouronikos
 # This file is covered by the GNU General Public License version 2.
+# SPDX-License-Identifier: GPL-2.0-only
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
-# Optional support: https://paypal.me/christosbouronikos
+# GitHub: https://github.com/ChristosBouronikos
+# Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
+# Greek Math Reader is free, open-source software. If it helps make
+# mathematics more accessible for you, please consider a kind, optional
+# donation — it directly supports continued development. Thank you!
+#   PayPal: https://paypal.me/christosbouronikos
 
 """Μετατροπή δέντρου MathML σε ελληνική εκφώνηση.
 
@@ -66,10 +72,97 @@ _ACCENTS_OVER = {
 _BIG_OPERATOR_CHARS = set(symbols.BIG_OPERATORS)
 _SUM_LIKE = {"∑", "∏", "⋃", "⋂", "⨁", "⨂"}
 _INTEGRAL_CHARS = {"∫", "∬", "∭", "∮", "∯"}
+_EXTREMUM_NAMES = {"max", "min", "sup", "inf"}
 _RELATION_CHARS = set(symbols.RELATIONS) | {"⇒", "⇔", "→", "↦"}
 _DIFFERENTIAL_RE = re.compile(r"^[dⅆ∂](\d*)(.*)$", re.DOTALL)
 _TRAILING_SUPERSCRIPTS_RE = re.compile(r"^([\d.,]+)([⁰¹²³⁴⁵⁶⁷⁸⁹]+)$")
 _SUPERSCRIPT_TRANS = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹", "0123456789")
+
+# Word, PDF converters and accessibility layers occasionally wrap an already
+# generated English math sentence in <mtext> even when the enclosing object is
+# labelled as MathML. Structural MathML never needs this table; it is a narrow
+# last line of defence for phrases such as "χ squared plus 1".
+_ENGLISH_MATH_MTEXT_REPLACEMENTS = (
+	# Equation boundary announcements (longest phrases first so they win).
+	("end of equation", "τέλος εξίσωσης"),
+	("start of equation", "αρχή εξίσωσης"),
+	("end of section", "τέλος εξίσωσης"),
+	("start of section", "αρχή εξίσωσης"),
+	("less than or equal to", "μικρότερο ή ίσο του"),
+	("greater than or equal to", "μεγαλύτερο ή ίσο του"),
+	("not equal to", "διάφορο του"),
+	("open parenthesis", "ανοίγει παρένθεση"),
+	("close parenthesis", "κλείνει η παρένθεση"),
+	("open bracket", "ανοίγει αγκύλη"),
+	("close bracket", "κλείνει η αγκύλη"),
+	("square root of", "τετραγωνική ρίζα του"),
+	("cube root of", "κυβική ρίζα του"),
+	("to the power of", "στη δύναμη"),
+	("raised to", "υψωμένο σε"),
+	("divided by", "διά"),
+	("multiplied by", "επί"),
+	("equal to", "ίσον"),
+	("squared", "στο τετράγωνο"),
+	("cubed", "στον κύβο"),
+	("superscript", "άνω δείκτης"),
+	("subscript", "κάτω δείκτης"),
+	("numerator", "αριθμητής"),
+	("denominator", "παρονομαστής"),
+	("summation", "άθροισμα"),
+	("integral", "ολοκλήρωμα"),
+	("multiplied", "επί"),
+	("divided", "διά"),
+	("raised", "υψωμένο"),
+	("fraction", "κλάσμα"),
+	("equals", "ίσον"),
+	("equal", "ίσον"),
+	("power", "δύναμη"),
+	("root", "ρίζα"),
+	("limit", "όριο"),
+	("over", "διά"),
+	("plus", "συν"),
+	("minus", "πλην"),
+	("times", "επί"),
+)
+_ENGLISH_MATH_MTEXT_TRIGGER_RE = re.compile(
+	"|".join(
+		rf"(?<!\w){re.escape(source)}(?!\w)"
+		for source, _replacement in _ENGLISH_MATH_MTEXT_REPLACEMENTS
+	),
+	re.IGNORECASE,
+)
+_ENGLISH_MATH_TOKEN_REPLACEMENTS = {
+	"zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",
+	"five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9",
+	"ten": "10", "alpha": "άλφα", "beta": "βήτα", "gamma": "γάμα",
+	"delta": "δέλτα", "epsilon": "έψιλον", "zeta": "ζήτα", "eta": "ήτα",
+	"theta": "θήτα", "iota": "γιώτα", "kappa": "κάπα", "lambda": "λάμδα",
+	"mu": "μι", "nu": "νι", "xi": "ξι", "omicron": "όμικρον", "pi": "πι",
+	"rho": "ρο", "sigma": "σίγμα", "tau": "ταυ", "upsilon": "ύψιλον",
+	"phi": "φι", "chi": "χι", "psi": "ψι", "omega": "ωμέγα",
+	"infinity": "άπειρο",
+}
+
+
+def _normalize_english_math_mtext(text):
+	"""Translate only explicit English math vocabulary inside fallback mtext."""
+	if not _ENGLISH_MATH_MTEXT_TRIGGER_RE.search(text):
+		return text
+	for source, replacement in _ENGLISH_MATH_MTEXT_REPLACEMENTS:
+		text = re.sub(
+			rf"(?<!\w){re.escape(source)}(?!\w)",
+			replacement,
+			text,
+			flags=re.IGNORECASE,
+		)
+	for source, replacement in _ENGLISH_MATH_TOKEN_REPLACEMENTS.items():
+		text = re.sub(
+			rf"(?<!\w){re.escape(source)}(?!\w)",
+			replacement,
+			text,
+			flags=re.IGNORECASE,
+		)
+	return re.sub(r"\s+", " ", text).strip()
 
 
 def is_simple(node):
@@ -155,6 +248,16 @@ class MathSpeaker(object):
 			return fn_def
 		while i < len(children):
 			child = children[i]
+			# Φυσική: Δx → «μεταβολή του χι». Η μεμονωμένη Δ (π.χ.
+			# διακρίνουσα) παραμένει «δέλτα».
+			if (
+				child.tag in ("mi", "mo") and child.text in ("Δ", "∆")
+				and i + 1 < len(children) and children[i + 1].tag == "mi"
+			):
+				out.append("μεταβολή του")
+				out.extend(self._node(children[i + 1]))
+				i += 2
+				continue
 			# Αόρατοι τελεστές
 			if child.tag == "mo" and child.text in symbols.INVISIBLE_CHARS:
 				if child.text == symbols.INVISIBLE_PLUS:
@@ -199,7 +302,7 @@ class MathSpeaker(object):
 				if j < len(children) and self._is_paren_group(children[j]):
 					out.extend(self._node(child))
 					out.append("του")
-					out.extend(self._fenced_content_or_group(children[j]))
+					out.extend(self._function_arguments(child, children[j]))
 					i = j + 1
 					continue
 			# Δυαδικό/μοναδιαίο πλην
@@ -278,10 +381,27 @@ class MathSpeaker(object):
 				return phrase[3:]
 		return phrase
 
+	def _preceded_by_number(self, node):
+		"""True αν προηγείται αριθμός (αγνοώντας αόρατο πολλαπλασιασμό)."""
+		prev = node.previous_sibling()
+		if prev is not None and prev.tag == "mo" and prev.text in symbols.INVISIBLE_CHARS:
+			prev = prev.previous_sibling()
+		return prev is not None and prev.tag == "mn"
+
 	def _speak_mi(self, node):
 		text = node.text
 		if not text:
 			return []
+		# P(A), E(X): τα μονογράμματα είναι ονόματα συναρτήσεων μόνο όταν
+		# ακολουθούνται από όρισμα· αλλού παραμένουν γεωμετρικά/αλγεβρικά σύμβολα.
+		if text in ("P", "E") and self._has_parenthesized_argument(node):
+			return [symbols.FUNCTION_NAMES[text]]
+		# Μονάδες μέτρησης: "5 N" → "5 νιούτον". Πολυγράμματες μονάδες (kg, cm,
+		# Hz…) είναι μονοσήμαντες· μονογράμματες απαιτούν mathvariant="normal"
+		# ώστε να μη μπερδεύονται με μεταβλητές.
+		if text in symbols.UNITS and self._preceded_by_number(node):
+			if len(text) > 1 or node.attrib.get("mathvariant") == "normal":
+				return [symbols.UNITS[text]]
 		if text in symbols.NUMBER_SETS:
 			if self.config.verbosity == TERSE:
 				return [symbols.NUMBER_SETS_TERSE[text]]
@@ -349,7 +469,12 @@ class MathSpeaker(object):
 		return [text]
 
 	def _speak_mtext(self, node):
-		return [node.text] if node.text else []
+		text = node.text
+		if not text:
+			return []
+		if text in symbols.UNITS:
+			return [symbols.UNITS[text]]
+		return [_normalize_english_math_mtext(text)]
 
 	def _speak_ms(self, node):
 		return [node.text] if node.text else []
@@ -403,6 +528,21 @@ class MathSpeaker(object):
 				out.extend(self._node(child))
 		return out
 
+	def _function_arguments(self, function, group):
+		"""Εκφώνηση ορισμάτων με ειδική περίπτωση την υπό συνθήκη πιθανότητα."""
+		info = self._fence_info(group)
+		if info is None:
+			return self._node(group)
+		_, _, inner = info
+		if function.tag == "mi" and function.text in ("P", "Pr"):
+			parts = self._split_top_level(inner, separators=("|", "∣"))
+			if len(parts) == 2 and parts[0] and parts[1]:
+				out = self._sequence(parts[0])
+				out.append("δεδομένου του")
+				out.extend(self._sequence(parts[1]))
+				return out
+		return self._fenced_content_or_group(group)
+
 	def _all_simple(self, nodes):
 		return all(
 			is_simple(n) or (n.tag == "mo" and (n.text == "," or n.text in symbols.INVISIBLE_CHARS))
@@ -416,7 +556,15 @@ class MathSpeaker(object):
 			return self._table_with_fences(inner[0], open_char)
 		# Απόλυτη τιμή
 		if open_char == "|":
-			out = ["απόλυτη τιμή του" if verbosity != TERSE else "απόλυτο"]
+			# Στη μιγαδική ανάλυση |z| διαβάζεται «μέτρο του ζήτα».
+			complex_operand = (
+				len(inner) == 1 and inner[0].tag == "mi"
+				and inner[0].text in ("z", "Z", "w", "W")
+			)
+			if complex_operand:
+				out = ["μέτρο του"]
+			else:
+				out = ["απόλυτη τιμή του" if verbosity != TERSE else "απόλυτο"]
 			out.extend(self._sequence(inner))
 			if not self._all_simple(inner):
 				out.append(Pause(SHORT))
@@ -443,6 +591,15 @@ class MathSpeaker(object):
 			out.append(Pause(SHORT))
 			out.append("τέλος άνω ακέραιου μέρους")
 			return out
+		# Εσωτερικό γινόμενο: ⟨x, y⟩
+		if open_char == "⟨":
+			parts = self._split_top_level(inner)
+			if len(parts) == 2 and parts[0] and parts[1]:
+				out = ["εσωτερικό γινόμενο"]
+				out.extend(self._sequence(parts[0]))
+				out.append("με")
+				out.extend(self._sequence(parts[1]))
+				return out
 		# Σύνολο σε άγκιστρα
 		if open_char == "{":
 			return self._set_notation(inner)
@@ -528,6 +685,11 @@ class MathSpeaker(object):
 			out.append("ανά")
 			out.extend(self._operand(denominator))
 			return out
+		# Σύνθετες μονάδες φυσικής: m/s, km/h, m/s².
+		numerator_unit = self._unit_expression(numerator)
+		denominator_unit = self._unit_expression(denominator, after_per=True)
+		if numerator_unit is not None and denominator_unit is not None:
+			return [numerator_unit, "ανά", denominator_unit]
 		# Παράγωγος κατά Leibniz: dy/dx, d²y/dx², ∂f/∂x
 		derivative = self._derivative(numerator, denominator)
 		if derivative is not None:
@@ -560,6 +722,29 @@ class MathSpeaker(object):
 		out.append(Pause(MEDIUM))
 		out.append("τέλος κλάσματος")
 		return out
+
+	def _unit_expression(self, node, after_per=False):
+		"""Επιστρέφει εκφώνηση αν ο κόμβος είναι σαφής μονάδα μέτρησης."""
+		if node.tag in ("mi", "mtext") and node.text in symbols.UNITS:
+			is_unambiguous = (
+				node.tag == "mtext"
+				or len(node.text) > 1
+				or node.attrib.get("mathvariant") == "normal"
+			)
+			if not is_unambiguous:
+				return None
+			if after_per:
+				return symbols.unit_per_reading(node.text)
+			return symbols.unit_reading(node.text)
+		if node.tag == "msup":
+			base, exponent = node.child(0), node.child(1)
+			if base is None or exponent is None:
+				return None
+			base_reading = self._unit_expression(base, after_per=after_per)
+			power = grammar.power_reading(exponent.token_text().strip())
+			if base_reading is not None and power is not None:
+				return f"{base_reading} {power}"
+		return None
 
 	def _derivative(self, numerator, denominator):
 		num_text = numerator.token_text().replace(" ", "")
@@ -682,6 +867,11 @@ class MathSpeaker(object):
 			out = ["αντίστροφη της"]
 			out.extend(self._node(base))
 			return out
+		# Αντίστροφος πίνακας: A⁻¹ (κεφαλαίο γράμμα ως πίνακας)
+		if exp_text in ("-1", "−1") and base.is_token and len(base.text) == 1 and base.text.isalpha() and base.text.isupper():
+			out = ["αντίστροφος πίνακας"]
+			out.extend(self._node(base))
+			return out
 		# Απλή δύναμη: στο τετράγωνο, στον κύβο, στην νιοστή…
 		power = grammar.power_reading(exp_text) if is_simple(exponent) else None
 		out = self._node(base)
@@ -700,14 +890,28 @@ class MathSpeaker(object):
 
 	def _is_function_atom(self, node):
 		if node.tag == "mi":
-			if len(node.text) > 1 and node.text in symbols.FUNCTION_NAMES:
+			if node.text in ("P", "E"):
+				return self._has_parenthesized_argument(node)
+			if node.text in symbols.FUNCTION_NAMES:
 				return True
 			if node.text in ("f", "g", "h", "φ", "ψ", "σ"):
 				return True
+		if node.tag == "mo" and node.text in ("ℜ", "ℑ"):
+			return True
 		if node.tag in ("msub", "msup"):
 			base = node.child(0)
 			return base is not None and self._is_function_atom(base)
 		return False
+
+	def _has_parenthesized_argument(self, node):
+		next_node = node.next_sibling()
+		if (
+			next_node is not None
+			and next_node.tag == "mo"
+			and next_node.text == symbols.INVISIBLE_APPLY
+		):
+			next_node = next_node.next_sibling()
+		return next_node is not None and self._is_paren_group(next_node)
 
 	def _speak_msub(self, node):
 		base, subscript = node.child(0), node.child(1)
@@ -853,6 +1057,10 @@ class MathSpeaker(object):
 		base, under = node.child(0), node.child(1)
 		if base is None or under is None:
 			return self._sequence(node.children)
+		if base.tag in ("mi", "mo") and base.text in _EXTREMUM_NAMES:
+			out = [symbols.FUNCTION_NAMES[base.text], "για"]
+			out.extend(self._node(under))
+			return out
 		out = self._node(base)
 		out.append("με κάτω")
 		out.extend(self._node(under))
@@ -876,6 +1084,15 @@ class MathSpeaker(object):
 			out = ["τόξο"]
 			out.extend(self._node(base))
 			return out
+		if accent == "παύλα" and base.tag == "mi":
+			if base.text in ("x", "X"):
+				out = ["μέσος όρος του"]
+				out.extend(self._node(base))
+				return out
+			if base.text in ("z", "Z", "w", "W"):
+				out = ["συζυγής του"]
+				out.extend(self._node(base))
+				return out
 		if accent is not None:
 			out = self._node(base)
 			out.append(accent)

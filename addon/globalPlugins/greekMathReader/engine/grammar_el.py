@@ -2,8 +2,14 @@
 # Greek Math Reader for NVDA
 # Copyright (C) 2026 Christos Bouronikos
 # This file is covered by the GNU General Public License version 2.
+# SPDX-License-Identifier: GPL-2.0-only
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
-# Optional support: https://paypal.me/christosbouronikos
+# GitHub: https://github.com/ChristosBouronikos
+# Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
+# Greek Math Reader is free, open-source software. If it helps make
+# mathematics more accessible for you, please consider a kind, optional
+# donation — it directly supports continued development. Thank you!
+#   PayPal: https://paypal.me/christosbouronikos
 
 """Ελληνική γραμματική για μαθηματική εκφώνηση: δυνάμεις, ρίζες, τακτικά
 αριθμητικά, κλασματικά ονόματα, παράγωγοι.

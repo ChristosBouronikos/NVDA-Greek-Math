@@ -1,7 +1,13 @@
 # Build customizations for the Greek Math Reader NVDA add-on.
+# SPDX-License-Identifier: GPL-2.0-only
 # Change this file instead of sconstruct or manifest files, whenever possible.
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
-# Optional support: https://paypal.me/christosbouronikos
+# GitHub: https://github.com/ChristosBouronikos
+# Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
+# Greek Math Reader is free, open-source software. If it helps make
+# mathematics more accessible for you, please consider a kind, optional
+# donation — it directly supports continued development. Thank you!
+#   PayPal: https://paypal.me/christosbouronikos
 
 from site_scons.site_tools.NVDATool.typings import AddonInfo, BrailleTables, SymbolDictionaries
 
@@ -26,23 +32,24 @@ addon_info = AddonInfo(
 	addon_description=_(
 		"""Reads mathematical content (MathML) aloud in natural Greek, following the dictation
 conventions used in Greek schools and universities.
-Supports fractions, powers, roots, integrals, sums, products, limits, derivatives,
-matrices, determinants, systems of equations, set notation, trigonometric functions
-(with Greek naming), and much more.
+Supports school and university mathematics, statistics, SI physics units, fractions,
+powers, roots, integrals, limits, derivatives, matrices, probability, and LaTeX input.
 Includes interactive navigation to explore complex expressions part by part,
 and three verbosity levels (terse, smart, verbose)."""
 	),
 	# version
-	addon_version="1.0.0",
+	addon_version="2.0.0",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
-	addon_changelog=_("""Initial release: Greek speech for MathML, interactive navigation, settings panel."""),
+	addon_changelog=_(
+		"""Version 2.0.0: reliable Greek reading of Word equations (structured OMath transform with an English backup), Greek LaTeX reading with NVDA+Alt+L, expanded school/university/statistics/physics vocabulary, clearer pronunciation of short Greek letter names, and Greek equation-boundary announcements."""
+	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",
 	# URL for the add-on documentation support
-	addon_url="https://github.com/chrisbouronikos/NVDA-Greek-Math",
+	addon_url="https://github.com/ChristosBouronikos/NVDA-Greek-Math",
 	# URL for the add-on repository where the source code can be found
-	addon_sourceURL="https://github.com/chrisbouronikos/NVDA-Greek-Math",
+	addon_sourceURL="https://github.com/ChristosBouronikos/NVDA-Greek-Math",
 	# Documentation file name
 	addon_docFileName="readme.html",
 	# Minimum NVDA version supported (e.g. "2019.3.0", minor version is optional)
@@ -53,8 +60,8 @@ and three verbosity levels (terse, smart, verbose)."""
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!
 	addon_updateChannel=None,
-	# Add-on license such as GPL 2
-	addon_license="GPL v2",
+	# SPDX identifier: GPL-2.0-only. This is compatible with NVDA's GPL-2.0-or-later license.
+	addon_license="GPL-2.0-only",
 	# URL for the license document the ad-on is licensed under
 	addon_licenseURL="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
 )
@@ -70,7 +77,15 @@ i18nSources: list[str] = pythonSources + ["buildVars.py"]
 
 # Files that will be ignored when building the nvda-addon file
 # Paths are relative to the addon directory, not to the root directory of your addon sources.
-excludedFiles: list[str] = []
+excludedFiles: list[str] = [
+	".DS_Store",
+	"**/.DS_Store",
+	"*.pyc",
+	"**/*.pyc",
+	"**/__pycache__/*",
+	"**/*.po",
+	"**/*.pot",
+]
 
 # Base language for the NVDA add-on
 # The add-on UI messages are authored in English and translated to Greek (el);
