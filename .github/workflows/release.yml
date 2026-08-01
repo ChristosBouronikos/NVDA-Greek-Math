@@ -45,3 +45,4 @@ jobs:
             *.nvda-addon
             sha256.txt
           generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
