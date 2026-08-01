@@ -98,6 +98,7 @@ class TestProviderRegistration(unittest.TestCase):
 		self.mathPres = _FakeMathPres()
 		self.log = _FakeLog()
 		self.originalMathCatCalls = []
+		self.backendConfigurationCalls = []
 		testCase = self
 
 		class FakeMathCAT:
@@ -290,6 +291,10 @@ class TestProviderRegistration(unittest.TestCase):
 		provider = types.ModuleType(f"{PACKAGE_NAME}.provider")
 
 		class GreekMathProvider:
+			def configureMathCatDelegate(providerInstance, delegate=None):
+				testCase.backendConfigurationCalls.append(delegate)
+				return False
+
 			def getSpeechForMathMl(self, mathMl):
 				self.lastMathMl = mathMl
 				return ["χι στο τετράγωνο συν 1"]
@@ -362,6 +367,12 @@ class TestProviderRegistration(unittest.TestCase):
 		self.module._unregister()
 		self.assertIs(self.mathPres.speechProvider, previousSpeech)
 		self.assertIs(self.mathPres.interactionProvider, previousInteraction)
+
+	def test_register_reconfigures_backend_when_provider_is_already_active(self):
+		previousSpeech = self.mathPres.speechProvider
+		self.module._register()
+		self.module._register()
+		self.assertEqual(self.backendConfigurationCalls, [previousSpeech, previousSpeech])
 
 	def test_register_recovers_after_slots_are_replaced(self):
 		originalSpeech = self.mathPres.speechProvider
@@ -596,6 +607,22 @@ class TestProviderRegistration(unittest.TestCase):
 			name="x squared",
 			_hasNavigableText=True,
 			appModule=types.SimpleNamespace(appName="browser"),
+		)
+
+		sequence = self.speechCore.getObjectSpeech(obj)
+
+		self.assertEqual(sequence, ["χι στο τετράγωνο συν 1"])
+		self.assertEqual(self.originalObjectSpeechCalls, [])
+		plugin.terminate()
+
+	def test_tagged_pdf_mathml_uses_the_same_global_provider(self):
+		plugin = self.module.GlobalPlugin()
+		obj = types.SimpleNamespace(
+			role=self.controlTypes.Role.MATH,
+			mathMl="<math><mi>E</mi><mo>=</mo><mi>m</mi><msup><mi>c</mi><mn>2</mn></msup></math>",
+			name="E equals m c squared",
+			_hasNavigableText=True,
+			appModule=types.SimpleNamespace(appName="acrord32"),
 		)
 
 		sequence = self.speechCore.getObjectSpeech(obj)

@@ -29,7 +29,7 @@ GREEK_TEXT_RE = re.compile(r"[Α-Ωα-ωάέήίόύώϊϋΐΰ]")
 class TestRealWorldMathMLCorpus(unittest.TestCase):
 	def test_every_sample_produces_greek_speech(self):
 		samples = sorted(CORPUS_DIR.glob("*.mathml"))
-		self.assertGreaterEqual(len(samples), 3)
+		self.assertGreaterEqual(len(samples), 9)
 		for sample in samples:
 			with self.subTest(sample=sample.name):
 				mathml = sample.read_text(encoding="utf-8")

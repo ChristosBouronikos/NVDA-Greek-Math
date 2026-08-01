@@ -26,8 +26,13 @@ Most Greek wording lives in:
 
 * `addon/globalPlugins/greekMathReader/engine/symbols_el.py`
 * `addon/globalPlugins/greekMathReader/engine/grammar_el.py`
+* `addon/globalPlugins/greekMathReader/engine/terminology_el.py` for meanings rather than glyphs
+* `addon/globalPlugins/greekMathReader/engine/morphology_el.py` for grammatical agreement
 
-When changing terminology, add or update an exact-wording test in `tests/test_engine.py`.
+When changing terminology, update the review status/source in
+`TERMINOLOGY_REVIEW.md` and add an exact-wording test in `tests/test_engine.py`
+or `tests/test_semantics.py`. Every semantic concept also needs an ambiguity or
+fallback test and profile tests wherever the wording changes.
 
 ## Local Checks
 
@@ -37,6 +42,7 @@ Run these before submitting a change:
 python3 -m unittest discover tests -v
 python3 preview.py --demo
 python3 build.py
+python3 tests/validate_package.py greekMathReader-2.1.0-dev.nvda-addon
 ```
 
 The built `*.nvda-addon` file is a release artifact and is intentionally ignored by Git. Official installation is through the NVDA Add-on Store only.
@@ -44,6 +50,14 @@ The built `*.nvda-addon` file is a release artifact and is intentionally ignored
 ## Release Policy
 
 Public releases are submitted to the NVDA Add-on Store from a stable GitHub release asset. Do not distribute ad-hoc `.nvda-addon` builds as an installation path; they should only be used for local testing and store submission.
+
+A semantic domain may leave the development channel only after approval from a
+relevant Greek domain expert, the Greek-language reviewer, and two blind Greek
+NVDA users. Meaning-changing speech, silent content loss, raw English structural
+leakage, unreviewed default terminology, or broken core navigation blocks a
+stable release. Existing MathCAT braille output is preserved; no Greek
+math-braille code may ship without an authoritative specification and the
+separate validation process documented in `TERMINOLOGY_REVIEW.md`.
 
 AI-assisted contributions are welcome when they are disclosed and carefully
 reviewed. Contributors remain responsible for correctness, licensing, privacy,

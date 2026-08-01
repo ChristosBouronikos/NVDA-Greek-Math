@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.1.0-dev — 2026-08-01
+
+Development preview of the first staged semantic release. It is deliberately on the `dev` channel until the terminology and user-listening release gates are signed off.
+
+* Adds a canonical semantic layer shared by MathML, LaTeX and UnicodeMath. Valid MathML `intent`/`arg` annotations take priority; conservative structure and domain context come next; unresolved notation keeps a lossless structural reading.
+* Adds direct UnicodeMath and Word-linear input to `NVDA+Alt+L`, with format detection and spoken confirmation. Existing LaTeX and public engine entry points remain compatible.
+* Adds a versioned Greek concept registry, Standard/School/University profiles, validated personal overrides with JSON import/export, and a morphology renderer for counted and compound SI units.
+* Corrects the main audited errors: `1 m` is singular, `A†` is an adjoint, and `∇·F` is divergence. Adds bra–ket/matrix elements, commutators with domain gating, expectation/conditional expectation, independence, gradient/curl/Laplacian, Jacobian/Hessian and selected physics concepts.
+* Adds capability-gated delegation to an installed MathCAT Greek language pack. Until one is advertised, the local Greek engine and navigation remain active; existing MathCAT braille is not replaced. Adds a deterministic upstream contribution bundle generated from the same terminology registry and golden corpus.
+* Adds read-only health reporting, explicit repair, backend/profile/rule diagnostics, adjustable relative rate and pauses, semantic-operand navigation, history, End, table-cell movement, position reporting, and speech/MathML copy.
+* Expands the real-world corpus from 3 to 9 samples and the automated suite from 268 to more than 300 tests, including tagged-PDF MathML routing, exact Greek semantic readings, cross-format parity, generated no-silent-loss checks and backend selection.
+
+Pending stable-release gates: terminology approval by the relevant Greek domain and language reviewers, listening tests with Microsoft Stefanos and eSpeak Greek, two blind Greek NVDA reviewers, and the supported NVDA/browser/Word/EPUB/PDF matrix. No Greek math-braille code is claimed or shipped.
+
 ## 2.0.0 — 2026-07-13
 
 First major release. Greek Math Reader now reads mathematics reliably across the web, EPUB, and Microsoft Word, and can read LaTeX on demand.

@@ -78,7 +78,9 @@ _SYMBOLS = {
 	"therefore": "∴", "because": "∵",
 	"mid": "∣", "nmid": "∤",
 	"Re": "ℜ", "Im": "ℑ", "aleph": "ℵ", "hbar": "ℏ", "ell": "ℓ",
-	"degree": "°", "prime": "′",
+	"degree": "°", "prime": "′", "dagger": "†", "ddagger": "‡",
+	"langle": "⟨", "rangle": "⟩", "vert": "|", "Vert": "‖",
+	"lvert": "|", "rvert": "|", "lVert": "‖", "rVert": "‖",
 	"coloneqq": "≔", "coloneq": "≔", "triangleq": "≜",
 }
 
@@ -95,8 +97,12 @@ _FUNCTIONS = {
 	"sinh", "cosh", "tanh", "coth",
 	"log", "ln", "lg", "exp",
 	"lim", "limsup", "liminf", "max", "min", "sup", "inf", "arg",
-	"det", "dim", "ker", "gcd", "lcm", "rank", "tr", "deg", "hom",
-	"Pr", "Var", "Cov", "Re", "Im",
+	"argmax", "argmin", "esssup", "essinf",
+	"det", "dim", "ker", "gcd", "lcm", "rank", "tr", "Tr", "deg", "hom",
+	"span", "null", "nullity", "spec", "Eig", "Hom", "End", "Aut", "Gal",
+	"ord", "char", "Res", "ind", "card", "dom", "diag", "adj",
+	"Pr", "Var", "Cov", "Corr", "SD", "Std", "SE", "Re", "Im",
+	"pdf", "pmf", "cdf", "supp", "cl", "erf", "sinc", "sgn",
 }
 
 _BIG_OPERATORS = {
@@ -337,6 +343,8 @@ class _Parser:
 		if name == "operatorname":
 			arg = self._parse_group_or_atom()
 			return MathNode("mi", text=arg.token_text())
+		if name in ("bra", "ket", "braket"):
+			return self._parse_quantum_group(name)
 		if name in ("mathbb", "mathbf", "mathrm", "mathcal", "mathit", "text", "mathsf", "boldsymbol"):
 			return self._parse_font(name)
 		if name == "begin":
@@ -358,11 +366,34 @@ class _Parser:
 		if name == "text":
 			return MathNode("mtext", text=arg.token_text())
 		if name == "mathrm":
+			text = arg.token_text()
+			if text and text.isalpha() and len(text) <= 8:
+				return MathNode("mi", {"mathvariant": "normal"}, text)
 			for node in arg.iter():
 				if node.tag == "mi":
 					node.attrib["mathvariant"] = "normal"
 		# For other fonts, keep the content as-is (styling is irrelevant to speech).
 		return arg
+
+	def _parse_quantum_group(self, name):
+		arg = self._parse_group_or_atom()
+		arg.attrib["arg"] = "state" if name != "braket" else "content"
+		row = MathNode("mrow", {"intent": f"{name}(${arg.attrib['arg']})"})
+		if name in ("bra", "braket"):
+			row.append(MathNode("mo", text="⟨"))
+		row.append(arg)
+		if name == "bra":
+			row.append(MathNode("mo", text="|"))
+		elif name == "ket":
+			row.children.insert(0, MathNode("mo", text="|"))
+			row.append(MathNode("mo", text="⟩"))
+		else:
+			row.append(MathNode("mo", text="⟩"))
+		# ``insert`` above bypasses append's parent/index maintenance.
+		for index, child in enumerate(row.children):
+			child.parent = row
+			child.index = index
+		return row
 
 	def _parse_accent(self, name):
 		arg = self._parse_group_or_atom()

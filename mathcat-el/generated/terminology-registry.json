@@ -1,0 +1,1784 @@
+{
+  "entries": [
+    {
+      "caseForms": {},
+      "conceptId": "absolute_value",
+      "domain": "arithmetic_analysis",
+      "forms": {
+        "school": "απόλυτη τιμή του",
+        "standard": "απόλυτη τιμή του",
+        "university": "απόλυτη τιμή του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "acceleration",
+      "domain": "classical_mechanics",
+      "forms": {
+        "school": "επιτάχυνση",
+        "standard": "επιτάχυνση",
+        "university": "επιτάχυνση"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "adjoint",
+      "domain": "linear_algebra",
+      "forms": {
+        "school": "συζυγής ανάστροφος του",
+        "standard": "συζυγής ανάστροφος του",
+        "university": "προσαρτημένος τελεστής του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "angular_momentum",
+      "domain": "classical_mechanics_quantum",
+      "forms": {
+        "school": "στροφορμή",
+        "standard": "στροφορμή",
+        "university": "στροφορμή"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "anticommutator",
+      "domain": "algebra_quantum",
+      "forms": {
+        "school": "αντιμεταθέτης των",
+        "standard": "αντιμεταθέτης των",
+        "university": "αντιμεταθέτης των"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "asymptotic_equivalence",
+      "domain": "analysis",
+      "forms": {
+        "school": "είναι ασυμπτωτικά ισοδύναμο με",
+        "standard": "είναι ασυμπτωτικά ισοδύναμο με",
+        "university": "είναι ασυμπτωτικά ισοδύναμο με"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "infix",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "augmented_matrix",
+      "domain": "linear_algebra",
+      "forms": {
+        "school": "επαυξημένος πίνακας",
+        "standard": "επαυξημένος πίνακας",
+        "university": "επαυξημένος πίνακας"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "block_matrix",
+      "domain": "linear_algebra",
+      "forms": {
+        "school": "πίνακας κατά μπλοκ",
+        "standard": "πίνακας κατά μπλοκ",
+        "university": "πίνακας κατά μπλοκ"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "boundary_condition",
+      "domain": "differential_equations",
+      "forms": {
+        "school": "συνοριακή συνθήκη",
+        "standard": "συνοριακή συνθήκη",
+        "university": "συνοριακή συνθήκη"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "bounded_operator",
+      "domain": "functional_analysis",
+      "forms": {
+        "school": "φραγμένος τελεστής",
+        "standard": "φραγμένος τελεστής",
+        "university": "φραγμένος τελεστής"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "bra",
+      "domain": "quantum_physics",
+      "forms": {
+        "school": "μπρα",
+        "standard": "μπρα",
+        "university": "μπρα"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "braket",
+      "domain": "quantum_physics",
+      "forms": {
+        "school": "εσωτερικό γινόμενο",
+        "standard": "εσωτερικό γινόμενο",
+        "university": "μπρα-κετ"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "cardinality",
+      "domain": "set_theory",
+      "forms": {
+        "school": "πληθάριθμος του",
+        "standard": "πληθάριθμος του",
+        "university": "πληθάριθμος του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "closed_interval",
+      "domain": "analysis",
+      "forms": {
+        "school": "κλειστό διάστημα",
+        "standard": "κλειστό διάστημα",
+        "university": "κλειστό διάστημα"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "closed_open_interval",
+      "domain": "analysis",
+      "forms": {
+        "school": "διάστημα κλειστό αριστερά ανοιχτό δεξιά",
+        "standard": "διάστημα κλειστό αριστερά ανοιχτό δεξιά",
+        "university": "διάστημα κλειστό αριστερά ανοιχτό δεξιά"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "commutator",
+      "domain": "algebra_quantum",
+      "forms": {
+        "school": "μεταθέτης των",
+        "standard": "μεταθέτης των",
+        "university": "μεταθέτης των"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "conditional_expectation",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "δεσμευμένη μέση τιμή του",
+        "standard": "δεσμευμένη αναμενόμενη τιμή του",
+        "university": "δεσμευμένη αναμενόμενη τιμή του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "confidence_interval",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "διάστημα εμπιστοσύνης",
+        "standard": "διάστημα εμπιστοσύνης",
+        "university": "διάστημα εμπιστοσύνης"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "contravariant_index",
+      "domain": "relativity_differential_geometry",
+      "forms": {
+        "school": "ανταλλοίωτος δείκτης του",
+        "standard": "ανταλλοίωτος δείκτης του",
+        "university": "ανταλλοίωτος δείκτης του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "coordinate",
+      "domain": "geometry",
+      "forms": {
+        "school": "σημείο με συντεταγμένες",
+        "standard": "σημείο με συντεταγμένες",
+        "university": "σημείο με συντεταγμένες"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "covariance",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "συνδιακύμανση των",
+        "standard": "συνδιακύμανση των",
+        "university": "συνδιακύμανση των"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "covariant_index",
+      "domain": "relativity_differential_geometry",
+      "forms": {
+        "school": "συναλλοίωτος δείκτης του",
+        "standard": "συναλλοίωτος δείκτης του",
+        "university": "συναλλοίωτος δείκτης του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "cross_product",
+      "domain": "linear_algebra_physics",
+      "forms": {
+        "school": "διανυσματικό γινόμενο",
+        "standard": "διανυσματικό γινόμενο",
+        "university": "διανυσματικό γινόμενο"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "curl",
+      "domain": "vector_calculus",
+      "forms": {
+        "school": "στροβιλισμός του",
+        "standard": "στροβιλισμός του",
+        "university": "στροβιλισμός του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "diagonal_matrix",
+      "domain": "linear_algebra",
+      "forms": {
+        "school": "διαγώνιος πίνακας του",
+        "standard": "διαγώνιος πίνακας του",
+        "university": "διαγώνιος πίνακας του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "differential_form",
+      "domain": "differential_geometry",
+      "forms": {
+        "school": "διαφορική μορφή",
+        "standard": "διαφορική μορφή",
+        "university": "διαφορική μορφή"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "directional_derivative",
+      "domain": "calculus",
+      "forms": {
+        "school": "παράγωγος κατά την κατεύθυνση",
+        "standard": "παράγωγος κατά την κατεύθυνση",
+        "university": "παράγωγος κατά την κατεύθυνση"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "divergence",
+      "domain": "vector_calculus",
+      "forms": {
+        "school": "απόκλιση του",
+        "standard": "απόκλιση του",
+        "university": "απόκλιση του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "dot_product",
+      "domain": "linear_algebra_physics",
+      "forms": {
+        "school": "εσωτερικό γινόμενο",
+        "standard": "εσωτερικό γινόμενο",
+        "university": "εσωτερικό γινόμενο"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "eigenvalue",
+      "domain": "linear_algebra",
+      "forms": {
+        "school": "ιδιοτιμή του",
+        "standard": "ιδιοτιμή του",
+        "university": "ιδιοτιμή του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "eigenvector",
+      "domain": "linear_algebra",
+      "forms": {
+        "school": "ιδιοδιάνυσμα του",
+        "standard": "ιδιοδιάνυσμα του",
+        "university": "ιδιοδιάνυσμα του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "electric_field",
+      "domain": "electromagnetism",
+      "forms": {
+        "school": "ηλεκτρικό πεδίο",
+        "standard": "ηλεκτρικό πεδίο",
+        "university": "ηλεκτρικό πεδίο"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "entropy",
+      "domain": "thermodynamics_statistical_mechanics",
+      "forms": {
+        "school": "εντροπία",
+        "standard": "εντροπία",
+        "university": "εντροπία"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "estimator",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "εκτιμητής του",
+        "standard": "εκτιμητής του",
+        "university": "εκτιμητής του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "evaluation",
+      "domain": "calculus",
+      "forms": {
+        "school": "αποτίμηση του",
+        "standard": "αποτίμηση του",
+        "university": "αποτίμηση του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "expectation",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "μέση τιμή του",
+        "standard": "αναμενόμενη τιμή του",
+        "university": "αναμενόμενη τιμή του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "exterior_product",
+      "domain": "multilinear_algebra_differential_geometry",
+      "forms": {
+        "school": "εξωτερικό γινόμενο",
+        "standard": "εξωτερικό γινόμενο",
+        "university": "εξωτερικό γινόμενο"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "field_structure",
+      "domain": "abstract_algebra",
+      "forms": {
+        "school": "σώμα",
+        "standard": "σώμα",
+        "university": "σώμα"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "four_momentum",
+      "domain": "relativity_particle_physics",
+      "forms": {
+        "school": "τετραορμή",
+        "standard": "τετραορμή",
+        "university": "τετραορμή"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "four_vector",
+      "domain": "relativity",
+      "forms": {
+        "school": "τετραδιάνυσμα",
+        "standard": "τετραδιάνυσμα",
+        "university": "τετραδιάνυσμα"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "fourier_transform",
+      "domain": "analysis_physics",
+      "forms": {
+        "school": "μετασχηματισμός Φουριέ του",
+        "standard": "μετασχηματισμός Φουριέ του",
+        "university": "μετασχηματισμός Φουριέ του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "generalized_function",
+      "domain": "distribution_theory",
+      "forms": {
+        "school": "γενικευμένη συνάρτηση",
+        "standard": "γενικευμένη συνάρτηση",
+        "university": "γενικευμένη συνάρτηση"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "gradient",
+      "domain": "vector_calculus",
+      "forms": {
+        "school": "κλίση του",
+        "standard": "βαθμίδα του",
+        "university": "βαθμίδα του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "group",
+      "domain": "abstract_algebra",
+      "forms": {
+        "school": "ομάδα",
+        "standard": "ομάδα",
+        "university": "ομάδα"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "hamiltonian",
+      "domain": "mechanics_quantum",
+      "forms": {
+        "school": "χαμιλτονιανός τελεστής",
+        "standard": "χαμιλτονιανός τελεστής",
+        "university": "χαμιλτονιανός τελεστής"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "hessian",
+      "domain": "multivariable_calculus",
+      "forms": {
+        "school": "εσσιανός πίνακας του",
+        "standard": "εσσιανός πίνακας του",
+        "university": "εσσιανός πίνακας του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "hypothesis_test",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "έλεγχος υπόθεσης",
+        "standard": "έλεγχος υπόθεσης",
+        "university": "έλεγχος υπόθεσης"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "ideal",
+      "domain": "commutative_algebra",
+      "forms": {
+        "school": "ιδεώδες",
+        "standard": "ιδεώδες",
+        "university": "ιδεώδες"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "identity_matrix",
+      "domain": "linear_algebra",
+      "forms": {
+        "school": "μοναδιαίος πίνακας τάξης",
+        "standard": "μοναδιαίος πίνακας τάξης",
+        "university": "μοναδιαίος πίνακας τάξης"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "independence",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "ανεξάρτητο από",
+        "standard": "ανεξάρτητο από",
+        "university": "ανεξάρτητο από"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "initial_condition",
+      "domain": "differential_equations",
+      "forms": {
+        "school": "αρχική συνθήκη",
+        "standard": "αρχική συνθήκη",
+        "university": "αρχική συνθήκη"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "interval",
+      "domain": "analysis",
+      "forms": {
+        "school": "διάστημα",
+        "standard": "διάστημα",
+        "university": "διάστημα"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "jacobian",
+      "domain": "multivariable_calculus",
+      "forms": {
+        "school": "ιακωβιανός πίνακας του",
+        "standard": "ιακωβιανός πίνακας του",
+        "university": "ιακωβιανός πίνακας του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "ket",
+      "domain": "quantum_physics",
+      "forms": {
+        "school": "κετ",
+        "standard": "κετ",
+        "university": "κετ"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "lagrangian",
+      "domain": "analytical_mechanics",
+      "forms": {
+        "school": "λαγκρανζιανή συνάρτηση",
+        "standard": "λαγκρανζιανή συνάρτηση",
+        "university": "λαγκρανζιανή συνάρτηση"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "laplace_transform",
+      "domain": "analysis_differential_equations",
+      "forms": {
+        "school": "μετασχηματισμός Λαπλάς του",
+        "standard": "μετασχηματισμός Λαπλάς του",
+        "university": "μετασχηματισμός Λαπλάς του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "laplacian",
+      "domain": "differential_equations",
+      "forms": {
+        "school": "λαπλασιανή του",
+        "standard": "λαπλασιανή του",
+        "university": "λαπλασιανή του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "line_integral",
+      "domain": "vector_calculus",
+      "forms": {
+        "school": "επικαμπύλιο ολοκλήρωμα του",
+        "standard": "επικαμπύλιο ολοκλήρωμα του",
+        "university": "επικαμπύλιο ολοκλήρωμα του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "magnetic_field",
+      "domain": "electromagnetism",
+      "forms": {
+        "school": "μαγνητικό πεδίο",
+        "standard": "μαγνητικό πεδίο",
+        "university": "μαγνητικό πεδίο"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "manifold",
+      "domain": "differential_geometry",
+      "forms": {
+        "school": "πολλαπλότητα",
+        "standard": "πολλαπλότητα",
+        "university": "πολλαπλότητα"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "material_derivative",
+      "domain": "continuum_mechanics",
+      "forms": {
+        "school": "υλική παράγωγος του",
+        "standard": "υλική παράγωγος του",
+        "university": "υλική παράγωγος του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "matrix_element",
+      "domain": "quantum_physics",
+      "forms": {
+        "school": "στοιχείο πίνακα",
+        "standard": "στοιχείο πίνακα",
+        "university": "στοιχείο μήτρας"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "measure",
+      "domain": "measure_theory",
+      "forms": {
+        "school": "μέτρο του",
+        "standard": "μέτρο του",
+        "university": "μέτρο του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "metric_tensor",
+      "domain": "relativity_differential_geometry",
+      "forms": {
+        "school": "μετρικός τανυστής",
+        "standard": "μετρικός τανυστής",
+        "university": "μετρικός τανυστής"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "momentum",
+      "domain": "classical_mechanics",
+      "forms": {
+        "school": "ορμή",
+        "standard": "ορμή",
+        "university": "ορμή"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "morphism",
+      "domain": "category_theory",
+      "forms": {
+        "school": "μορφισμός",
+        "standard": "μορφισμός",
+        "university": "μορφισμός"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "multiple_integral",
+      "domain": "multivariable_calculus",
+      "forms": {
+        "school": "πολλαπλό ολοκλήρωμα του",
+        "standard": "πολλαπλό ολοκλήρωμα του",
+        "university": "πολλαπλό ολοκλήρωμα του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "norm",
+      "domain": "analysis_linear_algebra",
+      "forms": {
+        "school": "νόρμα του",
+        "standard": "νόρμα του",
+        "university": "νόρμα του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "open_closed_interval",
+      "domain": "analysis",
+      "forms": {
+        "school": "διάστημα ανοιχτό αριστερά κλειστό δεξιά",
+        "standard": "διάστημα ανοιχτό αριστερά κλειστό δεξιά",
+        "university": "διάστημα ανοιχτό αριστερά κλειστό δεξιά"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "open_interval",
+      "domain": "analysis",
+      "forms": {
+        "school": "ανοιχτό διάστημα",
+        "standard": "ανοιχτό διάστημα",
+        "university": "ανοιχτό διάστημα"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "open_set",
+      "domain": "topology",
+      "forms": {
+        "school": "ανοιχτό σύνολο",
+        "standard": "ανοιχτό σύνολο",
+        "university": "ανοιχτό σύνολο"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "ordinary_derivative",
+      "domain": "calculus",
+      "forms": {
+        "school": "παράγωγος του",
+        "standard": "παράγωγος του",
+        "university": "παράγωγος του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "partial_derivative",
+      "domain": "calculus_differential_equations",
+      "forms": {
+        "school": "μερική παράγωγος του",
+        "standard": "μερική παράγωγος του",
+        "university": "μερική παράγωγος του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "partition_function",
+      "domain": "statistical_mechanics",
+      "forms": {
+        "school": "συνάρτηση επιμερισμού",
+        "standard": "συνάρτηση επιμερισμού",
+        "university": "συνάρτηση επιμερισμού"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "position_vector",
+      "domain": "classical_mechanics",
+      "forms": {
+        "school": "διάνυσμα θέσης",
+        "standard": "διάνυσμα θέσης",
+        "university": "διάνυσμα θέσης"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "power",
+      "domain": "arithmetic_algebra",
+      "forms": {
+        "school": "δύναμη",
+        "standard": "δύναμη",
+        "university": "δύναμη"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "probability",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "πιθανότητα του",
+        "standard": "πιθανότητα του",
+        "university": "πιθανότητα του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "proper_time",
+      "domain": "relativity",
+      "forms": {
+        "school": "ιδιοχρόνος",
+        "standard": "ιδιοχρόνος",
+        "university": "ιδιοχρόνος"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "quadratic_form",
+      "domain": "linear_algebra",
+      "forms": {
+        "school": "τετραγωνική μορφή του",
+        "standard": "τετραγωνική μορφή του",
+        "university": "τετραγωνική μορφή του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "quantum_adjoint",
+      "domain": "quantum_physics",
+      "forms": {
+        "school": "ερμιτιανός συζυγής του",
+        "standard": "ερμιτιανός συζυγής του",
+        "university": "ερμιτιανός συζυγής του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "quantum_operator",
+      "domain": "quantum_physics",
+      "forms": {
+        "school": "κβαντικός τελεστής",
+        "standard": "κβαντικός τελεστής",
+        "university": "κβαντικός τελεστής"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "ring",
+      "domain": "abstract_algebra",
+      "forms": {
+        "school": "δακτύλιος",
+        "standard": "δακτύλιος",
+        "university": "δακτύλιος"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "semantic_entailment",
+      "domain": "mathematical_logic",
+      "forms": {
+        "school": "συνεπάγεται σημασιολογικά",
+        "standard": "συνεπάγεται σημασιολογικά",
+        "university": "συνεπάγεται σημασιολογικά"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "infix",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "standard_deviation",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "τυπική απόκλιση του",
+        "standard": "τυπική απόκλιση του",
+        "university": "τυπική απόκλιση του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "stochastic_integral",
+      "domain": "stochastic_calculus",
+      "forms": {
+        "school": "στοχαστικό ολοκλήρωμα του",
+        "standard": "στοχαστικό ολοκλήρωμα του",
+        "university": "στοχαστικό ολοκλήρωμα του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "stochastic_process",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "στοχαστική διαδικασία",
+        "standard": "στοχαστική διαδικασία",
+        "university": "στοχαστική ανέλιξη"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "surface_integral",
+      "domain": "vector_calculus",
+      "forms": {
+        "school": "επιφανειακό ολοκλήρωμα του",
+        "standard": "επιφανειακό ολοκλήρωμα του",
+        "university": "επιφανειακό ολοκλήρωμα του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "tensor_product",
+      "domain": "multilinear_algebra",
+      "forms": {
+        "school": "τανυστικό γινόμενο",
+        "standard": "τανυστικό γινόμενο",
+        "university": "τανυστικό γινόμενο"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "topological_space",
+      "domain": "topology",
+      "forms": {
+        "school": "τοπολογικός χώρος",
+        "standard": "τοπολογικός χώρος",
+        "university": "τοπολογικός χώρος"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "torque",
+      "domain": "classical_mechanics",
+      "forms": {
+        "school": "ροπή",
+        "standard": "ροπή",
+        "university": "ροπή"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "transpose",
+      "domain": "linear_algebra",
+      "forms": {
+        "school": "ανάστροφος του",
+        "standard": "ανάστροφος του",
+        "university": "ανάστροφος του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "variance",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "διακύμανση του",
+        "standard": "διακύμανση του",
+        "university": "διακύμανση του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "reviewed",
+      "reviewed": true,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "velocity",
+      "domain": "classical_mechanics",
+      "forms": {
+        "school": "ταχύτητα",
+        "standard": "ταχύτητα",
+        "university": "ταχύτητα"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Greek school books / Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "wavefunction",
+      "domain": "quantum_physics",
+      "forms": {
+        "school": "κυματοσυνάρτηση",
+        "standard": "κυματοσυνάρτηση",
+        "university": "κυματοσυνάρτηση"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Kallipos"
+    }
+  ],
+  "language": "el",
+  "modules": {
+    "foundation": {
+      "concepts": [
+        "power",
+        "absolute_value",
+        "coordinate",
+        "interval",
+        "open_interval",
+        "closed_interval",
+        "open_closed_interval",
+        "closed_open_interval"
+      ],
+      "status": "stable-existing"
+    },
+    "physics": {
+      "concepts": [
+        "position_vector",
+        "velocity",
+        "acceleration",
+        "momentum",
+        "angular_momentum",
+        "torque",
+        "electric_field",
+        "magnetic_field",
+        "wavefunction",
+        "quantum_operator",
+        "entropy",
+        "partition_function",
+        "proper_time",
+        "covariant_index",
+        "contravariant_index",
+        "four_vector",
+        "four_momentum",
+        "metric_tensor"
+      ],
+      "status": "preview"
+    },
+    "specialist": {
+      "concepts": [
+        "group",
+        "ring",
+        "field_structure",
+        "ideal",
+        "topological_space",
+        "open_set",
+        "measure",
+        "bounded_operator",
+        "manifold",
+        "differential_form",
+        "morphism",
+        "generalized_function",
+        "stochastic_integral",
+        "semantic_entailment"
+      ],
+      "status": "preview"
+    },
+    "university_core": {
+      "concepts": [
+        "ordinary_derivative",
+        "partial_derivative",
+        "directional_derivative",
+        "material_derivative",
+        "line_integral",
+        "surface_integral",
+        "multiple_integral",
+        "asymptotic_equivalence",
+        "jacobian",
+        "hessian",
+        "eigenvalue",
+        "eigenvector",
+        "quadratic_form",
+        "identity_matrix",
+        "diagonal_matrix",
+        "block_matrix",
+        "augmented_matrix",
+        "boundary_condition",
+        "initial_condition",
+        "confidence_interval",
+        "estimator",
+        "hypothesis_test",
+        "stochastic_process"
+      ],
+      "status": "preview"
+    }
+  },
+  "schemaVersion": 1,
+  "terminologyVersion": "2026.08.2"
+}

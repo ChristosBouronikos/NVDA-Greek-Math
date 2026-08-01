@@ -18,10 +18,10 @@ EXPECTED_MANIFEST_LINES = {
 	'summary = "Greek Math Reader"',
 	'author = "Bouronikos Christos <chrisbouronikos@gmail.com>"',
 	"url = https://github.com/ChristosBouronikos/NVDA-Greek-Math",
-	"version = 2.0.0",
+	"version = 2.1.0-dev",
 	"minimumNVDAVersion = 2024.1.0",
 	"lastTestedNVDAVersion = 2026.1.1",
-	"updateChannel = None",
+	"updateChannel = dev",
 }
 
 REQUIRED_FILES = {
@@ -60,6 +60,6 @@ def validate(path: Path) -> None:
 
 
 if __name__ == "__main__":
-	package = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("greekMathReader-2.0.0.nvda-addon")
+	package = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("greekMathReader-2.1.0-dev.nvda-addon")
 	validate(package)
 	print(f"Store package validation passed: {package}")

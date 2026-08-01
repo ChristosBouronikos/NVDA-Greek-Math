@@ -248,6 +248,33 @@ class MathNode:
 		return f"<{self.tag} [{len(self.children)}]>"
 
 
+def mathnode_to_mathml(node):
+	"""Serialize a parsed subtree as portable Presentation MathML.
+
+	This is used by interaction mode's source-copy command.  Parser-internal
+	attributes start with an underscore and are intentionally omitted.
+	"""
+	def convert(current):
+		attributes = {
+			key: value for key, value in current.attrib.items()
+			if not key.startswith("_")
+		}
+		element = ElementTree.Element(current.tag, attributes)
+		if current.text:
+			element.text = current.text
+		for child in current.children:
+			element.append(convert(child))
+		return element
+
+	if node.tag == "math":
+		root = convert(node)
+	else:
+		root = ElementTree.Element("math")
+		root.append(convert(node))
+	root.set("xmlns", "http://www.w3.org/1998/Math/MathML")
+	return ElementTree.tostring(root, encoding="unicode", short_empty_elements=True)
+
+
 def _replace_entities(mathml):
 	def repl(match):
 		name = match.group(1)
@@ -314,9 +341,118 @@ def _clean_text(text):
 	return _WS_RE.sub(" ", text).strip()
 
 
+_CONTENT_INFIX = {
+	"plus": "+", "minus": "−", "times": "×", "eq": "=", "neq": "≠",
+	"lt": "<", "gt": ">", "leq": "≤", "geq": "≥", "approx": "≈",
+	"in": "∈", "notin": "∉", "subset": "⊂", "prsubset": "⊂",
+	"union": "∪", "intersect": "∩", "and": "∧", "or": "∨",
+}
+_CONTENT_FUNCTIONS = {
+	"sin": "sin", "cos": "cos", "tan": "tan", "sec": "sec", "csc": "csc", "cot": "cot",
+	"sinh": "sinh", "cosh": "cosh", "tanh": "tanh",
+	"ln": "ln", "log": "log", "exp": "exp", "abs": "abs",
+	"max": "max", "min": "min", "gcd": "gcd", "lcm": "lcm",
+}
+_CONTENT_CONSTANTS = {
+	"infinity": ("mo", "∞"), "emptyset": ("mo", "∅"),
+	"reals": ("mi", "ℝ"), "integers": ("mi", "ℤ"),
+	"rationals": ("mi", "ℚ"), "naturalnumbers": ("mi", "ℕ"),
+	"complexes": ("mi", "ℂ"), "primes": ("mi", "ℙ"),
+	"exponentiale": ("mi", "e"), "imaginaryi": ("mi", "i"), "pi": ("mi", "π"),
+}
+
+
+def _content_node(element):
+	"""Convert a useful Content MathML subset into the presentation tree.
+
+	Content markup carries stronger meaning than visual layout.  Supporting the
+	common arithmetic/function/calculus forms also prevents a content-only
+	annotation from becoming silent when no presentation annotation is present.
+	"""
+	tag = _strip_ns(element.tag)
+	if tag in ("ci", "csymbol"):
+		return MathNode("mi", dict(element.attrib), _clean_text("".join(element.itertext())))
+	if tag == "cn":
+		return MathNode("mn", dict(element.attrib), _clean_text("".join(element.itertext())))
+	if tag in _CONTENT_CONSTANTS:
+		node_tag, text = _CONTENT_CONSTANTS[tag]
+		return MathNode(node_tag, text=text)
+	if tag == "apply":
+		children = list(element)
+		if not children:
+			return MathNode("mrow")
+		operator = _strip_ns(children[0].tag)
+		operands = [_content_node(child) for child in children[1:]]
+		if operator == "divide" and len(operands) >= 2:
+			node = MathNode("mfrac", {"intent": "divide($numerator,$denominator)"})
+			operands[0].attrib.setdefault("arg", "numerator")
+			operands[1].attrib.setdefault("arg", "denominator")
+			node.append(operands[0]); node.append(operands[1])
+			return node
+		if operator == "power" and len(operands) >= 2:
+			node = MathNode("msup", {"intent": "power($base,$exp)"})
+			operands[0].attrib.setdefault("arg", "base")
+			operands[1].attrib.setdefault("arg", "exp")
+			node.append(operands[0]); node.append(operands[1])
+			return node
+		if operator == "root" and operands:
+			if len(operands) == 1:
+				node = MathNode("msqrt")
+				node.append(operands[0])
+				return node
+			node = MathNode("mroot")
+			node.append(operands[-1]); node.append(operands[0])
+			return node
+		if operator in _CONTENT_INFIX:
+			row = MathNode("mrow")
+			for index, operand in enumerate(operands):
+				if index:
+					row.append(MathNode("mo", text=_CONTENT_INFIX[operator]))
+				row.append(operand)
+			return row
+		if operator in _CONTENT_FUNCTIONS:
+			row = MathNode("mrow")
+			row.append(MathNode("mi", text=_CONTENT_FUNCTIONS[operator]))
+			row.append(MathNode("mo", text="⁡"))
+			group = MathNode("mrow", {"_fenced": "1"})
+			group.append(MathNode("mo", text="("))
+			for index, operand in enumerate(operands):
+				if index:
+					group.append(MathNode("mo", text=","))
+				group.append(operand)
+			group.append(MathNode("mo", text=")"))
+			row.append(group)
+			return row
+		# Meaning is retained literally rather than discarded.
+		row = MathNode("mrow", {"intent": f"_{operator}"})
+		row.append(MathNode("mtext", text=operator.replace("-", " ")))
+		for operand in operands:
+			row.append(operand)
+		return row
+	if tag == "interval":
+		closure = element.attrib.get("closure", "closed")
+		concept = {
+			"open": "open-interval", "closed": "closed-interval",
+			"open-closed": "open-closed-interval", "closed-open": "closed-open-interval",
+		}.get(closure, "interval")
+		row = MathNode("mrow", {"intent": f"{concept}($start,$end)"})
+		children = list(element)
+		for index, child in enumerate(children[:2]):
+			node = _content_node(child)
+			node.attrib["arg"] = "start" if index == 0 else "end"
+			row.append(node)
+		return row
+	if tag in _CONTENT_INFIX:
+		return MathNode("mo", text=_CONTENT_INFIX[tag])
+	return MathNode("mtext", text=tag.replace("-", " "))
+
+
 def _convert(element, parent):
 	"""Convert an ElementTree element into MathNode children of `parent`."""
 	tag = _strip_ns(element.tag)
+	if tag in ("apply", "ci", "cn", "csymbol", "interval") or tag in _CONTENT_CONSTANTS:
+		parent.append(_content_node(element))
+		return
 
 	if tag in _SKIPPED_TAGS:
 		return
@@ -336,6 +472,15 @@ def _convert(element, parent):
 				continue
 			for presentation_child in child:
 				_convert(presentation_child, parent)
+			return
+		for child in element:
+			if _strip_ns(child.tag) != "annotation-xml":
+				continue
+			encoding = child.attrib.get("encoding", "").lower()
+			if "mathml-content" not in encoding and "content" not in encoding:
+				continue
+			for content_child in child:
+				parent.append(_content_node(content_child))
 			return
 		return
 

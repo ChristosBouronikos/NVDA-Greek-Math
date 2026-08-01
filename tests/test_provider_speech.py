@@ -43,6 +43,7 @@ class TestProviderSpeechSequence(unittest.TestCase):
 			},
 			"speech": {"autoLanguageSwitching": True},
 		}
+		self.config = config.conf
 
 		mathPres = types.ModuleType("mathPres")
 		mathPres.MathPresentationProvider = object
@@ -76,8 +77,13 @@ class TestProviderSpeechSequence(unittest.TestCase):
 			def __init__(command, lang):
 				command.lang = lang
 
+		class RateCommand:
+			def __init__(command, multiplier=1.0):
+				command.multiplier = multiplier
+
 		commands.BreakCommand = BreakCommand
 		commands.LangChangeCommand = LangChangeCommand
+		commands.RateCommand = RateCommand
 		speech = types.ModuleType("speech")
 		speech.__path__ = []
 
@@ -138,6 +144,12 @@ class TestProviderSpeechSequence(unittest.TestCase):
 		sequence = self.provider.tokensToSpeechSequence(["ψι", "στο τετράγωνο", "συν", "ρο"])
 		spoken = [item for item in sequence if isinstance(item, str)]
 		self.assertEqual(spoken, ["ψί", "στο τετράγωνο", "συν", "ρό"])
+
+	def test_relative_math_rate_has_scoped_start_and_reset(self):
+		self.config["greekMathReader"]["relativeRate"] = 80
+		sequence = self.provider.tokensToSpeechSequence(["χι"])
+		rates = [item.multiplier for item in sequence if isinstance(item, self.commands.RateCommand)]
+		self.assertEqual(rates, [0.8, 1.0])
 
 	def test_preposition_se_is_not_respelled(self):
 		# "σε" (raised to) must stay the preposition, not become the letter name.

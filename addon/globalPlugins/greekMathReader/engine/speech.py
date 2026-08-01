@@ -23,6 +23,13 @@ import re
 from . import grammar_el as grammar
 from . import symbols_el as symbols
 from .parser import MathNode, parse_mathml  # noqa: F401 (re-exported for convenience)
+from .semantics import (
+	recognize_semantic,
+	record_fallback,
+	record_unknown,
+	reset_engine_diagnostics,
+)
+from .terminology_el import STANDARD, normalize_profile, term, terminology_record
 
 # Επίπεδα λεπτομέρειας εκφώνησης
 TERSE = 0    # σύντομη: "χι τετράγωνο", ελάχιστες δομικές αναγγελίες
@@ -45,6 +52,33 @@ class Pause(object):
 		return isinstance(other, Pause) and other.ms == self.ms
 
 
+class Language(object):
+	"""Language boundary in the internal rich speech representation."""
+
+	__slots__ = ("locale",)
+
+	def __init__(self, locale):
+		self.locale = locale
+
+
+class Prosody(object):
+	"""Relative speech-rate boundary; 100 means the synthesizer's base rate."""
+
+	__slots__ = ("relative_rate",)
+
+	def __init__(self, relative_rate=100):
+		self.relative_rate = max(1, min(100, int(relative_rate)))
+
+
+class NavigationMark(object):
+	"""Stable semantic/navigation marker ignored by plain speech backends."""
+
+	__slots__ = ("name",)
+
+	def __init__(self, name):
+		self.name = str(name)
+
+
 SHORT = 100
 MEDIUM = 250
 LONG = 450
@@ -53,10 +87,25 @@ LONG = 450
 class ReadingConfig(object):
 	"""Ρυθμίσεις ανάγνωσης. Κρατιέται απλό ώστε να αποθηκεύεται εύκολα στο config του NVDA."""
 
-	def __init__(self, verbosity=SMART, decimal_comma=True, announce_capitals=False):
+	def __init__(
+		self,
+		verbosity=SMART,
+		decimal_comma=True,
+		announce_capitals=False,
+		terminology_profile=STANDARD,
+		domain_hint="auto",
+		relative_rate=100,
+		pause_factor=50,
+		terminology_overrides=None,
+	):
 		self.verbosity = verbosity
 		self.decimal_comma = decimal_comma
 		self.announce_capitals = announce_capitals
+		self.terminology_profile = normalize_profile(terminology_profile)
+		self.domain_hint = domain_hint or "auto"
+		self.relative_rate = max(1, min(100, int(relative_rate)))
+		self.pause_factor = max(0, min(100, int(pause_factor)))
+		self.terminology_overrides = dict(terminology_overrides or {})
 
 
 _PRIMES = {"′": 1, "″": 2, "‴": 3, "⁗": 4, "'": 1, "’": 1}
@@ -208,6 +257,8 @@ def role_description(node):
 		return "υπόρριζο"
 	if tag == "mtr":
 		return f"στήλη {i + 1}"
+	if tag == "mtd":
+		return "περιεχόμενο κελιού"
 	if tag == "mtable":
 		return f"γραμμή {i + 1}"
 	return None
@@ -225,18 +276,190 @@ class MathSpeaker(object):
 
 	def speak(self, node):
 		tokens = self._node(node)
-		return _clean_tokens(tokens)
+		cleaned = _clean_tokens(tokens)
+		if self.config.pause_factor == 50:
+			return cleaned
+		factor = self.config.pause_factor / 50.0
+		return [Pause(round(token.ms * factor)) if isinstance(token, Pause) else token for token in cleaned]
 
 	# ------------------------------------------------------------------
 	# Κεντρικός διεκπεραιωτής
 	# ------------------------------------------------------------------
 
 	def _node(self, node):
+		semantic = recognize_semantic(node, self.config)
+		if semantic is not None:
+			return self._speak_semantic(semantic)
 		handler = getattr(self, f"_speak_{node.tag}", None)
 		if handler is not None:
 			return handler(node)
 		# Άγνωστη ετικέτα: διάβασε τα παιδιά της στη σειρά.
+		record_fallback(f"unsupported-construct:{node.tag}")
 		return self._sequence(node.children)
+
+	def _semantic_term(self, concept):
+		return term(
+			concept,
+			self.config.terminology_profile,
+			self.config.terminology_overrides,
+		)
+
+	def _speak_semantic(self, semantic):
+		concept = semantic.concept
+		arguments = list(semantic.arguments)
+
+		if concept in (
+			"adjoint", "quantum_adjoint", "gradient", "divergence", "curl", "laplacian",
+			"material_derivative", "jacobian", "hessian", "fourier_transform", "laplace_transform",
+		):
+			out = [self._semantic_term(concept)]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			return out
+		if concept == "transpose":
+			out = [self._semantic_term("transpose")]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			return out
+		if concept == "power" and len(arguments) >= 2:
+			out = self._node(arguments[0])
+			power = grammar.power_reading(arguments[1].token_text()) if is_simple(arguments[1]) else None
+			if power:
+				out.append(power)
+			else:
+				out.append("υψωμένο σε")
+				out.extend(self._node(arguments[1]))
+			return out
+
+		if concept in ("expectation", "conditional_expectation", "probability", "variance", "standard_deviation"):
+			out = [self._semantic_term(concept)]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			if len(arguments) > 1:
+				out.append("δεδομένου του")
+				out.extend(self._node(arguments[1]))
+			return out
+		if concept == "covariance":
+			out = [self._semantic_term(concept)]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			if len(arguments) > 1:
+				out.append("και")
+				out.extend(self._node(arguments[1]))
+			return out
+
+		if concept in ("dot_product", "cross_product", "exterior_product", "tensor_product", "braket"):
+			out = [self._semantic_term(concept)]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			if len(arguments) > 1:
+				out.append("με")
+				out.extend(self._node(arguments[1]))
+			return out
+		if concept == "matrix_element" and len(arguments) >= 3:
+			out = [self._semantic_term(concept), "με", self._semantic_term("bra")]
+			out.extend(self._node(arguments[0]))
+			out.append(Pause(SHORT))
+			out.extend(self._node(arguments[1]))
+			out.append(Pause(SHORT))
+			out.append(self._semantic_term("ket"))
+			out.extend(self._node(arguments[2]))
+			return out
+		if concept in ("commutator", "anticommutator"):
+			out = [self._semantic_term(concept)]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			if len(arguments) > 1:
+				out.append("και")
+				out.extend(self._node(arguments[1]))
+			return out
+		if concept == "bra":
+			out = [self._semantic_term("bra")]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			return out
+		if concept == "ket":
+			out = [self._semantic_term("ket")]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			return out
+
+		if concept in ("norm", "absolute_value", "cardinality"):
+			head = {
+				"norm": self._semantic_term("norm"),
+				"absolute_value": self._semantic_term("absolute_value"),
+				"cardinality": self._semantic_term("cardinality"),
+			}[concept]
+			out = [head]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			return out
+
+		if concept in ("interval", "open_interval", "closed_interval", "open_closed_interval", "closed_open_interval"):
+			kind = self._semantic_term(concept)
+			out = [kind, "από"]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			if len(arguments) > 1:
+				out.append("έως")
+				out.extend(self._node(arguments[1]))
+			return out
+		if concept == "coordinate":
+			out = [self._semantic_term("coordinate")]
+			for index, argument in enumerate(arguments):
+				if index:
+					out.append(Pause(SHORT))
+				out.extend(self._node(argument))
+			return out
+		if concept == "directional_derivative":
+			out = [self._semantic_term(concept)]
+			if len(arguments) > 1:
+				out.extend(self._node(arguments[1]))
+			if arguments:
+				out.append("του")
+				out.extend(self._node(arguments[0]))
+			return out
+		if concept == "evaluation":
+			out = [self._semantic_term(concept)]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			if len(arguments) > 1:
+				out.append("από")
+				out.extend(self._node(arguments[1]))
+			if len(arguments) > 2:
+				out.append("έως")
+				out.extend(self._node(arguments[2]))
+			return out
+		if concept in ("hamiltonian", "lagrangian", "four_vector", "metric_tensor"):
+			out = [self._semantic_term(concept)]
+			if arguments:
+				out.extend(self._node(arguments[0]))
+			return out
+		if concept == "independence" and len(arguments) >= 2:
+			out = self._node(arguments[0])
+			out.append(self._semantic_term(concept))
+			out.extend(self._node(arguments[1]))
+			return out
+
+		# Preview-domain concepts are intentionally author-intent-only. Their
+		# registry metadata determines whether they read as a relation or a
+		# named function, while unknown private intents still fall back to source.
+		record = terminology_record(concept)
+		if record is not None:
+			if record.get("localFixity") == "infix" and len(arguments) >= 2:
+				out = self._node(arguments[0])
+				out.append(self._semantic_term(concept))
+				out.extend(self._node(arguments[1]))
+				return out
+			out = [self._semantic_term(concept)]
+			for index, argument in enumerate(arguments):
+				if index:
+					out.append("και")
+				out.extend(self._node(argument))
+			return out
+
+		record_fallback(f"semantic-speaker:{concept}")
+		return self._sequence(semantic.source.children) if semantic.source is not None else [concept]
 
 	def _sequence(self, children):
 		"""Εκφώνηση ακολουθίας αδελφών κόμβων (περιεχόμενο mrow)."""
@@ -384,9 +607,26 @@ class MathSpeaker(object):
 	def _preceded_by_number(self, node):
 		"""True αν προηγείται αριθμός (αγνοώντας αόρατο πολλαπλασιασμό)."""
 		prev = node.previous_sibling()
-		if prev is not None and prev.tag == "mo" and prev.text in symbols.INVISIBLE_CHARS:
+		while prev is not None and (
+			(prev.tag == "mo" and prev.text in symbols.INVISIBLE_CHARS)
+			or (prev.tag == "mrow" and not prev.children and not prev.text)
+		):
 			prev = prev.previous_sibling()
 		return prev is not None and prev.tag == "mn"
+
+	def _preceding_number_value(self, node):
+		prev = node.previous_sibling()
+		while prev is not None and (
+			(prev.tag == "mo" and prev.text in symbols.INVISIBLE_CHARS)
+			or (prev.tag == "mrow" and not prev.children and not prev.text)
+		):
+			prev = prev.previous_sibling()
+		if prev is None or prev.tag != "mn":
+			return None
+		try:
+			return float(prev.text.replace(",", "."))
+		except ValueError:
+			return None
 
 	def _speak_mi(self, node):
 		text = node.text
@@ -399,9 +639,11 @@ class MathSpeaker(object):
 		# Μονάδες μέτρησης: "5 N" → "5 νιούτον". Πολυγράμματες μονάδες (kg, cm,
 		# Hz…) είναι μονοσήμαντες· μονογράμματες απαιτούν mathvariant="normal"
 		# ώστε να μη μπερδεύονται με μεταβλητές.
-		if text in symbols.UNITS and self._preceded_by_number(node):
-			if len(text) > 1 or node.attrib.get("mathvariant") == "normal":
-				return [symbols.UNITS[text]]
+		if text in symbols.UNITS:
+			if node.attrib.get("mathvariant") == "normal":
+				return [symbols.unit_reading(text, self._preceding_number_value(node))]
+			if len(text) > 1 and self._preceded_by_number(node):
+				return [symbols.unit_reading(text, self._preceding_number_value(node))]
 		if text in symbols.NUMBER_SETS:
 			if self.config.verbosity == TERSE:
 				return [symbols.NUMBER_SETS_TERSE[text]]
@@ -417,14 +659,20 @@ class MathSpeaker(object):
 			symbol = symbols.symbol_reading(text)
 			if symbol:
 				return [symbol]
+			record_unknown(text, "identifier")
 			return [text]
 		# Πολυγράμματο mi: όνομα συνάρτησης, ελληνική λέξη, ή γράμμα-γράμμα
 		if text in symbols.FUNCTION_NAMES:
 			return [symbols.FUNCTION_NAMES[text]]
 		if re.fullmatch(r"[A-Za-zΑ-ΩΆ-Ώ]{2,4}", text):
 			# Πιθανό ευθύγραμμο τμήμα/σχήμα (ΑΒ, ΑΒΓ): γράμμα-γράμμα.
+			record_fallback(f"multi-letter-identifier-spelled:{text}")
+			if not text.isupper():
+				record_unknown(text, "identifier")
 			readings = [symbols.letter_reading(c) or c for c in text]
 			return [" ".join(readings)]
+		if re.search(r"[A-Za-z]", text):
+			record_unknown(text, "identifier")
 		return [text]
 
 	def _speak_mn(self, node):
@@ -466,6 +714,7 @@ class MathSpeaker(object):
 		letter = symbols.letter_reading(text)
 		if letter:
 			return [letter]
+		record_unknown(text, "operator")
 		return [text]
 
 	def _speak_mtext(self, node):
@@ -474,7 +723,10 @@ class MathSpeaker(object):
 			return []
 		if text in symbols.UNITS:
 			return [symbols.UNITS[text]]
-		return [_normalize_english_math_mtext(text)]
+		normalized = _normalize_english_math_mtext(text)
+		if normalized == text and re.search(r"[A-Za-z]", text):
+			record_unknown(text, "text")
+		return [normalized]
 
 	def _speak_ms(self, node):
 		return [node.text] if node.text else []
@@ -686,7 +938,7 @@ class MathSpeaker(object):
 			out.extend(self._operand(denominator))
 			return out
 		# Σύνθετες μονάδες φυσικής: m/s, km/h, m/s².
-		numerator_unit = self._unit_expression(numerator)
+		numerator_unit = self._unit_expression(numerator, count=self._preceding_number_value(node))
 		denominator_unit = self._unit_expression(denominator, after_per=True)
 		if numerator_unit is not None and denominator_unit is not None:
 			return [numerator_unit, "ανά", denominator_unit]
@@ -723,7 +975,7 @@ class MathSpeaker(object):
 		out.append("τέλος κλάσματος")
 		return out
 
-	def _unit_expression(self, node, after_per=False):
+	def _unit_expression(self, node, after_per=False, count=None):
 		"""Επιστρέφει εκφώνηση αν ο κόμβος είναι σαφής μονάδα μέτρησης."""
 		if node.tag in ("mi", "mtext") and node.text in symbols.UNITS:
 			is_unambiguous = (
@@ -735,15 +987,35 @@ class MathSpeaker(object):
 				return None
 			if after_per:
 				return symbols.unit_per_reading(node.text)
-			return symbols.unit_reading(node.text)
+			return symbols.unit_reading(node.text, count)
 		if node.tag == "msup":
 			base, exponent = node.child(0), node.child(1)
 			if base is None or exponent is None:
 				return None
-			base_reading = self._unit_expression(base, after_per=after_per)
+			base_reading = self._unit_expression(base, after_per=after_per, count=count)
 			power = grammar.power_reading(exponent.token_text().strip())
 			if base_reading is not None and power is not None:
 				return f"{base_reading} {power}"
+		if node.tag == "mrow":
+			factors = []
+			for child in node.children:
+				if child.tag == "mo" and child.text in ("·", "⋅", "∙", "×", "⁢"):
+					continue
+				# The quantity before a compound unit agrees with its first
+				# numerator factor: 3 kg·m/s² -> «3 κιλά επί μέτρο ανά…».
+				# Remaining factors and every denominator factor use the
+				# conventional singular form.
+				first_factor = not factors
+				factor = self._unit_expression(
+					child,
+					after_per=after_per or not first_factor or count is None,
+					count=count if first_factor and not after_per else None,
+				)
+				if factor is None:
+					return None
+				factors.append(factor)
+			if factors:
+				return " επί ".join(factors)
 		return None
 
 	def _derivative(self, numerator, denominator):
@@ -1341,14 +1613,32 @@ def speak_node(node, config=None):
 
 def speak_mathml(mathml, config=None):
 	"""MathML → λίστα ελληνικών speech tokens."""
+	reset_engine_diagnostics()
 	tree = parse_mathml(mathml)
 	return speak_node(tree, config)
+
+
+def enrich_speech(tokens, config=None, mark=None):
+	"""Add language, prosody and optional navigation metadata to speech tokens."""
+	config = config or ReadingConfig()
+	out = [Language("el-GR")]
+	if config.relative_rate != 100:
+		out.append(Prosody(config.relative_rate))
+	if mark is not None:
+		out.append(NavigationMark(mark))
+	out.extend(tokens)
+	if config.relative_rate != 100:
+		out.append(Prosody(100))
+	out.append(Language(None))
+	return out
 
 
 def tokens_to_text(tokens):
 	"""Μετατροπή tokens σε απλό κείμενο (για δοκιμές και προεπισκόπηση)."""
 	parts = []
 	for token in tokens:
+		if isinstance(token, (Language, Prosody, NavigationMark)):
+			continue
 		if isinstance(token, Pause):
 			if token.ms >= MEDIUM and parts:
 				parts[-1] = parts[-1] + ","

@@ -31,8 +31,8 @@ from .provider import GreekMathProvider, getGreekVoiceSupport, tokensToSpeechSeq
 
 addonHandler.initTranslation()
 
-ADDON_VERSION = "2.0.0"
-BUILD_ID = "20260713-v2-release-r8"
+ADDON_VERSION = "2.1.0-dev"
+BUILD_ID = "20260801-semantic-preview"
 _WORD_UIA_ALWAYS = 3
 
 CONFIG_SPEC = {
@@ -42,6 +42,12 @@ CONFIG_SPEC = {
 	"verbosity": "integer(default=1, min=0, max=2)",
 	"decimalComma": "boolean(default=True)",
 	"forceGreekLanguage": "boolean(default=True)",
+	"terminologyProfile": "option('standard', 'school', 'university', default='standard')",
+	"domainHint": "option('auto', 'general_math', 'geometry', 'probability_statistics', 'linear_algebra', 'vector_calculus', 'physics', 'quantum_physics', 'algebra', default='auto')",
+	"relativeRate": "integer(default=100, min=1, max=100)",
+	"pauseFactor": "integer(default=50, min=0, max=100)",
+	"autoMathCatBackend": "boolean(default=True)",
+	"terminologyOverrides": "string(default='{}')",
 	# Backup mode: translate Word/Outlook speech that clearly reads as English
 	# math even when no native OMath or UIA math field confirms an equation
 	# (COM unavailable, protected view, Outlook reading pane and similar).
@@ -911,6 +917,8 @@ def _removeMathTextInfoSpeechHooks():
 
 def _redirectStaleMathCatInteraction(obj):
 	"""Replace an already-focused MathCAT navigator with Greek interaction."""
+	if _provider is not None and getattr(_provider, "usingMathCatBackend", False):
+		return False
 	try:
 		from mathPres.MathCAT.MathCAT import MathCATInteraction
 	except (ImportError, AttributeError):
@@ -938,6 +946,9 @@ def _installMathCatSpeechFallback():
 	exactly when the global plugin terminates.
 	"""
 	global _mathCatClass, _originalMathCatSpeech, _mathCatSpeechFallback
+	if _provider is not None and getattr(_provider, "usingMathCatBackend", False):
+		_removeMathCatSpeechFallback()
+		return False
 	try:
 		from mathPres.MathCAT.MathCAT import MathCAT
 	except (ImportError, AttributeError):
@@ -1136,6 +1147,9 @@ def _register():
 	replaceSpeech = mathPres.speechProvider is not _provider
 	replaceInteraction = mathPres.interactionProvider is not _provider
 	if not replaceSpeech and not replaceInteraction:
+		configureBackend = getattr(_provider, "configureMathCatDelegate", None)
+		if callable(configureBackend):
+			configureBackend(_previousSpeechProvider)
 		_registered = True
 		return
 	wasRegistered = _registered
@@ -1143,6 +1157,9 @@ def _register():
 		_previousSpeechProvider = mathPres.speechProvider
 	if replaceInteraction and not wasRegistered:
 		_previousInteractionProvider = mathPres.interactionProvider
+	configureBackend = getattr(_provider, "configureMathCatDelegate", None)
+	if callable(configureBackend):
+		configureBackend(_previousSpeechProvider)
 	mathPres.registerProvider(
 		_provider,
 		speech=replaceSpeech,
@@ -1182,8 +1199,12 @@ def _unregister():
 
 
 def applyProviderRegistration():
-	"""Enforce exclusive Greek speech while the add-on is installed."""
-	_enforceRequiredNvdaSettings()
+	"""Install or repair math providers without changing NVDA preferences."""
+	# These two legacy add-on keys describe the provider's invariant, not a
+	# user-wide NVDA preference.  Keep old profiles from disabling the add-on.
+	section = config.conf["greekMathReader"]
+	section["enabled"] = True
+	section["forceGreekLanguage"] = True
 	_installMathPresGuards()
 	_register()
 	_installMathCatSpeechFallback()
@@ -1194,7 +1215,7 @@ def applyProviderRegistration():
 
 
 def _enforceRequiredNvdaSettings():
-	"""Force NVDA settings which otherwise allow English math to bypass us."""
+	"""Explicitly repair settings which can let English math bypass us."""
 	section = config.conf["greekMathReader"]
 	section["enabled"] = True
 	section["forceGreekLanguage"] = True
@@ -1223,12 +1244,39 @@ def _enforceRequiredNvdaSettings():
 		pass
 
 
+def getHealthCheck():
+	"""Return a read-only health report; never alter NVDA configuration."""
+	checks = {
+		"providerActive": isProviderActive(),
+		"automaticLanguageSwitching": _isAutoLanguageSwitchingEnabled(),
+		"wordNativeMathDisabled": not _isWordNativeMathEnabled(),
+		"wordUIAAlways": _isWordUIAAlwaysEnabled(),
+	}
+	checks["healthy"] = all(checks.values())
+	checks["issues"] = [
+		name for name, value in checks.items()
+		if name != "healthy" and not value
+	]
+	return checks
+
+
+def repairRequiredNvdaSettings():
+	"""One-click explicit repair, preserving speech and terminology choices."""
+	_enforceRequiredNvdaSettings()
+	return applyProviderRegistration()
+
+
 def resetRecommendedDefaults():
 	"""Reset add-on preferences and repair every exclusive routing layer."""
 	section = config.conf["greekMathReader"]
 	section["verbosity"] = 1
 	section["decimalComma"] = True
 	section["translateUnconfirmedWordMath"] = True
+	section["terminologyProfile"] = "standard"
+	section["domainHint"] = "auto"
+	section["relativeRate"] = 100
+	section["pauseFactor"] = 50
+	section["autoMathCatBackend"] = True
 	_enforceRequiredNvdaSettings()
 	_installMathPresGuards()
 	_register()
@@ -1400,6 +1448,16 @@ def buildDiagnostics():
 		if _provider is not None
 		else "Provider has not been constructed."
 	)
+	section = config.conf["greekMathReader"]
+	try:
+		from .backend import automaticBackend
+		from .engine import TERMINOLOGY_VERSION
+
+		backendDiagnostic = automaticBackend.diagnostics()
+	except Exception as error:
+		TERMINOLOGY_VERSION = "unavailable"
+		backendDiagnostic = {"backend": "unavailable", "detail": repr(error)}
+	health = getHealthCheck()
 	return "\n".join(
 		[
 			"Greek Math Reader diagnostics",
@@ -1418,6 +1476,10 @@ def buildDiagnostics():
 			f"wordNativeMath={_isWordNativeMathEnabled()}",
 			f"wordUIAAlways={_isWordUIAAlwaysEnabled()}",
 			f"translateUnconfirmedWordMath={bool(config.conf['greekMathReader'].get('translateUnconfirmedWordMath', True))}",
+			f"health={health!r}",
+			f"backend={getattr(_provider, 'lastBackend', backendDiagnostic['backend']) if _provider is not None else backendDiagnostic['backend']}; backendDetail={backendDiagnostic['detail']}",
+			f"terminologyVersion={TERMINOLOGY_VERSION}; profile={section.get('terminologyProfile', 'standard')}; domainHint={section.get('domainHint', 'auto')}",
+			f"lastEngineDiagnostic={getattr(_provider, 'lastEngineDiagnostic', 'unavailable') if _provider is not None else 'provider not constructed'}",
 			f"mathCatLanguage={mathCatLanguage!r} (English is normal; this setting is bypassed)",
 			_getPlatformDiagnostics(),
 			_getSynthDiagnostics(),
@@ -1436,16 +1498,9 @@ def buildDiagnostics():
 
 
 def copyDiagnostics():
-	"""Copy and log the exact runtime diagnosis for a Windows report."""
+	"""Copy and log the exact runtime diagnosis without changing settings."""
 	import api
 
-	_enforceRequiredNvdaSettings()
-	_installMathPresGuards()
-	_register()
-	_installMathCatSpeechFallback()
-	_installMathObjectSpeechHook()
-	_installMathTextInfoSpeechHooks()
-	_installFinalWordSpeechFilter()
 	diagnostics = buildDiagnostics()
 	log.info(diagnostics)
 	return bool(api.copyToClip(diagnostics))
@@ -2124,7 +2179,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		global slots after this add-on starts. A focus event is the earliest safe
 		point after those app-switch hooks to restore Greek math reading.
 		"""
-		_enforceRequiredNvdaSettings()
 		applyProviderRegistration()
 		if _redirectStaleMathCatInteraction(obj):
 			return
@@ -2140,8 +2194,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		speakSelfTest()
 
 	@script(
-		# Translators: Describes the LaTeX reading command in the input gestures dialog.
-		description=_("Reads the selected or copied LaTeX math expression in Greek"),
+		# Translators: Describes the linear-math reading command in the input gestures dialog.
+		description=_("Reads selected or copied LaTeX or UnicodeMath in Greek"),
 		category=_("Greek Math Reader"),
 		gesture="kb:NVDA+alt+l",
 	)
@@ -2153,29 +2207,47 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _readLatex(self, interact=False):
 		import speech
 
-		from .engine import LatexParseError, latex_to_tree, looks_like_latex, speak_latex
+		from .engine import (
+			LatexParseError,
+			UnicodeMathParseError,
+			detect_math_format,
+			latex_to_tree,
+			speak_latex,
+			speak_unicodemath,
+			unicodemath_to_tree,
+		)
 		from .provider import getReadingConfig, tokensToSpeechSequence
 
 		source = self._getLatexSource()
 		if not source or not source.strip():
-			# Translators: Announced when there is no text to read as LaTeX.
-			ui.message(_("Select or copy a LaTeX expression first"))
+			# Translators: Announced when there is no linear math text to read.
+			ui.message(_("Select or copy a LaTeX or UnicodeMath expression first"))
 			return
-		if not looks_like_latex(source):
-			# Translators: Announced when the text does not appear to be LaTeX math.
-			ui.message(_("The selected text does not look like LaTeX math"))
+		inputFormat = detect_math_format(source)
+		if inputFormat is None:
+			# Translators: Announced when selected text does not resemble supported linear math.
+			ui.message(_("The selected text does not look like LaTeX or UnicodeMath"))
 			return
 		try:
+			if inputFormat == "unicodemath":
+				# Translators: Confirms the detected input syntax.
+				ui.message(_("Detected UnicodeMath input"))
+				tree = unicodemath_to_tree(source)
+				tokens = speak_unicodemath(source, getReadingConfig())
+			else:
+				# Translators: Confirms the detected input syntax.
+				ui.message(_("Detected LaTeX input"))
+				tree = latex_to_tree(source)
+				tokens = speak_latex(source, getReadingConfig())
 			if interact:
 				from .interaction import GreekMathInteraction
 
-				interaction = GreekMathInteraction(provider=_provider, tree=latex_to_tree(source))
+				interaction = GreekMathInteraction(provider=_provider, tree=tree)
 				interaction.setFocus()
 				return
-			tokens = speak_latex(source, getReadingConfig())
-		except LatexParseError:
-			# Translators: Announced when a LaTeX expression cannot be read.
-			ui.message(_("Could not read the LaTeX expression"))
+		except (LatexParseError, UnicodeMathParseError):
+			# Translators: Announced when linear mathematical input cannot be read.
+			ui.message(_("Could not read the LaTeX or UnicodeMath expression"))
 			return
 		speech.speak(tokensToSpeechSequence(tokens))
 
@@ -2208,6 +2280,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		gesture="kb:NVDA+alt+g",
 	)
 	def script_repairGreekMath(self, gesture):
-		applyProviderRegistration()
+		repairRequiredNvdaSettings()
 		# Translators: Announced after the exclusive provider is reasserted.
 		ui.message(_("Greek Math Reader is active and exclusive"))

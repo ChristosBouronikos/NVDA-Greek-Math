@@ -1,0 +1,115 @@
+{
+  "cases": [
+    {
+      "diagnostics": {
+        "fallbacks": [],
+        "recognized": [
+          "open_closed_interval:author"
+        ],
+        "terminologyVersion": "2026.08.2",
+        "unknown": []
+      },
+      "id": "content_mathml_interval",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <interval closure=\"open-closed\"><cn>0</cn><cn>1</cn></interval>\n</math>",
+      "standardSpeech": "διάστημα ανοιχτό αριστερά κλειστό δεξιά από 0 έως 1"
+    },
+    {
+      "diagnostics": {
+        "fallbacks": [],
+        "recognized": [],
+        "terminologyVersion": "2026.08.2",
+        "unknown": []
+      },
+      "id": "mathjax_semantics",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <semantics>\n    <mrow>\n      <mi>x</mi><mo>=</mo>\n      <mfrac>\n        <mrow><mo>−</mo><mi>b</mi><mo>±</mo><msqrt><msup><mi>b</mi><mn>2</mn></msup><mo>−</mo><mn>4</mn><mi>a</mi><mi>c</mi></msqrt></mrow>\n        <mrow><mn>2</mn><mi>a</mi></mrow>\n      </mfrac>\n    </mrow>\n    <annotation encoding=\"application/x-tex\">x=\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}</annotation>\n  </semantics>\n</math>",
+      "standardSpeech": "χι ίσον κλάσμα με αριθμητή μείον μπε συν πλην τετραγωνική ρίζα του μπε στο τετράγωνο πλην 4 α σε, και παρονομαστή 2 α, τέλος κλάσματος"
+    },
+    {
+      "diagnostics": {
+        "fallbacks": [],
+        "recognized": [],
+        "terminologyVersion": "2026.08.2",
+        "unknown": []
+      },
+      "id": "mathtype_annotation_xml",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <semantics>\n    <annotation encoding=\"application/x-tex\">\\int_0^1 x^2\\,dx</annotation>\n    <annotation-xml encoding=\"MathML-Presentation\">\n      <mrow>\n        <msubsup><mo>∫</mo><mn>0</mn><mn>1</mn></msubsup>\n        <msup><mi>x</mi><mn>2</mn></msup><mi>d</mi><mi>x</mi>\n      </mrow>\n    </annotation-xml>\n  </semantics>\n</math>",
+      "standardSpeech": "ολοκλήρωμα από 0 έως 1 του χι στο τετράγωνο ντε χι"
+    },
+    {
+      "diagnostics": {
+        "fallbacks": [],
+        "recognized": [
+          "matrix_element:certain"
+        ],
+        "terminologyVersion": "2026.08.2",
+        "unknown": []
+      },
+      "id": "quantum_matrix_element",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <mo>⟨</mo><mi>ψ</mi><mo>|</mo><mi>H</mi><mo>|</mo><mi>φ</mi><mo>⟩</mo>\n</math>",
+      "standardSpeech": "στοιχείο πίνακα με μπρα ψι ήτα κετ φι"
+    },
+    {
+      "diagnostics": {
+        "fallbacks": [],
+        "recognized": [
+          "expectation:certain"
+        ],
+        "terminologyVersion": "2026.08.2",
+        "unknown": []
+      },
+      "id": "statistics_expectation",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <mi>E</mi><mrow><mo>[</mo><mi>X</mi><mo>|</mo><mi>Y</mi><mo>]</mo></mrow>\n</math>",
+      "standardSpeech": "αναμενόμενη τιμή του χι δεδομένου του ψι"
+    },
+    {
+      "diagnostics": {
+        "fallbacks": [],
+        "recognized": [],
+        "terminologyVersion": "2026.08.2",
+        "unknown": []
+      },
+      "id": "tagged_pdf_formula",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <mrow>\n    <mi>E</mi><mo>=</mo><mi>m</mi><msup><mi>c</mi><mn>2</mn></msup>\n  </mrow>\n</math>",
+      "standardSpeech": "έψιλον ίσον μι σε στο τετράγωνο"
+    },
+    {
+      "diagnostics": {
+        "fallbacks": [],
+        "recognized": [],
+        "terminologyVersion": "2026.08.2",
+        "unknown": []
+      },
+      "id": "tensor_indices",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <mmultiscripts><mi>T</mi><mi>j</mi><none/><mprescripts/><none/><mi>i</mi></mmultiscripts>\n</math>",
+      "standardSpeech": "προεκθέτης ι ταυ δείκτης ζι"
+    },
+    {
+      "diagnostics": {
+        "fallbacks": [],
+        "recognized": [
+          "divergence:certain"
+        ],
+        "terminologyVersion": "2026.08.2",
+        "unknown": []
+      },
+      "id": "vector_calculus",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <mo>∇</mo><mo>·</mo><mi mathvariant=\"bold\">F</mi><mo>=</mo><mn>0</mn>\n</math>",
+      "standardSpeech": "απόκλιση του εφ ίσον 0"
+    },
+    {
+      "diagnostics": {
+        "fallbacks": [],
+        "recognized": [],
+        "terminologyVersion": "2026.08.2",
+        "unknown": []
+      },
+      "id": "word_uia_prefixed",
+      "mathml": "<mml:math>\n  <mml:mrow>\n    <mml:munderover>\n      <mml:mo>∑</mml:mo>\n      <mml:mrow><mml:mi>n</mml:mi><mml:mo>=</mml:mo><mml:mn>1</mml:mn></mml:mrow>\n      <mml:mi>∞</mml:mi>\n    </mml:munderover>\n    <mml:mfrac><mml:mn>1</mml:mn><mml:msup><mml:mi>n</mml:mi><mml:mn>2</mml:mn></mml:msup></mml:mfrac>\n  </mml:mrow>\n</mml:math>",
+      "standardSpeech": "άθροισμα για νι από 1 έως άπειρο του 1 διά νι στο τετράγωνο"
+    }
+  ],
+  "language": "el",
+  "schemaVersion": 1,
+  "speechStyle": "Standard",
+  "terminologyVersion": "2026.08.2"
+}

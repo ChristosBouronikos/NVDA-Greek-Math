@@ -6,7 +6,7 @@
 # Optional support: https://paypal.me/christosbouronikos
 msgid ""
 msgstr ""
-"Project-Id-Version: greekMathReader 2.0.0\n"
+"Project-Id-Version: greekMathReader 2.1.0-dev\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-09 12:00+0300\n"
 "PO-Revision-Date: 2026-07-13 12:00+0300\n"
@@ -296,3 +296,210 @@ msgid ""
 msgstr ""
 "&Εφεδρική λειτουργία: μετάφραση της αγγλικής μαθηματικής ομιλίας σε Word "
 "και Outlook ακόμη κι όταν η εξίσωση δεν μπορεί να επιβεβαιωθεί"
+
+#. Semantic terminology and domain controls.
+msgid "Greek &terminology profile:"
+msgstr "Προφίλ ελληνικής &ορολογίας:"
+
+msgid "Standard (default)"
+msgstr "Πρότυπη (προεπιλογή)"
+
+msgid "Personal term to &reset:"
+msgstr "Προσωπικός όρος για &επαναφορά:"
+
+msgid "(no personal terms)"
+msgstr "(δεν υπάρχουν προσωπικοί όροι)"
+
+msgid "Reset &selected personal term"
+msgstr "&Επαναφορά επιλεγμένου προσωπικού όρου"
+
+msgid "Selected personal terminology reset"
+msgstr "Ο επιλεγμένος προσωπικός όρος επαναφέρθηκε"
+
+msgid "No personal terminology selected"
+msgstr "Δεν έχει επιλεγεί προσωπικός όρος"
+
+msgid "School"
+msgstr "Σχολική"
+
+msgid "University"
+msgstr "Πανεπιστημιακή"
+
+msgid "Notation &context:"
+msgstr "&Πλαίσιο συμβολισμού:"
+
+msgid "Automatic"
+msgstr "Αυτόματο"
+
+msgid "General mathematics"
+msgstr "Γενικά μαθηματικά"
+
+msgid "Geometry"
+msgstr "Γεωμετρία"
+
+msgid "Probability and statistics"
+msgstr "Πιθανότητες και στατιστική"
+
+msgid "Linear algebra"
+msgstr "Γραμμική άλγεβρα"
+
+msgid "Vector calculus"
+msgstr "Διανυσματικός λογισμός"
+
+msgid "Physics"
+msgstr "Φυσική"
+
+msgid "Quantum physics"
+msgstr "Κβαντική φυσική"
+
+msgid "Abstract algebra"
+msgstr "Αφηρημένη άλγεβρα"
+
+msgid "Relative math speech &rate (percent):"
+msgstr "Σχετική &ταχύτητα εκφώνησης μαθηματικών (ποσοστό):"
+
+msgid "Math &pause factor:"
+msgstr "Συντελεστής &παύσεων στα μαθηματικά:"
+
+msgid "Use the installed MathCAT Greek backend automatically when available"
+msgstr "Αυτόματη χρήση της εγκατεστημένης ελληνικής υποστήριξης του MathCAT όταν είναι διαθέσιμη"
+
+#. Read-only health check and explicit repair.
+msgid "The health check reports settings that can block Greek math. Use Repair to change them explicitly."
+msgstr "Ο έλεγχος κατάστασης αναφέρει ρυθμίσεις που μπορούν να εμποδίσουν τα ελληνικά μαθηματικά. Χρησιμοποιήστε την Επιδιόρθωση για να τις αλλάξετε ρητά."
+
+msgid "Health check: ready"
+msgstr "Έλεγχος κατάστασης: έτοιμο"
+
+msgid "Health check: repair recommended"
+msgstr "Έλεγχος κατάστασης: συνιστάται επιδιόρθωση"
+
+msgid "&Repair required NVDA settings"
+msgstr "&Επιδιόρθωση απαιτούμενων ρυθμίσεων NVDA"
+
+msgid "Required NVDA settings repaired"
+msgstr "Οι απαιτούμενες ρυθμίσεις του NVDA επιδιορθώθηκαν"
+
+#. Personal concept-level terminology overrides.
+msgid "&Import personal terminology..."
+msgstr "&Εισαγωγή προσωπικής ορολογίας..."
+
+msgid "E&xport personal terminology..."
+msgstr "Ε&ξαγωγή προσωπικής ορολογίας..."
+
+msgid "&Clear personal terminology"
+msgstr "&Εκκαθάριση προσωπικής ορολογίας"
+
+msgid "Import personal Greek math terminology"
+msgstr "Εισαγωγή προσωπικής ελληνικής μαθηματικής ορολογίας"
+
+msgid "Export personal Greek math terminology"
+msgstr "Εξαγωγή προσωπικής ελληνικής μαθηματικής ορολογίας"
+
+msgid "JSON files (*.json)|*.json"
+msgstr "Αρχεία JSON (*.json)|*.json"
+
+msgid "The terminology file contains invalid or unknown concept identifiers"
+msgstr "Το αρχείο ορολογίας περιέχει μη έγκυρα ή άγνωστα αναγνωριστικά εννοιών"
+
+msgid "Personal terminology imported"
+msgstr "Η προσωπική ορολογία εισήχθη"
+
+msgid "Personal terminology exported"
+msgstr "Η προσωπική ορολογία εξήχθη"
+
+msgid "Personal terminology cleared"
+msgstr "Η προσωπική ορολογία εκκαθαρίστηκε"
+
+msgid "Could not import the terminology file"
+msgstr "Δεν ήταν δυνατή η εισαγωγή του αρχείου ορολογίας"
+
+msgid "Could not export the terminology file"
+msgstr "Δεν ήταν δυνατή η εξαγωγή του αρχείου ορολογίας"
+
+#. LaTeX and UnicodeMath input.
+msgid "Reads selected or copied LaTeX or UnicodeMath in Greek"
+msgstr "Διαβάζει στα ελληνικά επιλεγμένο ή αντιγραμμένο LaTeX ή UnicodeMath"
+
+msgid "Select or copy a LaTeX or UnicodeMath expression first"
+msgstr "Επιλέξτε ή αντιγράψτε πρώτα μια παράσταση LaTeX ή UnicodeMath"
+
+msgid "The selected text does not look like LaTeX or UnicodeMath"
+msgstr "Το επιλεγμένο κείμενο δεν φαίνεται να είναι LaTeX ή UnicodeMath"
+
+msgid "Could not read the LaTeX or UnicodeMath expression"
+msgstr "Δεν ήταν δυνατή η ανάγνωση της παράστασης LaTeX ή UnicodeMath"
+
+msgid "Detected LaTeX input"
+msgstr "Εντοπίστηκε είσοδος LaTeX"
+
+msgid "Detected UnicodeMath input"
+msgstr "Εντοπίστηκε είσοδος UnicodeMath"
+
+#. Extended local interaction.
+msgid "Move to the last inner part of the expression"
+msgstr "Μετακίνηση στο τελευταίο εσωτερικό μέρος της παράστασης"
+
+msgid "Return to the previous navigation position"
+msgstr "Επιστροφή στην προηγούμενη θέση πλοήγησης"
+
+msgid "No previous navigation position"
+msgstr "Δεν υπάρχει προηγούμενη θέση πλοήγησης"
+
+msgid "Move to the table cell on the left"
+msgstr "Μετακίνηση στο αριστερό κελί του πίνακα"
+
+msgid "Move to the table cell on the right"
+msgstr "Μετακίνηση στο δεξιό κελί του πίνακα"
+
+msgid "Move to the table cell above"
+msgstr "Μετακίνηση στο επάνω κελί του πίνακα"
+
+msgid "Move to the table cell below"
+msgstr "Μετακίνηση στο κάτω κελί του πίνακα"
+
+msgid "Not in a table cell"
+msgstr "Δεν βρίσκεστε σε κελί πίνακα"
+
+msgid "No table cell in that direction"
+msgstr "Δεν υπάρχει κελί πίνακα προς αυτή την κατεύθυνση"
+
+msgid "Announce the current position in the expression"
+msgstr "Αναγγελία της τρέχουσας θέσης στην παράσταση"
+
+#, python-brace-format
+msgid "Row {row}, column {column}"
+msgstr "Γραμμή {row}, στήλη {column}"
+
+msgid "Whole expression"
+msgstr "Ολόκληρη η παράσταση"
+
+#, python-brace-format
+msgid "Part {position} of {total}"
+msgstr "Μέρος {position} από {total}"
+
+msgid "Copy the current expression as MathML source"
+msgstr "Αντιγραφή της τρέχουσας παράστασης ως πηγαίος κώδικας MathML"
+
+msgid "MathML source copied"
+msgstr "Ο πηγαίος κώδικας MathML αντιγράφηκε"
+
+#. Translators: Long description shown in add-on information.
+msgid ""
+"Reads MathML, LaTeX, and UnicodeMath aloud in natural Greek, following the dictation\n"
+"conventions used in Greek schools and universities.\n"
+"Uses conservative semantic interpretation, terminology profiles, statistics, vector calculus,\n"
+"quantum notation, SI units, fractions, powers, integrals, derivatives, and matrices.\n"
+"Includes interactive navigation to explore complex expressions part by part,\n"
+"and three verbosity levels (terse, smart, verbose)."
+msgstr ""
+"Εκφωνεί MathML, LaTeX και UnicodeMath σε φυσικά ελληνικά, ακολουθώντας τον τρόπο\n"
+"υπαγόρευσης των ελληνικών σχολείων και πανεπιστημίων.\n"
+"Χρησιμοποιεί συντηρητική σημασιολογική ερμηνεία, προφίλ ορολογίας, στατιστική,\n"
+"διανυσματικό λογισμό, κβαντικό συμβολισμό, μονάδες SI, κλάσματα, δυνάμεις,\n"
+"ολοκληρώματα, παραγώγους και πίνακες. Περιλαμβάνει διαδραστική πλοήγηση\n"
+"μέρος προς μέρος και τρία επίπεδα λεπτομέρειας (σύντομη, έξυπνη, αναλυτική)."
+
+#. Translators: Development-preview changelog shown in add-on information.
+msgid "Version 2.1.0 development preview: shared semantic MathML/LaTeX/UnicodeMath reading, versioned Greek terminology profiles and overrides, vector-calculus/probability/quantum concepts, SI agreement, automatic MathCAT Greek delegation, richer diagnostics, and expanded navigation."
+msgstr "Έκδοση 2.1.0, προεπισκόπηση ανάπτυξης: κοινή σημασιολογική ανάγνωση MathML/LaTeX/UnicodeMath, εκδόσιμο μητρώο ελληνικής ορολογίας με προφίλ και προσωπικές αποδόσεις, έννοιες διανυσματικού λογισμού/πιθανοτήτων/κβαντικής, γραμματική συμφωνία μονάδων SI, αυτόματη ανάθεση σε ελληνικό MathCAT, πλουσιότερα διαγνωστικά και εκτεταμένη πλοήγηση."

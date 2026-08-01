@@ -30,19 +30,19 @@ addon_info = AddonInfo(
 	# Add-on description
 	# Translators: Long description to be shown for this add-on on add-on information from add-on store
 	addon_description=_(
-		"""Reads mathematical content (MathML) aloud in natural Greek, following the dictation
+		"""Reads MathML, LaTeX, and UnicodeMath aloud in natural Greek, following the dictation
 conventions used in Greek schools and universities.
-Supports school and university mathematics, statistics, SI physics units, fractions,
-powers, roots, integrals, limits, derivatives, matrices, probability, and LaTeX input.
+Uses conservative semantic interpretation, terminology profiles, statistics, vector calculus,
+quantum notation, SI units, fractions, powers, integrals, derivatives, and matrices.
 Includes interactive navigation to explore complex expressions part by part,
 and three verbosity levels (terse, smart, verbose)."""
 	),
 	# version
-	addon_version="2.0.0",
+	addon_version="2.1.0-dev",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.0.0: reliable Greek reading of Word equations (structured OMath transform with an English backup), Greek LaTeX reading with NVDA+Alt+L, expanded school/university/statistics/physics vocabulary, clearer pronunciation of short Greek letter names, and Greek equation-boundary announcements."""
+		"""Version 2.1.0 development preview: shared semantic MathML/LaTeX/UnicodeMath reading, versioned Greek terminology profiles and overrides, vector-calculus/probability/quantum concepts, SI agreement, automatic MathCAT Greek delegation, richer diagnostics, and expanded navigation."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",
@@ -59,7 +59,7 @@ and three verbosity levels (terse, smart, verbose)."""
 	# Add-on update channel (default is None, denoting stable releases,
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!
-	addon_updateChannel=None,
+	addon_updateChannel="dev",
 	# SPDX identifier: GPL-2.0-only. This is compatible with NVDA's GPL-2.0-or-later license.
 	addon_license="GPL-2.0-only",
 	# URL for the license document the ad-on is licensed under
@@ -95,7 +95,8 @@ baseLanguage: str = "en"
 # Markdown extensions for add-on documentation
 markdownExtensions: list[str] = ["markdown.extensions.tables"]
 
-# Custom braille translation tables (none in v1; Greek math braille is planned for v2)
+# MathCAT's existing braille output is preserved. A Greek math-braille table
+# remains a separate research track and is not asserted without a specification.
 brailleTables: BrailleTables = {}
 
 # Custom speech symbol dictionaries (math symbols are handled by the engine, not NVDA symbol dics)

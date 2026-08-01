@@ -13,6 +13,7 @@
 
 """NVDA math presentation provider backed by the Greek speech engine."""
 
+import json
 import re
 
 import addonHandler
@@ -21,7 +22,24 @@ import mathPres
 from logHandler import log
 from speech.commands import BreakCommand, LangChangeCommand
 
-from .engine import MathMLParseError, Pause, ReadingConfig, speak_mathml
+try:
+	from speech.commands import RateCommand
+except ImportError:  # NVDA versions without relative-rate speech commands.
+	RateCommand = None
+
+from .backend import automaticBackend
+from .engine import (
+	MathMLParseError,
+	Language,
+	NavigationMark,
+	Pause,
+	Prosody,
+	ReadingConfig,
+	enrich_speech,
+	get_last_engine_diagnostics,
+	speak_mathml,
+)
+from .engine.terminology_el import validate_overrides
 
 addonHandler.initTranslation()
 
@@ -58,9 +76,23 @@ def _applyPronunciation(text):
 def getReadingConfig():
 	"""Build an engine ReadingConfig from the current NVDA configuration."""
 	section = config.conf["greekMathReader"]
+	overrides = section.get("terminologyOverrides", "{}")
+	if isinstance(overrides, str):
+		try:
+			overrides = json.loads(overrides)
+		except (TypeError, ValueError):
+			overrides = {}
+	if not isinstance(overrides, dict):
+		overrides = {}
+	overrides, _rejected = validate_overrides(overrides)
 	return ReadingConfig(
 		verbosity=int(section["verbosity"]),
 		decimal_comma=bool(section["decimalComma"]),
+		terminology_profile=section.get("terminologyProfile", "standard"),
+		domain_hint=section.get("domainHint", "auto"),
+		relative_rate=int(section.get("relativeRate", 100)),
+		pause_factor=int(section.get("pauseFactor", 50)),
+		terminology_overrides=overrides,
 	)
 
 
@@ -118,17 +150,25 @@ def tokensToSpeechSequence(tokens):
 			"voice (el_GR); Greek text will be pronounced by the current voice"
 		)
 		_hasWarnedGreekVoiceUnavailable = True
-	if forceGreek:
-		sequence.append(LangChangeCommand(GREEK_LOCALE))
-	for token in tokens:
+	richTokens = list(tokens)
+	if not any(isinstance(token, Language) for token in richTokens):
+		richTokens = enrich_speech(richTokens, getReadingConfig())
+	for token in richTokens:
 		if isinstance(token, Pause):
 			sequence.append(BreakCommand(time=token.ms))
+		elif isinstance(token, Language):
+			if forceGreek:
+				locale = GREEK_LOCALE if token.locale else None
+				sequence.append(LangChangeCommand(locale))
+		elif isinstance(token, Prosody):
+			if RateCommand is not None:
+				sequence.append(RateCommand(multiplier=token.relative_rate / 100.0))
+		elif isinstance(token, NavigationMark):
+			continue
 		elif isinstance(token, str):
 			sequence.append(_applyPronunciation(token))
 		else:
 			sequence.append(token)
-	if forceGreek:
-		sequence.append(LangChangeCommand(None))
 	return sequence
 
 
@@ -137,9 +177,31 @@ class GreekMathProvider(mathPres.MathPresentationProvider):
 	_hasLoggedFirstSpeech = False
 	speechRequestCount = 0
 	lastInputDiagnostic = "No MathML received."
+	lastEngineDiagnostic = "No local-engine speech has been generated."
+	lastBackend = "local"
+
+	def configureMathCatDelegate(self, delegate=None):
+		section = config.conf["greekMathReader"]
+		return automaticBackend.configure(
+			delegate,
+			enabled=bool(section.get("autoMathCatBackend", True)),
+		)
+
+	@property
+	def usingMathCatBackend(self):
+		return automaticBackend.usingMathCat
 
 	def getSpeechForMathMl(self, mathMl):
 		self.speechRequestCount += 1
+		if automaticBackend.usingMathCat:
+			try:
+				sequence = automaticBackend.getSpeechForMathMl(mathMl)
+				if sequence is not None:
+					self.lastBackend = "mathcat-el"
+					return sequence
+			except Exception:
+				log.exception("Greek Math Reader: MathCAT Greek backend failed; using local engine")
+			automaticBackend.configure(None, enabled=False)
 		mathMlText = mathMl if isinstance(mathMl, str) else repr(mathMl)
 		preview = re.sub(r"\s+", " ", mathMlText).strip()
 		if len(preview) > 220:
@@ -160,6 +222,8 @@ class GreekMathProvider(mathPres.MathPresentationProvider):
 			self._hasLoggedFirstSpeech = True
 		try:
 			tokens = speak_mathml(mathMl, getReadingConfig())
+			self.lastBackend = "local"
+			self.lastEngineDiagnostic = repr(get_last_engine_diagnostics())
 			return tokensToSpeechSequence(tokens)
 		except MathMLParseError as error:
 			log.error(f"Greek Math Reader: invalid MathML: {error}\n{mathMl}")
@@ -171,6 +235,13 @@ class GreekMathProvider(mathPres.MathPresentationProvider):
 			return [_("Error reading mathematical content")]
 
 	def interactWithMathMl(self, mathMl):
+		if automaticBackend.usingMathCat:
+			interaction = getattr(automaticBackend.delegate, "interactWithMathMl", None)
+			if callable(interaction):
+				try:
+					return interaction(mathMl)
+				except Exception:
+					log.exception("Greek Math Reader: MathCAT Greek interaction failed; using local navigation")
 		# Imported lazily: interaction pulls in wx/NVDAObjects, which must not
 		# load during add-on import.
 		from .interaction import GreekMathInteraction
