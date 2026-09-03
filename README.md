@@ -1,4 +1,4 @@
-# Greek Math Reader
+# Greek Math Reader - by Bouronikos Christos
 
 **Πρόσθετο NVDA / NVDA add-on** — εκφωνεί μαθηματικά σε φυσικά ελληνικά · reads mathematics aloud in natural Greek.
 
