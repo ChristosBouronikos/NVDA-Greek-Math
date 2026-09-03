@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: GPL-3.0-or-later
+# NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)
+# Additional attribution terms under GPL-3.0 section 7 apply - see LICENSE.md.
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
 # GitHub: https://github.com/ChristosBouronikos
 # Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
@@ -238,9 +240,9 @@ def build_docs() -> None:
 
 
 def install_license() -> None:
-	"""Include the complete GPL text in the distributable add-on bundle."""
-	shutil.copyfile(ROOT / "COPYING.txt", ADDON / "COPYING.txt")
-	print("copied COPYING.txt into add-on bundle")
+	"""Include LICENSE.md with complete GPL-3.0 text and section 7 terms."""
+	shutil.copyfile(ROOT / "LICENSE.md", ADDON / "LICENSE.md")
+	print("copied LICENSE.md into add-on bundle")
 
 
 def package() -> Path:

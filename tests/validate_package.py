@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: GPL-3.0-or-later
+# NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)
+# Additional attribution terms under GPL-3.0 section 7 apply - see LICENSE.md.
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
 # GitHub: https://github.com/ChristosBouronikos
 # Optional support: https://paypal.me/christosbouronikos
@@ -24,8 +26,13 @@ EXPECTED_MANIFEST_LINES = {
 	"updateChannel = dev",
 }
 
+# Required in the shipped package by the GPL-3.0 section 7(b) term in LICENSE.md.
+ATTRIBUTION_NOTICE = (
+	"NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)"
+)
+
 REQUIRED_FILES = {
-	"COPYING.txt",
+	"LICENSE.md",
 	"doc/el/readme.html",
 	"doc/en/readme.html",
 	"globalPlugins/greekMathReader/__init__.py",
@@ -54,9 +61,14 @@ def validate(path: Path) -> None:
 		missing_lines = EXPECTED_MANIFEST_LINES - set(manifest.splitlines())
 		if missing_lines:
 			raise AssertionError(f"manifest mismatch: {sorted(missing_lines)}")
-		license_text = bundle.read("COPYING.txt").decode("utf-8")
-		if "GNU GENERAL PUBLIC LICENSE" not in license_text or "Version 2" not in license_text:
-			raise AssertionError("COPYING.txt is not the complete GNU GPL version 2 text")
+		terms = bundle.read("LICENSE.md").decode("utf-8")
+		if "GNU GENERAL PUBLIC LICENSE" not in terms or "Version 3" not in terms:
+			raise AssertionError("LICENSE.md is missing the complete GNU GPL version 3 text")
+		if ATTRIBUTION_NOTICE not in terms:
+			raise AssertionError("LICENSE.md is missing the required attribution notice")
+		for doc in ("doc/en/readme.html", "doc/el/readme.html"):
+			if ATTRIBUTION_NOTICE not in bundle.read(doc).decode("utf-8"):
+				raise AssertionError(f"{doc} is missing the required attribution notice")
 
 
 if __name__ == "__main__":

@@ -12,6 +12,8 @@ Development preview of the first staged semantic release. It is deliberately on 
 * Adds read-only health reporting, explicit repair, backend/profile/rule diagnostics, adjustable relative rate and pauses, semantic-operand navigation, history, End, table-cell movement, position reporting, and speech/MathML copy.
 * Expands the real-world corpus from 3 to 9 samples and the automated suite from 268 to more than 300 tests, including tagged-PDF MathML routing, exact Greek semantic readings, cross-format parity, generated no-silent-loss checks and backend selection.
 
+* Relicenses the add-on from `GPL-2.0-only` to **`GPL-3.0-or-later`**, with additional author-attribution terms under section 7 of that license (`LICENSE.md`, now shipped inside the package). Anyone who copies, modifies or redistributes the add-on must preserve the notice «NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)»; using the add-on remains unrestricted. NVDA is licensed GPL v2-or-later, so the combination stays compatible. Releases up to 2.0.0 remain available under `GPL-2.0-only`.
+
 Pending stable-release gates: terminology approval by the relevant Greek domain and language reviewers, listening tests with Microsoft Stefanos and eSpeak Greek, two blind Greek NVDA reviewers, and the supported NVDA/browser/Word/EPUB/PDF matrix. No Greek math-braille code is claimed or shipped.
 
 ## 2.0.0 — 2026-07-13

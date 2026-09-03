@@ -339,6 +339,30 @@ x + 2y − z = 2
 * **GitHub:** [ChristosBouronikos](https://github.com/ChristosBouronikos)
 * **PayPal — κάντε μια δωρεά:** **https://paypal.me/christosbouronikos**
 
+### Αναφορά δημιουργού και άδεια
+
+Το πρόσθετο φέρει την εξής ένδειξη αναφοράς:
+
+> **NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)**
+
+Διατίθεται υπό την [GNU General Public License έκδοση 3 ή νεότερη](COPYING.txt),
+με πρόσθετους όρους αναφοράς δημιουργού βάσει του άρθρου 7 της άδειας — δείτε το
+[LICENSE.md](LICENSE.md). Όποιος αντιγράφει, τροποποιεί ή αναδιανέμει το
+πρόσθετο οφείλει να διατηρεί την ένδειξη αυτή στον πηγαίο κώδικα, στην
+τεκμηρίωση που συνοδεύει το πακέτο και στις νομικές ενδείξεις κάθε έργου που το
+περιέχει. Η απλή **χρήση** δεν συνεπάγεται καμία τέτοια υποχρέωση: το πρόσθετο
+είναι ελεύθερο λογισμικό και μπορείτε να το χρησιμοποιείτε για οποιονδήποτε
+σκοπό.
+
+Αν το εγκαθιστάτε, το προτείνετε, το διδάσκετε ή γράφετε γι' αυτό — σε κέντρο
+προσβασιμότητας, σχολείο, πανεπιστήμιο, επιμόρφωση ή δημοσίευση — αναφέρετέ το
+παρακαλώ. Είναι ευγενική παράκληση και όχι όρος της άδειας, και δεν κοστίζει
+τίποτα:
+
+> Η εκφώνηση των μαθηματικών στα ελληνικά παρέχεται από το *NVDA Greek Math
+> (Greek Math Reader)*, του Μπουρονίκου Χρήστου (cbouronikos@uth.gr) —
+> https://github.com/ChristosBouronikos/NVDA-Greek-Math
+
 ---
 
 ## English
@@ -651,8 +675,34 @@ you so much! 🙏
 * **GitHub:** [ChristosBouronikos](https://github.com/ChristosBouronikos)
 * **PayPal — make a donation:** **https://paypal.me/christosbouronikos**
 
+### Credit and attribution
+
+The add-on carries this attribution notice:
+
+> **NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)**
+
+Under the license, anyone who copies, modifies, or redistributes the add-on must
+preserve that notice in the source files, in the documentation shipped with the
+add-on, and in the legal notices of any work containing it. **Using** the add-on
+carries no such obligation — it is free software and you may run it for any
+purpose.
+
+If you deploy, recommend, teach, or write about the add-on — in an accessibility
+centre, a school, a university, a training session, or a publication — please
+credit it. This is a request, not a license condition, and it costs nothing:
+
+> Greek mathematics speech provided by *NVDA Greek Math (Greek Math Reader)*, by
+> Bouronikos Christos (cbouronikos@uth.gr) —
+> https://github.com/ChristosBouronikos/NVDA-Greek-Math
+
 ### License
 
-[GNU General Public License v2.0 only (GPL-2.0-only)](COPYING.txt). This strong
-copyleft license keeps the add-on and redistributed modifications free and
-source-available, and is compatible with NVDA's GPL v2-or-later licensing.
+[GNU General Public License version 3 or later (GPL-3.0-or-later) with
+additional author-attribution terms under section 7 of that license](LICENSE.md).
+This strong copyleft license keeps the add-on and redistributed modifications
+free and source-available, while making author attribution durable. NVDA is
+licensed GPL v2-**or-later**, so NVDA and this add-on may be combined and
+conveyed under GPL version 3.
+
+Releases up to and including 2.0.0 were published under `GPL-2.0-only` and remain
+available under that license.

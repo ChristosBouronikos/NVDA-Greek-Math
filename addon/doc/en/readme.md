@@ -125,7 +125,22 @@ development.
 * GitHub: [ChristosBouronikos](https://github.com/ChristosBouronikos)
 * PayPal: [Make a donation](https://paypal.me/christosbouronikos)
 
+## Attribution
+
+NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)
+
+This notice must be preserved by anyone who copies, modifies, or redistributes
+the add-on. It places no obligation on you as a user: you may run the add-on
+freely, for any purpose.
+
+If you deploy or recommend the add-on in an accessibility centre, a school, or a
+university, please also name it and its author in your materials. That is a
+request rather than a licence condition, and it helps the add-on reach more
+blind and visually impaired students.
+
 ## License
 
-GNU General Public License v2.0 only (`GPL-2.0-only`). The complete license is
-included in the add-on package as `COPYING.txt`.
+GNU General Public License version 3 or later (`GPL-3.0-or-later`), with
+additional author-attribution terms under section 7 of that license. The
+complete license, including the additional terms, is included in the add-on
+package as `LICENSE.md`.

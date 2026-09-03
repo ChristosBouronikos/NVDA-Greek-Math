@@ -1,5 +1,7 @@
 # Build customizations for the Greek Math Reader NVDA add-on.
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: GPL-3.0-or-later
+# NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)
+# Additional attribution terms under GPL-3.0 section 7 apply - see LICENSE.md.
 # Change this file instead of sconstruct or manifest files, whenever possible.
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
 # GitHub: https://github.com/ChristosBouronikos
@@ -60,10 +62,13 @@ and three verbosity levels (terse, smart, verbose)."""
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!
 	addon_updateChannel="dev",
-	# SPDX identifier: GPL-2.0-only. This is compatible with NVDA's GPL-2.0-or-later license.
-	addon_license="GPL-2.0-only",
-	# URL for the license document the ad-on is licensed under
-	addon_licenseURL="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+	# SPDX identifier: GPL-3.0-or-later, plus attribution terms under GPL-3.0
+	# section 7 (see LICENSE.md in the repository and in the package).
+	# NVDA is licensed GPL-2.0-or-later, so the combination of NVDA and this
+	# add-on may be conveyed under GPL version 3.
+	addon_license="GPL-3.0-or-later",
+	# URL for the license document the ad-on is licensed under (official text)
+	addon_licenseURL="https://www.gnu.org/licenses/gpl-3.0.html",
 )
 
 # Define the python files that are the sources of your add-on.

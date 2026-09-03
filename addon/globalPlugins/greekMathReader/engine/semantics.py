@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: GPL-3.0-or-later
+# NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)
+# Additional attribution terms under GPL-3.0 section 7 apply - see LICENSE.md.
 """Semantic interpretation shared by MathML, LaTeX and UnicodeMath.
 
 The interpreter is intentionally conservative.  It recognizes a meaning only

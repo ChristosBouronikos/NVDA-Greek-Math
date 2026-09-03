@@ -63,3 +63,23 @@ AI-assisted contributions are welcome when they are disclosed and carefully
 reviewed. Contributors remain responsible for correctness, licensing, privacy,
 and tests. See [AI_DISCLOSURE.md](AI_DISCLOSURE.md) for this project's use of
 AI-assisted tools.
+
+## Licensing of Contributions
+
+The project is licensed **GPL-3.0-or-later** with additional author-attribution
+terms under section 7 of that license — see [LICENSE.md](LICENSE.md).
+
+By submitting a contribution you agree that it is licensed on those same terms
+(inbound equals outbound). Keep the existing header block, including the
+attribution notice and the pointer to `LICENSE.md`, in every file you touch, and
+add it to new source files:
+
+```python
+# SPDX-License-Identifier: GPL-3.0-or-later
+# NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)
+# Additional attribution terms under GPL-3.0 section 7 apply - see LICENSE.md.
+```
+
+You are welcome to add your own copyright line for your changes. Please do not
+remove or alter the attribution notice; the section 7(b) term requires it to be
+preserved.

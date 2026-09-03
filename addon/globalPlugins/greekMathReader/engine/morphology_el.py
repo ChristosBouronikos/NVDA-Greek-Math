@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: GPL-3.0-or-later
+# NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)
+# Additional attribution terms under GPL-3.0 section 7 apply - see LICENSE.md.
 """Small, deterministic Greek morphology helpers for mathematical speech.
 
 The renderer does not infer mathematical meaning.  It receives a resolved

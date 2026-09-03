@@ -22,11 +22,26 @@ issue generates the Store pull request automatically.
 | Minimum NVDA API version | `2024.1.0` |
 | Last tested NVDA API version | `2026.1.1` |
 | Channel | `stable` |
-| License name | `GPL-2.0-only` |
-| License URL | `https://www.gnu.org/licenses/old-licenses/gpl-2.0.html` |
+| License name | `GPL-3.0-or-later` |
+| License URL | `https://www.gnu.org/licenses/gpl-3.0.html` |
 
 NVDA 2026.1.1 is listed as a stable, non-experimental API version in the Store's
 current `nvdaAPIVersions.json`, so the stable channel is appropriate.
+
+### Note on the GPL version, if a reviewer asks
+
+NVDA's own `copying.txt` states that NVDA is available under "the GNU General
+Public License version 2 **or later**, with two special exceptions". Because
+NVDA is "or later", an add-on licensed GPL-3.0-or-later is compatible with it:
+the combination of NVDA and this add-on may be conveyed under GPL version 3.
+
+The add-on adds attribution terms under GPL-3.0 section 7(b), 7(c) and 7(e),
+stated in `LICENSE.md` and shipped inside the package. These are among the
+additional terms section 7 expressly permits, so they are not "further
+restrictions": the add-on remains free software, may be redistributed and
+modified by anyone, and imposes no obligation on end users. Older add-on
+development documentation that says "GPL version 2" predates NVDA's move to
+"version 2 or later".
 
 ## Before creating the Store issue
 
@@ -41,7 +56,8 @@ current `nvdaAPIVersions.json`, so the stable channel is appropriate.
    `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.0.0/greekMathReader-2.0.0.nvda-addon`
 
 5. Confirm the package manifest matches the values above and the package
-   contains `COPYING.txt`, English/Greek HTML help, compiled Greek translations,
+   contains `LICENSE.md` (complete GPL-3.0 text plus §7 attribution terms),
+      English/Greek HTML help, compiled Greek translations,
    and only the required `globalPlugins/greekMathReader` package. In particular,
    the source tree intentionally has no checked-in generated `addon/manifest.ini`
    and no unused `globalPlugins/__init__.py` or `appModules/__init__.py` files.
@@ -58,8 +74,8 @@ and enter:
 | Source URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math` |
 | Publisher | `Bouronikos Christos` |
 | Channel | `stable` |
-| License Name | `GPL-2.0-only` |
-| License URL | `https://www.gnu.org/licenses/old-licenses/gpl-2.0.html` |
+| License Name | `GPL-3.0-or-later` |
+| License URL | `https://www.gnu.org/licenses/gpl-3.0.html` |
 
 Suggested issue title suffix: `Greek Math Reader 2.0.0`.
 
@@ -79,7 +95,7 @@ text is ready to use:
 > can explore an expression one part at a time.
 >
 > The repository includes English and Greek documentation, automated tests,
-> release metadata, and the GPL-2.0-only license. Artificial intelligence tools
+> release metadata, and the GPL-3.0-or-later license. Artificial intelligence tools
 > were used in the development and documentation of the repository and add-on.
 > The add-on is developed and maintained by Bouronikos Christos
 > (chrisbouronikos@gmail.com).

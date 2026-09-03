@@ -1,8 +1,10 @@
 # Greek Math Reader for NVDA
 # Copyright (C) 2026 Christos Bouronikos
-# This file is covered by the GNU General Public License version 2.
+# This file is covered by the GNU General Public License version 3 or later.
 # See the file COPYING.txt for more details.
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: GPL-3.0-or-later
+# NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)
+# Additional attribution terms under GPL-3.0 section 7 apply - see LICENSE.md.
 # Project contact: Bouronikos Christos <chrisbouronikos@gmail.com>
 # GitHub: https://github.com/ChristosBouronikos
 # Author / maintainer: Christos Bouronikos  ·  chrisbouronikos@gmail.com
