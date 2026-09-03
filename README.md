@@ -660,7 +660,8 @@ python3 build.py                     # build greekMathReader-<version>.nvda-addo
 ```
 
 Artificial intelligence (AI) tools were used in the development and
-documentation of this repository and add-on.
+documentation of this repository and add-on. Claude (by Anthropic) was used
+minimally to assist with relicensing, documentation, and build automation.
 
 ### Support
 
