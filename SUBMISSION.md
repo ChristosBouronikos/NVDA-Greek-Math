@@ -64,9 +64,16 @@ development documentation that says "GPL version 2" predates NVDA's move to
 
 ## Add-on registration issue values
 
-Open the [Add-on registration
-form](https://github.com/nvaccess/addon-datastore/issues/new?template=registerAddon.yml)
-and enter:
+Open this pre-filled link (signed in as the maintainer's GitHub account) —
+every field below is filled in from the query string, matching the field IDs
+in [nvaccess/addon-datastore's actual issue
+form](https://github.com/nvaccess/addon-datastore/blob/master/.github/ISSUE_TEMPLATE/registerAddon.yml):
+
+<https://github.com/nvaccess/addon-datastore/issues/new?template=registerAddon.yml&title=%5BSubmit+add-on%5D%3A+Greek+Math+Reader+2.1.0&download-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math%2Freleases%2Fdownload%2Fv2.1.0%2FgreekMathReader-2.1.0.nvda-addon&source-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math&publisher=Bouronikos+Christos&channel=stable&license-name=GPL-3.0-or-later&license-url=https%3A%2F%2Fwww.gnu.org%2Flicenses%2Fgpl-3.0.html>
+
+GitHub issue-form pre-fill does not always populate a dropdown field (Channel
+here) reliably, so confirm every field against this table before submitting,
+and fill in by hand anything that came through blank:
 
 | Issue-form field | Value |
 |---|---|
@@ -77,7 +84,12 @@ and enter:
 | License Name | `GPL-3.0-or-later` |
 | License URL | `https://www.gnu.org/licenses/gpl-3.0.html` |
 
-Suggested issue title suffix: `Greek Math Reader 2.1.0`.
+Suggested issue title suffix: `Greek Math Reader 2.1.0` (already in the
+pre-filled link above).
+
+If the pre-filled link ever breaks (NV Access renames a field ID or the
+template), use the bare form instead and fill in the table by hand:
+<https://github.com/nvaccess/addon-datastore/issues/new?template=registerAddon.yml>
 
 ## Suggested submission text
 
