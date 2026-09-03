@@ -15,7 +15,7 @@ issue generates the Store pull request automatically.
 | Field | Value |
 |---|---|
 | Add-on ID / manifest name | `greekMathReader` |
-| Version | `2.0.0` |
+| Version | `2.1.0` |
 | Display name / manifest summary | `Greek Math Reader` |
 | Publisher | `Bouronikos Christos` |
 | Source and homepage | `https://github.com/ChristosBouronikos/NVDA-Greek-Math` |
@@ -45,15 +45,15 @@ development documentation that says "GPL version 2" predates NVDA's move to
 
 ## Before creating the Store issue
 
-1. Merge the repository pull request containing version 2.0.0.
+1. Merge or push the commit containing version 2.1.0 to `main`.
 2. Complete the Windows/NVDA checks below and record the tested versions.
-3. Create and push tag `v2.0.0`. The release workflow builds the package, runs
+3. Create and push tag `v2.1.0`. The release workflow builds the package, runs
    tests, creates the GitHub Release, and attaches both the `.nvda-addon` file
    and `sha256.txt`.
 4. Confirm that this permanent direct URL downloads the release asset and ends
    in `.nvda-addon`:
 
-   `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.0.0/greekMathReader-2.0.0.nvda-addon`
+   `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.1.0/greekMathReader-2.1.0.nvda-addon`
 
 5. Confirm the package manifest matches the values above and the package
    contains `LICENSE.md` (complete GPL-3.0 text plus §7 attribution terms),
@@ -70,14 +70,14 @@ and enter:
 
 | Issue-form field | Value |
 |---|---|
-| Download URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.0.0/greekMathReader-2.0.0.nvda-addon` |
+| Download URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.1.0/greekMathReader-2.1.0.nvda-addon` |
 | Source URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math` |
 | Publisher | `Bouronikos Christos` |
 | Channel | `stable` |
 | License Name | `GPL-3.0-or-later` |
 | License URL | `https://www.gnu.org/licenses/gpl-3.0.html` |
 
-Suggested issue title suffix: `Greek Math Reader 2.0.0`.
+Suggested issue title suffix: `Greek Math Reader 2.1.0`.
 
 ## Suggested submission text
 
@@ -87,7 +87,8 @@ text is ready to use:
 
 > Hello NVDA Add-on Store team,
 >
-> I would kindly like to submit Greek Math Reader 2.0.0 for inclusion in the
+> I would kindly like to submit Greek Math Reader 2.1.0, an update to the
+> already-published add-on, for inclusion in the
 > NVDA Add-on Store. Greek Math Reader helps Greek-speaking blind and visually
 > impaired users access mathematical content in natural Greek. It supports
 > MathML on webpages and in EPUB books, modern Microsoft Word equations, and
@@ -110,7 +111,7 @@ submit the form again as directed by the automation.
 
 ## Windows and NVDA pre-release checks
 
-- [ ] Install `greekMathReader-2.0.0.nvda-addon` in NVDA 2024.1, the oldest
+- [ ] Install `greekMathReader-2.1.0.nvda-addon` in NVDA 2024.1, the oldest
       declared version; restart NVDA and check the log for errors.
 - [ ] Install it in NVDA 2026.1.1, the last tested version; restart NVDA and
       check the log for errors.
