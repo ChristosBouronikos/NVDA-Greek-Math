@@ -3,6 +3,26 @@
 Version 2.1 is a development preview until every applicable row below has
 recorded evidence. A blank approval is a blocker, not an implicit pass.
 
+## Status of 2.1.0 stable (2026-09-03)
+
+**Version 2.1.0 shipped on the stable channel on 2026-09-03 with the NVDA and
+document matrix and the human-approval rows below still marked Pending.** This
+was the maintainer's explicit decision, made after this gap was raised
+directly. It is recorded here rather than left unstated, and the Pending rows
+below are left as Pending rather than backfilled, because no review or
+listening test has actually occurred for them.
+
+Several reading changes landed in 2.1.0 on release day itself — the explicit
+fraction reading inside a trigonometric argument, the pause between
+juxtaposed single-letter factors, and the Leibniz-derivative fixes — and have
+not been heard by anyone outside this development session. A test sheet with
+19 verified equations was sent to a native blind NVDA user for informal
+feedback; as of this release, no response had been received yet. Closing the
+rows below, and revisiting the two open wording questions the test sheet
+raises (whether "του" is needed after an unparenthesized function name, and
+whether the explicit fraction reading is worth its length), is the immediate
+follow-up work for 2.1.x.
+
 ## Automated gates
 
 | Gate | Required result | Evidence |

@@ -2,7 +2,7 @@
 
 ## 2.1.0 — 2026-09-03
 
-Development preview of the first staged semantic release. It is deliberately on the `dev` channel until the terminology and user-listening release gates are signed off.
+First staged semantic release. Shipped on the stable channel by maintainer decision; see `RELEASE_GATES.md` for the NVDA/document matrix and human-approval rows that remain open at this version.
 
 * Adds a canonical semantic layer shared by MathML, LaTeX and UnicodeMath. Valid MathML `intent`/`arg` annotations take priority; conservative structure and domain context come next; unresolved notation keeps a lossless structural reading.
 * Adds direct UnicodeMath and Word-linear input to `NVDA+Alt+L`, with format detection and spoken confirmation. Existing LaTeX and public engine entry points remain compatible.

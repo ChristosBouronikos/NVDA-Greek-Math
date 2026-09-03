@@ -22,12 +22,19 @@ def _build_var(key: str) -> str:
 	Read rather than import: buildVars pulls in the SCons build tooling, which
 	is not a test dependency. Fields that change every release must track this
 	source of truth — pinning them here means a stale artifact still validates.
+
+	addon_updateChannel is Python None for a stable release rather than a
+	quoted string. str.format() renders that as the literal text "None" in
+	the manifest (NVDA's own convention for the stable channel sentinel), so
+	the bare-None case is matched separately and mapped to that same text.
 	"""
 	text = (Path(__file__).parent.parent / "buildVars.py").read_text(encoding="utf-8")
 	match = re.search(rf'{key}\s*=\s*"([^"]+)"', text)
-	if match is None:
-		raise AssertionError(f"could not read {key} from buildVars.py")
-	return match.group(1)
+	if match is not None:
+		return match.group(1)
+	if re.search(rf"{key}\s*=\s*None\s*,", text):
+		return "None"
+	raise AssertionError(f"could not read {key} from buildVars.py")
 
 
 # Invariants: these must not drift silently between releases.

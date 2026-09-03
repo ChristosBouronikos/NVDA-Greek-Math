@@ -61,7 +61,7 @@ and three verbosity levels (terse, smart, verbose)."""
 	# Add-on update channel (default is None, denoting stable releases,
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!
-	addon_updateChannel="dev",
+	addon_updateChannel=None,
 	# SPDX identifier: GPL-3.0-or-later, plus attribution terms under GPL-3.0
 	# section 7 (see LICENSE.md in the repository and in the package).
 	# NVDA is licensed GPL-2.0-or-later, so the combination of NVDA and this
