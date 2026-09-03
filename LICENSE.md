@@ -90,13 +90,20 @@ in the relevant source files, as required by GPL-3.0 §7.
 
 ## Requested credit — a request, not a licence condition
 
-The terms above are what the licence requires. The following is a **courtesy
-request** with no legal force. It costs nothing and it helps this work reach
-more blind and visually impaired students in Greece.
+The terms above (section 1–3) are the full extent of what the licence can
+require, and only for people who copy, modify, or convey the add-on itself.
+Copyright licensing has no reach over how someone talks about the add-on
+without redistributing it — a licence cannot compel a mention in an email, a
+slide deck, a spoken recommendation, or any other communication that isn't
+itself a copy of the software. So the following is a **courtesy request**
+with no legal force. It costs nothing and it helps this work reach more
+blind and visually impaired students in Greece.
 
-If you deploy, recommend, present, teach, or write about this add-on — in an
-accessibility centre, a university, a school, a training session, a
-presentation, a manual, or a publication — please name it and its author:
+If you deploy, recommend, present, teach, or write about this add-on —
+in an accessibility centre, a university, a school, a training session, a
+seminar, a research paper, a **PowerPoint presentation**, a **Word document**,
+an **email**, a **press release**, on social media, or simply by **word of
+mouth** — please name it and its author:
 
 > **English:** Greek mathematics speech provided by *NVDA Greek Math (Greek
 > Math Reader)*, by Bouronikos Christos (cbouronikos@uth.gr) —
@@ -161,9 +168,12 @@ deliberately, to secure durable author attribution under GPL-3.0 §7(b).
    αληθής αναφορά της προέλευσης επιτρέπεται πλήρως.
 
 Οι όροι αυτοί **δεν** περιορίζουν την ελεύθερη χρήση του προσθέτου και **δεν**
-επιβάλλουν υποχρέωση στους απλούς χρήστες. Η αναφορά σε παρουσιάσεις,
-εκπαιδευτικό υλικό και δημοσιεύσεις είναι **ευγενική παράκληση**, όχι όρος της
-άδειας.
+επιβάλλουν υποχρέωση στους απλούς χρήστες. Η άδεια χρήσης δεν μπορεί να
+επιβάλει αναφορά όποτε κάποιος απλώς μιλά για το πρόσθετο χωρίς να το
+αναδιανέμει — π.χ. σε PowerPoint, σε έγγραφο Word, σε email, ή προφορικά.
+Η αναφορά σε τέτοιες περιπτώσεις (παρουσιάσεις, εκπαιδευτικό υλικό,
+δημοσιεύσεις, email, προφορική σύσταση) είναι **ευγενική παράκληση**, όχι
+όρος της άδειας — βλ. «Requested credit» παραπάνω.
 
 Σε περίπτωση απόκλισης, υπερισχύει το αγγλικό κείμενο και το επίσημο κείμενο
 της GNU GPL v3 παρακάτω (στο τμήμα "Complete License Text").
