@@ -1,4 +1,4 @@
-# Licensing — Greek Math Reader (NVDA Greek Math)
+# NVDA Greek Math - by Bouronikos Christos
 
 Copyright © 2026 Bouronikos Christos (Χρήστος Μπουρονίκος)
 <cbouronikos@uth.gr> · <chrisbouronikos@gmail.com>
