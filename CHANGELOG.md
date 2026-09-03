@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.1.0-dev — 2026-08-01
+## 2.1.0 — 2026-09-03
 
 Development preview of the first staged semantic release. It is deliberately on the `dev` channel until the terminology and user-listening release gates are signed off.
 
@@ -13,6 +13,19 @@ Development preview of the first staged semantic release. It is deliberately on 
 * Expands the real-world corpus from 3 to 9 samples and the automated suite from 268 to more than 300 tests, including tagged-PDF MathML routing, exact Greek semantic readings, cross-format parity, generated no-silent-loss checks and backend selection.
 
 * Relicenses the add-on from `GPL-2.0-only` to **`GPL-3.0-or-later`**, with additional author-attribution terms under section 7 of that license (`LICENSE.md`, now shipped inside the package). Anyone who copies, modifies or redistributes the add-on must preserve the notice «NVDA Greek Math (Greek Math Reader) by Bouronikos Christos (cbouronikos@uth.gr)»; using the add-on remains unrestricted. NVDA is licensed GPL v2-or-later, so the combination stays compatible. Releases up to 2.0.0 remain available under `GPL-2.0-only`.
+
+* Reads a fraction inside a trigonometric argument with explicit structure — «κλάσμα με αριθμητή … και παρονομαστή … τέλος κλάσματος» — instead of the compact «… διά …» form, with or without parentheses around the argument. In Fourier-style expressions such as `ημ(νπχ/L)` the compact reading did not say where the denominator ended, so the rest of the expression could be heard as part of the fraction. Covers the Latin, Greek school, inverse and hyperbolic trigonometric notations, and the invisible function-application operator that Word and MathType emit. Fractions elsewhere, and non-trigonometric functions such as `log` and `ln`, keep the compact reading.
+* Separates juxtaposed single-letter factors with a short pause. Implicit multiplication such as `nπx` was spoken as «νι πι χι» with no break and ran together into a single word; each factor is now followed by a 100 ms break, whether or not the invisible multiplication operator is present. Numbers before letters (`2χι`), explicit operators and multi-letter function names are unaffected, and the spoken text itself is unchanged — only prosody.
+* Fixes the Leibniz derivative, which read its operands character by character. This mattered most with the encoding Word and MathType actually produce: the invisible multiplication operator between `d` and the variable leaked into the speech as a raw character and was also counted as a denominator variable, so `d²y/dx²` was read «δεύτερη παράγωγος του ⁢ ψι ως προς ⁢ και χι». The same flattening spelled a function name in the numerator letter by letter, so the derivative of `sin x` was heard as «ες ι νι» instead of «ημίτονο», and left parentheses unspoken as raw characters. The numerator is now spoken as structure, and invisible operators are stripped before the pattern is matched.
+* Fixes reading errors found by systematic testing of the three input formats:
+  * `f′(x)` lost its function application and was read «εφ τόνος παρένθεση χι κλείνει η παρένθεση». The derivative marks no longer hide the call, so it reads «εφ τόνος του χι».
+  * A fraction inside a trigonometric function that carries an exponent — `ημ²(χ/2)` — kept the compact reading, because the exponent hid the function. Powered trigonometric functions are now recognised.
+  * An absolute value or norm spanning the whole expression, such as `|χ−2|`, was read literally as «κάθετος … κλείνει η κάθετος»: the delimiters sit on the root rather than on an inner group. Restricted to self-matching delimiters, so `[Α,Β]` without a declared domain stays a commutator and is not turned into a closed interval.
+  * `|α|+|β|` was treated as a single absolute value, because `|` matches itself and the first and last delimiters paired up across the sum.
+  * In UnicodeMath, function names were split into letters and spoken «ες ι νι» instead of «ημίτονο», since the linear form writes `sin(x)` without a backslash. Latin and Greek school names are now kept whole; `min` stays «λεπτά` after a number and reads «ελάχιστο» when applied.
+  * In UnicodeMath, any symbol after `/` that happened to name a unit was read as that unit, so `x/L` became «χι διά λίτρα» and `P/V` «πι διά βολτ». A unit is now recognised only when the preceding term is also a unit, leaving `m/s` and `km/h` intact.
+  * A differential is no longer split by the new factor pause: `dx` stays «ντε χι», while `dx dy` still separates.
+* Reads a bare Latin `k` as «κάπα» in Word's unstructured English fallback, matching the MathML, LaTeX and UnicodeMath paths, which were already correct. The letter table is deliberately separate from the math-detection word list, so a lone `k` in ordinary prose still does not make Word speech look like an equation.
 
 Pending stable-release gates: terminology approval by the relevant Greek domain and language reviewers, listening tests with Microsoft Stefanos and eSpeak Greek, two blind Greek NVDA reviewers, and the supported NVDA/browser/Word/EPUB/PDF matrix. No Greek math-braille code is claimed or shipped.
 

@@ -858,6 +858,35 @@ class TestProviderRegistration(unittest.TestCase):
 
 		self.assertEqual(calls, [False, True])
 
+	def test_bare_latin_k_is_translated_to_kappa_in_word_fallback(self):
+		"""A lone k must read «κάπα», like the MathML/LaTeX/UnicodeMath paths."""
+		normalize = self.module._normalizeWordNativeMathText
+
+		self.assertEqual(normalize("k equals 3"), "κάπα ίσον 3")
+		self.assertEqual(normalize("K equals 3"), "κάπα ίσον 3")
+		self.assertEqual(normalize("sum from k equals 1 to n"), "άθροισμα from κάπα ίσον 1 to n")
+		# The spelled-out name keeps working and is not double-translated.
+		self.assertEqual(normalize("kappa equals 3"), "κάπα ίσον 3")
+
+	def test_bare_latin_letters_do_not_widen_word_math_detection(self):
+		"""Letter replacements must not make ordinary prose look like an equation.
+
+		_looksLikeWordNativeMathSpeech uses any(), so a single letter in
+		_WORD_NATIVE_MATH_WORDS would classify prose containing that letter as
+		mathematics — the false-positive class fixed in 1.1.8.
+		"""
+		looksLikeMath = self.module._looksLikeWordNativeMathSpeech
+
+		for prose in ("vitamin k", "10 k run", "the k rate", "k"):
+			self.assertFalse(looksLikeMath(prose), prose)
+
+		for formula in ("k equals 3", "sum from k equals 1 to n"):
+			self.assertTrue(looksLikeMath(formula), formula)
+
+		letters = {source for source, _ in self.module._WORD_NATIVE_LETTER_REPLACEMENTS}
+		self.assertTrue(letters)
+		self.assertFalse(letters & set(self.module._WORD_NATIVE_MATH_WORDS))
+
 
 if __name__ == "__main__":
 	unittest.main()

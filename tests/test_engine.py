@@ -21,6 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "addon" / "globalPlugins" / "greekMathReader"))
 
 from engine import (  # noqa: E402
+	Pause,
 	ReadingConfig,
 	SMART,
 	TERSE,
@@ -990,6 +991,290 @@ class TestNavigationRoles(unittest.TestCase):
 		sup = tree.children[0]
 		self.assertEqual(role_description(sup.children[0]), "βάση")
 		self.assertEqual(role_description(sup.children[1]), "εκθέτης")
+
+
+class TestFractionInsideTrigonometricArgument(unittest.TestCase):
+	"""Ένα κλάσμα μέσα σε τριγωνομετρικό όρισμα εκφωνείται με ρητή δομή.
+
+	Η σύντομη μορφή «αριθμητής διά παρονομαστή» δεν δηλώνει πού κλείνει το
+	κλάσμα, οπότε σε σειρές Fourier όπως «ημ(νπχ/L)» ο αναγνώστης δεν ξέρει αν
+	το L ανήκει στον παρονομαστή ή στη συνέχεια της παράστασης.
+	"""
+
+	FRACTION = "<mfrac><mrow><mi>n</mi><mi>&#960;</mi><mi>x</mi></mrow><mi>L</mi></mfrac>"
+	EXPLICIT = "κλάσμα με αριθμητή νι πι χι, και παρονομαστή λάμδα, τέλος κλάσματος"
+
+	def test_without_parentheses(self):
+		self.assertEqual(
+			spoken(math(f"<mi>cos</mi>{self.FRACTION}")),
+			f"συνημίτονο {self.EXPLICIT}",
+		)
+
+	def test_with_parentheses(self):
+		self.assertEqual(
+			spoken(math(f"<mi>sin</mi><mo>(</mo>{self.FRACTION}<mo>)</mo>")),
+			f"ημίτονο του παρένθεση {self.EXPLICIT} κλείνει η παρένθεση",
+		)
+
+	def test_invisible_apply_operator(self):
+		"""Word και MathType παρεμβάλλουν U+2061 ανάμεσα σε συνάρτηση και όρισμα."""
+		self.assertEqual(
+			spoken(math(f"<mi>cos</mi><mo>&#8289;</mo>{self.FRACTION}")),
+			f"συνημίτονο {self.EXPLICIT}",
+		)
+
+	def test_greek_school_notation(self):
+		for notation, reading in (("ημ", "ημίτονο"), ("συν", "συνημίτονο"), ("εφ", "εφαπτομένη")):
+			with self.subTest(notation=notation):
+				self.assertEqual(
+					spoken(math(f"<mi>{notation}</mi>{self.FRACTION}")),
+					f"{reading} {self.EXPLICIT}",
+				)
+
+	def test_hyperbolic_and_inverse_are_included(self):
+		self.assertEqual(
+			spoken(math(f"<mi>sinh</mi>{self.FRACTION}")),
+			f"υπερβολικό ημίτονο {self.EXPLICIT}",
+		)
+
+	def test_plain_fraction_still_uses_the_compact_reading(self):
+		"""Η αλλαγή περιορίζεται στα τριγωνομετρικά ορίσματα."""
+		self.assertEqual(spoken(math(self.FRACTION)), "νι πι χι διά λάμδα")
+
+	def test_non_trigonometric_functions_are_unaffected(self):
+		for notation, reading in (("log", "λογάριθμος"), ("ln", "φυσικός λογάριθμος")):
+			with self.subTest(notation=notation):
+				self.assertEqual(
+					spoken(math(f"<mi>{notation}</mi>{self.FRACTION}")),
+					f"{reading} νι πι χι διά λάμδα",
+				)
+
+	def test_fraction_after_a_trig_call_is_not_captured(self):
+		"""«ημ χ + α/β»: το κλάσμα δεν είναι όρισμα του ημιτόνου."""
+		self.assertEqual(
+			spoken(math("<mi>sin</mi><mi>x</mi><mo>+</mo><mfrac><mi>a</mi><mi>b</mi></mfrac>")),
+			"ημίτονο χι συν α διά μπε",
+		)
+
+
+class TestImplicitProductPauses(unittest.TestCase):
+	"""Γειτονικά γράμματα χωρίς τελεστή χωρίζονται με μικρή παύση.
+
+	Χωρίς αυτήν το «νπχ» εκφωνείται «νιπιχι» και ακούγεται σαν μία λέξη.
+	"""
+
+	def tokens(self, inner):
+		return speak_mathml(math(inner), ReadingConfig(verbosity=SMART))
+
+	def pauseCount(self, inner):
+		return sum(1 for token in self.tokens(inner) if isinstance(token, Pause))
+
+	def test_adjacent_letters_are_separated(self):
+		tokens = self.tokens("<mrow><mi>n</mi><mi>&#960;</mi><mi>x</mi></mrow>")
+		words = [t for t in tokens if isinstance(t, str)]
+		self.assertEqual(words, ["νι", "πι", "χι"])
+		self.assertEqual(sum(1 for t in tokens if isinstance(t, Pause)), 2)
+
+	def test_invisible_times_does_not_block_the_pause(self):
+		"""Word και MathType παρεμβάλλουν U+2062 ανάμεσα στους παράγοντες."""
+		self.assertEqual(
+			self.pauseCount("<mrow><mi>x</mi><mo>&#8290;</mo><mi>y</mi></mrow>"), 1
+		)
+
+	def test_number_before_letter_is_not_paused(self):
+		"""Το «2χι» ακούγεται ήδη καθαρά και δεν χρειάζεται παύση."""
+		self.assertEqual(self.pauseCount("<mrow><mn>2</mn><mi>x</mi></mrow>"), 0)
+
+	def test_explicit_operator_suppresses_the_pause(self):
+		self.assertEqual(
+			self.pauseCount("<mrow><mi>a</mi><mo>+</mo><mi>b</mi></mrow>"), 0
+		)
+
+	def test_function_name_is_not_treated_as_a_factor(self):
+		"""Το «cos» είναι πολυγράμματο· δεν είναι παράγοντας γινομένου."""
+		self.assertEqual(
+			self.pauseCount("<mrow><mi>cos</mi><mi>x</mi></mrow>"), 0
+		)
+
+	def test_reading_text_is_unchanged(self):
+		"""Οι παύσεις είναι προσωδία: το κείμενο της εκφώνησης δεν αλλάζει."""
+		self.assertEqual(
+			spoken(math("<mrow><mi>n</mi><mi>&#960;</mi><mi>x</mi></mrow>")),
+			"νι πι χι",
+		)
+
+
+class TestDifferentialsAreNotSplit(unittest.TestCase):
+	"""Το «ντε χι» είναι ένα διαφορικό, όχι γινόμενο δύο παραγόντων."""
+
+	def pauses(self, inner):
+		tokens = speak_mathml(math(inner), ReadingConfig(verbosity=SMART))
+		return sum(1 for token in tokens if isinstance(token, Pause))
+
+	def test_differential_has_no_internal_pause(self):
+		self.assertEqual(self.pauses("<mi>d</mi><mi>x</mi>"), 0)
+
+	def test_partial_differential_has_no_internal_pause(self):
+		self.assertEqual(self.pauses("<mi>&#8706;</mi><mi>x</mi>"), 0)
+
+	def test_two_differentials_are_still_separated(self):
+		"""Στο «dx dy» ο δεύτερος παράγοντας δεν έπεται του d, άρα χωρίζεται."""
+		self.assertEqual(
+			self.pauses("<mi>d</mi><mi>x</mi><mi>d</mi><mi>y</mi>"), 1
+		)
+
+	def test_ordinary_product_is_still_separated(self):
+		self.assertEqual(self.pauses("<mi>a</mi><mi>b</mi>"), 1)
+
+
+class TestPrimedFunctionApplication(unittest.TestCase):
+	"""Ο τόνος της παραγώγου δεν κρύβει την εφαρμογή συνάρτησης."""
+
+	def test_first_derivative(self):
+		self.assertEqual(
+			spoken(math("<mi>f</mi><mo>&#8242;</mo><mo>(</mo><mi>x</mi><mo>)</mo>")),
+			"εφ τόνος του χι",
+		)
+
+	def test_second_derivative(self):
+		self.assertEqual(
+			spoken(math(
+				"<mi>f</mi><mo>&#8242;</mo><mo>&#8242;</mo>"
+				"<mo>(</mo><mi>x</mi><mo>)</mo>"
+			)),
+			"εφ τόνος τόνος του χι",
+		)
+
+	def test_unprimed_application_is_unchanged(self):
+		self.assertEqual(
+			spoken(math("<mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo>")), "εφ του χι"
+		)
+
+
+class TestWholeExpressionAbsoluteValue(unittest.TestCase):
+	"""Fences που καταλαμβάνουν ολόκληρη την παράσταση κάθονται στη ρίζα."""
+
+	def test_absolute_value_is_recognized(self):
+		self.assertEqual(
+			spoken(math("<mo>|</mo><mi>x</mi><mo>-</mo><mn>2</mn><mo>|</mo>")),
+			"απόλυτη τιμή του χι πλην 2",
+		)
+
+	def test_sum_of_two_absolute_values_is_not_merged(self):
+		"""Το «|α|+|β|» δεν είναι μία απόλυτη τιμή· το | ταιριάζει με τον εαυτό του."""
+		reading = spoken(math(
+			"<mo>|</mo><mi>a</mi><mo>|</mo><mo>+</mo>"
+			"<mo>|</mo><mi>b</mi><mo>|</mo>"
+		))
+		self.assertNotIn("απόλυτη τιμή του α κάθετος", reading)
+
+	def test_brackets_at_the_root_stay_literal(self):
+		"""«[Α,Β]» χωρίς πεδίο είναι μεταθέτης, όχι κλειστό διάστημα.
+
+		Μια σημασιολογική ανάγνωση εδώ θα άλλαζε το νόημα, οπότε μόνο τα
+		αυτοταιριαστά σύμβολα (|, ‖) αντιμετωπίζονται σημασιολογικά στη ρίζα.
+		"""
+		self.assertEqual(
+			spoken(math("<mo>[</mo><mi>A</mi><mo>,</mo><mi>B</mi><mo>]</mo>")),
+			"αγκύλη άλφα κόμμα βήτα κλείνει η αγκύλη",
+		)
+
+
+class TestTrigonometricPowerArgument(unittest.TestCase):
+	"""Ο εκθέτης δεν κρύβει την τριγωνομετρική συνάρτηση: ημ²(χ/2)."""
+
+	FRACTION = "<mfrac><mi>x</mi><mn>2</mn></mfrac>"
+	EXPLICIT = "κλάσμα με αριθμητή χι, και παρονομαστή 2, τέλος κλάσματος"
+
+	def test_squared_trig_keeps_the_explicit_fraction(self):
+		self.assertEqual(
+			spoken(math(
+				f"<msup><mi>sin</mi><mn>2</mn></msup>{self.FRACTION}"
+			)),
+			f"ημίτονο στο τετράγωνο {self.EXPLICIT}",
+		)
+
+	def test_non_trigonometric_power_is_unaffected(self):
+		self.assertEqual(
+			spoken(math(f"<msup><mi>log</mi><mn>2</mn></msup>{self.FRACTION}")),
+			"λογάριθμος στο τετράγωνο χι διά 2",
+		)
+
+
+class TestLeibnizDerivativeOperands(unittest.TestCase):
+	"""Ο αριθμητής και ο παρονομαστής του d/dx εκφωνούνται ως κόμβοι.
+
+	Η παλιά ανάγνωση χαρακτήρα-χαρακτήρα διάβαζε το «sin» ως «ες ι νι», άφηνε
+	τις παρενθέσεις αυτούσιες και άφηνε να διαρρεύσει ο αόρατος τελεστής
+	πολλαπλασιασμού που παρεμβάλλουν το Word και το MathType.
+	"""
+
+	SUP_D = "<msup><mi>d</mi><mn>2</mn></msup>"
+	SUP_X = "<msup><mi>x</mi><mn>2</mn></msup>"
+	INVISIBLE_TIMES = "<mo>&#8290;</mo>"
+
+	def test_second_derivative_with_invisible_times(self):
+		"""Η κωδικοποίηση του Word: d²⁢y / d⁢x²."""
+		mathml = (
+			f"<mfrac><mrow>{self.SUP_D}{self.INVISIBLE_TIMES}<mi>y</mi></mrow>"
+			f"<mrow><mi>d</mi>{self.INVISIBLE_TIMES}{self.SUP_X}</mrow></mfrac>"
+		)
+		self.assertEqual(spoken(math(mathml)), "δεύτερη παράγωγος του ψι ως προς χι")
+
+	def test_first_derivative_with_invisible_times(self):
+		mathml = (
+			f"<mfrac><mrow><mi>d</mi>{self.INVISIBLE_TIMES}<mi>y</mi></mrow>"
+			f"<mrow><mi>d</mi>{self.INVISIBLE_TIMES}<mi>x</mi></mrow></mfrac>"
+		)
+		self.assertEqual(spoken(math(mathml)), "παράγωγος του ψι ως προς χι")
+
+	def test_invisible_operator_is_not_counted_as_a_variable(self):
+		"""Ο αόρατος τελεστής μετριόταν ως μεταβλητή: «ως προς ⁢ και χι»."""
+		mathml = (
+			f"<mfrac><mrow><mi>d</mi>{self.INVISIBLE_TIMES}<mi>y</mi></mrow>"
+			f"<mrow><mi>d</mi>{self.INVISIBLE_TIMES}<mi>x</mi></mrow></mfrac>"
+		)
+		self.assertNotIn("και", spoken(math(mathml)))
+
+	def test_trigonometric_numerator_keeps_its_name(self):
+		mathml = (
+			f"<mfrac><mrow>{self.SUP_D}<mi>sin</mi><mi>x</mi></mrow>"
+			f"<mrow><mi>d</mi>{self.SUP_X}</mrow></mfrac>"
+		)
+		self.assertEqual(
+			spoken(math(mathml)), "δεύτερη παράγωγος του ημίτονο χι ως προς χι"
+		)
+
+	def test_parenthesised_numerator_is_not_read_literally(self):
+		mathml = (
+			"<mfrac><mrow><mi>d</mi><mo>(</mo><mi>sin</mi><mi>x</mi><mo>)</mo></mrow>"
+			"<mrow><mi>d</mi><mi>x</mi></mrow></mfrac>"
+		)
+		reading = spoken(math(mathml))
+		self.assertIn("ημίτονο", reading)
+		self.assertNotIn("(", reading)
+
+	def test_plain_forms_are_unchanged(self):
+		plain = (
+			f"<mfrac>{self.SUP_D}<mrow><mi>d</mi>{self.SUP_X}</mrow></mfrac>"
+		)
+		self.assertEqual(spoken(math(plain)), "δεύτερη παράγωγος ως προς χι")
+		self.assertEqual(
+			spoken(math(
+				"<mfrac><mrow><mi>d</mi><mi>y</mi></mrow>"
+				"<mrow><mi>d</mi><mi>x</mi></mrow></mfrac>"
+			)),
+			"παράγωγος του ψι ως προς χι",
+		)
+
+	def test_partial_second_derivative(self):
+		mathml = (
+			"<mfrac><mrow><msup><mi>&#8706;</mi><mn>2</mn></msup><mi>f</mi></mrow>"
+			"<mrow><mi>&#8706;</mi><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac>"
+		)
+		self.assertEqual(
+			spoken(math(mathml)), "δεύτερη μερική παράγωγος του εφ ως προς χι"
+		)
 
 
 if __name__ == "__main__":

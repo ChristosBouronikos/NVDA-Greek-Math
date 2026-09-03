@@ -40,11 +40,11 @@ Includes interactive navigation to explore complex expressions part by part,
 and three verbosity levels (terse, smart, verbose)."""
 	),
 	# version
-	addon_version="2.1.0-dev",
+	addon_version="2.1.0",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.1.0 development preview: shared semantic MathML/LaTeX/UnicodeMath reading, versioned Greek terminology profiles and overrides, vector-calculus/probability/quantum concepts, SI agreement, automatic MathCAT Greek delegation, richer diagnostics, and expanded navigation."""
+		"""Version 2.1.0: shared semantic MathML/LaTeX/UnicodeMath reading, versioned Greek terminology profiles and overrides, vector-calculus/probability/quantum concepts, SI agreement, automatic MathCAT Greek delegation, richer diagnostics, and expanded navigation. Fractions inside trigonometric arguments are read with explicit structure, juxtaposed factors are separated by a short pause, and a bare k is read «κάπα» in Word's fallback."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",

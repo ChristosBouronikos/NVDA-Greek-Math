@@ -10,20 +10,37 @@
 
 from __future__ import annotations
 
+import re
 import sys
 import zipfile
 from pathlib import Path
 
 
+def _build_var(key: str) -> str:
+	"""Read one string field from buildVars.py.
+
+	Read rather than import: buildVars pulls in the SCons build tooling, which
+	is not a test dependency. Fields that change every release must track this
+	source of truth — pinning them here means a stale artifact still validates.
+	"""
+	text = (Path(__file__).parent.parent / "buildVars.py").read_text(encoding="utf-8")
+	match = re.search(rf'{key}\s*=\s*"([^"]+)"', text)
+	if match is None:
+		raise AssertionError(f"could not read {key} from buildVars.py")
+	return match.group(1)
+
+
+# Invariants: these must not drift silently between releases.
 EXPECTED_MANIFEST_LINES = {
 	"name = greekMathReader",
 	'summary = "Greek Math Reader"',
 	'author = "Bouronikos Christos <chrisbouronikos@gmail.com>"',
 	"url = https://github.com/ChristosBouronikos/NVDA-Greek-Math",
-	"version = 2.1.0-dev",
 	"minimumNVDAVersion = 2024.1.0",
 	"lastTestedNVDAVersion = 2026.1.1",
-	"updateChannel = dev",
+	# Per-release fields, taken from buildVars.py.
+	f"version = {_build_var('addon_version')}",
+	f"updateChannel = {_build_var('addon_updateChannel')}",
 }
 
 # Required in the shipped package by the GPL-3.0 section 7(b) term in LICENSE.md.
@@ -71,7 +88,14 @@ def validate(path: Path) -> None:
 				raise AssertionError(f"{doc} is missing the required attribution notice")
 
 
+def _default_package():
+	"""Derive the release filename the way build.py names it."""
+	return Path(
+		f"{_build_var('addon_name')}-{_build_var('addon_version')}.nvda-addon"
+	)
+
+
 if __name__ == "__main__":
-	package = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("greekMathReader-2.1.0-dev.nvda-addon")
+	package = Path(sys.argv[1]) if len(sys.argv) > 1 else _default_package()
 	validate(package)
 	print(f"Store package validation passed: {package}")

@@ -94,5 +94,60 @@ class TestCrossFormatParity(unittest.TestCase):
 		)
 
 
+class TestFunctionNamesInLinearInput(unittest.TestCase):
+	"""Η γραμμική μορφή γράφει «sin(x)» χωρίς ανάστροφη κάθετο.
+
+	Χωρίς σήμανση ο αναλυτής LaTeX το έσπαγε σε γράμματα και εκφωνούνταν
+	«ες ι νι» αντί για «ημίτονο».
+	"""
+
+	def spoken(self, source):
+		return tokens_to_text(speak_unicodemath(source))
+
+	def test_latin_trigonometric_names(self):
+		self.assertEqual(self.spoken("sin(x)"), "ημίτονο του χι")
+		self.assertEqual(self.spoken("cos(x)"), "συνημίτονο του χι")
+		self.assertEqual(self.spoken("tan(x)"), "εφαπτομένη του χι")
+
+	def test_greek_school_names(self):
+		"""Για την ελληνική γραφή δεν υπάρχει εντολή LaTeX."""
+		self.assertEqual(self.spoken("ημ(x)"), "ημίτονο του χι")
+		self.assertEqual(self.spoken("συν(x)"), "συνημίτονο του χι")
+
+	def test_logarithms(self):
+		self.assertEqual(self.spoken("log(x)"), "λογάριθμος του χι")
+		self.assertEqual(self.spoken("ln(x)"), "φυσικός λογάριθμος του χι")
+
+	def test_name_that_is_also_a_unit(self):
+		"""Το «min» είναι και συνάρτηση και μονάδα χρόνου."""
+		self.assertEqual(self.spoken("min(a,b)"), "ελάχιστο του α κόμμα μπε")
+		self.assertEqual(self.spoken("5 min"), "5 λεπτά")
+
+
+class TestUnitsAreNotGuessedAfterDivision(unittest.TestCase):
+	"""Ο τελεστής «/» από μόνος του δεν κάνει μονάδα το επόμενο σύμβολο."""
+
+	def spoken(self, source):
+		return tokens_to_text(speak_unicodemath(source))
+
+	def test_variables_keep_their_letter_reading(self):
+		# «λίτρα», «βολτ», «νιούτον», «κέλβιν» θα άλλαζαν το νόημα.
+		self.assertEqual(self.spoken("x/L"), "χι διά λάμδα")
+		self.assertEqual(self.spoken("P/V"), "πι διά βε")
+		self.assertEqual(self.spoken("n/N"), "νι διά νι")
+		self.assertEqual(self.spoken("y/K"), "ψι διά κάπα")
+
+	def test_genuine_compound_units_still_read_as_units(self):
+		self.assertEqual(self.spoken("5 m/s"), "5 μέτρα ανά δευτερόλεπτο")
+		self.assertEqual(self.spoken("10 km/h"), "10 χιλιόμετρα ανά ώρα")
+		self.assertEqual(
+			self.spoken("9.8 m/s^2"), "9,8 μέτρα ανά δευτερόλεπτο στο τετράγωνο"
+		)
+
+	def test_simple_units_after_a_number(self):
+		self.assertEqual(self.spoken("5 kg"), "5 κιλά")
+		self.assertEqual(self.spoken("3 L"), "3 λίτρα")
+
+
 if __name__ == "__main__":
 	unittest.main()

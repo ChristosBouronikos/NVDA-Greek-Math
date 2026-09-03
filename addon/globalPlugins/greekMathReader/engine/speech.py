@@ -216,6 +216,13 @@ def _normalize_english_math_mtext(text):
 	return re.sub(r"\s+", " ", text).strip()
 
 
+# Πρόθεμα διαφορικού: «dx», «dt», «∂x».
+_DIFFERENTIAL_PREFIXES = frozenset(("d", "∂"))
+
+# Τόνοι παραγώγου: f′(x), f″(x).
+_PRIME_CHARS = frozenset(("′", "″", "‴", "'", "\u2019"))
+
+
 def is_simple(node):
 	"""Απλή παράσταση: εκφωνείται χωρίς δομικές αναγγελίες (π.χ. "2χι", "ν+1")."""
 	if node.is_token:
@@ -229,6 +236,55 @@ def is_simple(node):
 		if len(node.children) > 4:
 			return False
 		return all(child.is_token for child in node.children)
+	return False
+
+
+def _strip_invisible(text):
+	"""Αφαίρεσε τους αόρατους τελεστές που παρεμβάλλουν Word και MathType."""
+	return "".join(char for char in text if char not in symbols.INVISIBLE_CHARS)
+
+
+def _is_trig_atom(node):
+	"""Τριγωνομετρική συνάρτηση, με ή χωρίς εκθέτη/δείκτη.
+
+	Το «ημ²(χ/2)» γράφεται msup με βάση το «ημ», οπότε ο εκθέτης δεν πρέπει να
+	κρύβει τη συνάρτηση.
+	"""
+	if node is None:
+		return False
+	if node.tag == "mi":
+		return node.text in symbols.TRIG_FUNCTIONS
+	if node.tag in ("msup", "msub", "msubsup"):
+		return _is_trig_atom(node.child(0))
+	return False
+
+
+def _is_trig_function_argument(node):
+	"""Βρίσκεται ο κόμβος μέσα στο όρισμα τριγωνομετρικής συνάρτησης;
+
+	Καλύπτει και τις δύο γραφές του σχολικού βιβλίου: «ημ(νπχ/L)» με παρένθεση
+	και «ημ νπχ/L» χωρίς. Ανεβαίνει από τον κόμβο προς τα έξω όσο δεν υπάρχει
+	προηγούμενος αδελφός (δηλαδή μέσα από την ανοιχτή παρένθεση) και ελέγχει
+	τον πρώτο ουσιαστικό προηγούμενο αδελφό.
+	"""
+	current = node
+	while current is not None:
+		parent = current.parent
+		if parent is None or parent.tag not in ("mrow", "math"):
+			return False
+		index = current.index - 1
+		while index >= 0:
+			sibling = parent.child(index)
+			if sibling is not None and sibling.tag == "mo" and (
+				sibling.text == symbols.INVISIBLE_APPLY
+				or sibling.text in ("(", "[", "{")
+			):
+				index -= 1
+				continue
+			break
+		if index >= 0:
+			return _is_trig_atom(parent.child(index))
+		current = parent
 	return False
 
 
@@ -518,14 +574,23 @@ class MathSpeaker(object):
 			# Ο αόρατος τελεστής εφαρμογής (U+2061) μπορεί να μεσολαβεί.
 			if self._is_function_atom(child):
 				j = i + 1
-				if (
-					j < len(children)
-					and children[j].tag == "mo"
-					and children[j].text == symbols.INVISIBLE_APPLY
-				):
-					j += 1
+				# Οι τόνοι της παραγώγου μεσολαβούν ανάμεσα στο όνομα και το
+				# όρισμα: το «f′(x)» παραμένει εφαρμογή συνάρτησης.
+				primes = []
+				while j < len(children) and children[j].tag == "mo":
+					text = children[j].text
+					if text == symbols.INVISIBLE_APPLY:
+						j += 1
+						continue
+					if text in _PRIME_CHARS:
+						primes.append(children[j])
+						j += 1
+						continue
+					break
 				if j < len(children) and self._is_paren_group(children[j]):
 					out.extend(self._node(child))
+					for prime in primes:
+						out.extend(self._node(prime))
 					out.append("του")
 					out.extend(self._function_arguments(child, children[j]))
 					i = j + 1
@@ -543,9 +608,35 @@ class MathSpeaker(object):
 				out.append("προς")
 				i += 1
 				continue
+			if self._is_implicit_product_with_previous(children, i):
+				out.append(Pause(SHORT))
 			out.extend(self._node(child))
 			i += 1
 		return out
+
+	def _is_implicit_product_with_previous(self, children, i):
+		"""Γειτονικά μονογράμματα χωρίς τελεστή: υπονοούμενος πολλαπλασιασμός.
+
+		Το «νπχ» εκφωνείται «νι πι χι» και χωρίς παύση ακούγεται σαν μία λέξη,
+		οπότε μπαίνει μικρή παύση ανάμεσα στους παράγοντες. Ο αόρατος τελεστής
+		πολλαπλασιασμού (U+2062), όπου υπάρχει, δεν εμποδίζει τον έλεγχο.
+		"""
+		child = children[i]
+		if child.tag != "mi" or not child.text or len(child.text) != 1:
+			return False
+		j = i - 1
+		while j >= 0:
+			previous = children[j]
+			if previous.tag == "mo" and previous.text in symbols.INVISIBLE_CHARS:
+				j -= 1
+				continue
+			if previous.tag != "mi" or not previous.text or len(previous.text) != 1:
+				return False
+			# «ντε χι» είναι ένα διαφορικό, όχι γινόμενο δύο παραγόντων: δεν
+			# χωρίζεται. Δύο διαδοχικά διαφορικά (dx dy) χωρίζονται κανονικά,
+			# επειδή εκεί ο προηγούμενος παράγοντας δεν είναι το d.
+			return previous.text not in _DIFFERENTIAL_PREFIXES
+		return False
 
 	def _has_operand_after(self, children, i):
 		for sibling in children[i + 1:]:
@@ -746,6 +837,23 @@ class MathSpeaker(object):
 			return self._speak_fenced(node, *fence_info)
 		return self._sequence(node.children)
 
+	def _speak_math(self, node):
+		"""Απόλυτη τιμή ή νόρμα που καταλαμβάνει ολόκληρη την παράσταση.
+
+		Όταν η παράσταση είναι εξ ολοκλήρου μία ομάδα με fences, οι fences
+		βρίσκονται πάνω στη ρίζα και όχι σε εσωτερικό mrow, οπότε το «|χ−2|»
+		διαβαζόταν κυριολεκτικά «κάθετος … κλείνει η κάθετος».
+
+		Περιορίζεται στα αυτοταιριαστά σύμβολα (|, ‖), όπου η σημασία είναι
+		μονοσήμαντη. Οι αγκύλες και οι παρενθέσεις στη ρίζα παραμένουν
+		κυριολεκτικές: το «[Α,Β]» χωρίς δηλωμένο πεδίο είναι μεταθέτης και όχι
+		κλειστό διάστημα, και μια τέτοια ανάγνωση θα άλλαζε το νόημα.
+		"""
+		info = self._fence_info(node)
+		if info is not None and info[0] == info[1]:
+			return self._speak_fenced(node, *info)
+		return self._sequence(node.children)
+
 	def _fence_info(self, node):
 		"""(open_char, close_char, inner_children) αν ο κόμβος είναι ομάδα με fences."""
 		kids = node.children
@@ -755,7 +863,15 @@ class MathSpeaker(object):
 		if not (first.tag == "mo" and last.tag == "mo"):
 			return None
 		if first.text in symbols.MATCHING_FENCE and symbols.MATCHING_FENCE[first.text] == last.text:
-			return (first.text, last.text, kids[1:-1])
+			inner = kids[1:-1]
+			# Αυτοταιριαστά σύμβολα (|, ‖): αν το ίδιο σύμβολο υπάρχει και στο
+			# εσωτερικό, το πρώτο με το τελευταίο δεν είναι κατ' ανάγκη ζεύγος.
+			# Το «|α|+|β|» είναι άθροισμα δύο απόλυτων τιμών, όχι μία.
+			if first.text == last.text and any(
+				child.tag == "mo" and child.text == first.text for child in inner
+			):
+				return None
+			return (first.text, last.text, inner)
 		return None
 
 	def _is_paren_group(self, node):
@@ -954,7 +1070,9 @@ class MathSpeaker(object):
 			if named:
 				return [named]
 		simple = is_simple(numerator) and is_simple(denominator)
-		if simple and verbosity != VERBOSE:
+		# Μέσα σε τριγωνομετρικό όρισμα η σύντομη μορφή «... διά ...» δεν δηλώνει
+		# πού κλείνει το κλάσμα, οπότε κρατάμε τη ρητή δομική εκφώνηση.
+		if simple and verbosity != VERBOSE and not _is_trig_function_argument(node):
 			out = []
 			out.extend(self._operand(numerator))
 			out.append("διά")
@@ -1021,8 +1139,11 @@ class MathSpeaker(object):
 		return None
 
 	def _derivative(self, numerator, denominator):
-		num_text = numerator.token_text().replace(" ", "")
-		den_text = denominator.token_text().replace(" ", "")
+		# Το Word και το MathType παρεμβάλλουν αόρατους τελεστές (U+2062). Χωρίς
+		# αφαίρεση, ο χαρακτήρας διέρρεε αυτούσιος στην εκφώνηση και μετριόταν
+		# και ως μεταβλητή του παρονομαστή («ως προς ⁢ και χι»).
+		num_text = _strip_invisible(numerator.token_text()).replace(" ", "")
+		den_text = _strip_invisible(denominator.token_text()).replace(" ", "")
 		num_match = _DIFFERENTIAL_RE.match(num_text)
 		den_match = _DIFFERENTIAL_RE.match(den_text)
 		if not num_match or not den_match:
@@ -1034,7 +1155,10 @@ class MathSpeaker(object):
 		function_part = num_match.group(2)
 		# Ο παρονομαστής πρέπει να είναι d + μεταβλητή (+ εκθέτης τάξης)
 		den_body = den_match.group(2)
-		den_vars = re.findall(r"[^\dⅆd∂]", den_body)
+		den_vars = [
+			char for char in re.findall(r"[^\dⅆd∂]", den_body)
+			if char not in symbols.INVISIBLE_CHARS
+		]
 		if not den_vars:
 			return None
 		order = grammar.derivative_order_reading(order_text) or "παράγωγος"
@@ -1043,12 +1167,40 @@ class MathSpeaker(object):
 		out = [order]
 		if function_part:
 			out.append("του")
-			readings = [symbols.letter_reading(c) or c for c in function_part]
-			out.append(" ".join(readings))
+			# Ο αριθμητής εκφωνείται ως κόμβος όπου γίνεται. Η ανάγνωση
+			# χαρακτήρα-χαρακτήρα διάβαζε το «sin» ως «ες ι νι» και άφηνε τις
+			# παρενθέσεις αυτούσιες.
+			nodes = self._differential_operand(numerator)
+			if nodes is not None:
+				out.extend(nodes)
+			else:
+				readings = [symbols.letter_reading(c) or c for c in function_part]
+				out.append(" ".join(readings))
 		out.append("ως προς")
 		var_readings = [symbols.letter_reading(c) or c for c in den_vars]
 		out.append(" και ".join(var_readings) if len(var_readings) > 1 else var_readings[0])
 		return out
+
+	def _differential_operand(self, numerator):
+		"""Ο αριθμητής του Leibniz χωρίς το πρόθεμα «d»/«d^ν», ως κόμβοι.
+
+		Επιστρέφει None όταν ο αριθμητής δεν έχει ξεχωριστά παιδιά (π.χ. ένα
+		ενιαίο «dy»), οπότε ο καλών επιστρέφει στην ανάγνωση χαρακτήρων.
+		"""
+		children = numerator.children
+		if not children:
+			return None
+		first = children[0]
+		base = first.child(0) if first.tag in ("msup", "msubsup") else first
+		if base is None or base.tag != "mi" or base.text not in ("d", "ⅆ", "∂"):
+			return None
+		rest = [
+			child for child in children[1:]
+			if not (child.tag == "mo" and child.text in symbols.INVISIBLE_CHARS)
+		]
+		if not rest:
+			return None
+		return self._sequence(rest)
 
 	def _operand(self, node):
 		"""Εκφώνηση τελεστέου, με παρένθεση γύρω από σύνθετα σε αναλυτική εκφώνηση."""

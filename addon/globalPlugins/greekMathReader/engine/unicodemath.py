@@ -200,6 +200,37 @@ def _convert_postfix_dagger(source):
 	return re.sub(r"(?<=[A-Za-zΑ-Ωα-ω0-9)\]])[†‡]", lambda match: "^{" + _COMMANDS[match.group(0)].strip() + "}", source)
 
 
+def _mark_function_names(source):
+	r"""Σημείωσε τα ονόματα συναρτήσεων ώστε να μείνουν ενιαία σύμβολα.
+
+	Η γραμμική μορφή γράφει «sin(x)» χωρίς ανάστροφη κάθετο, οπότε ο αναλυτής
+	LaTeX το έσπαγε σε τρία γράμματα και εκφωνούνταν «ες ι νι» αντί για
+	«ημίτονο». Το \mathrm{} κρατά το όνομα ενιαίο και καλύπτει και την ελληνική
+	σχολική γραφή (ημ, συν, εφ), για την οποία δεν υπάρχει εντολή LaTeX.
+
+	Απαιτείται ανοιχτή παρένθεση, ώστε το «5 min» να παραμείνει «λεπτά». Για τα
+	ονόματα που είναι ταυτόχρονα και μονάδες χρησιμοποιείται η εντολή LaTeX
+	(\min), επειδή το \mathrm{min} θα διαβαζόταν ως μονάδα χρόνου.
+	"""
+	from .symbols_el import FUNCTION_NAMES, UNITS
+
+	for name in sorted(FUNCTION_NAMES, key=len, reverse=True):
+		pattern = re.compile(
+			rf"(?<![A-Za-zΑ-Ωα-ω\\]){re.escape(name)}(?=\s*\()"
+		)
+
+		def replacement(match, name=name):
+			prefix = source[:match.start()].rstrip()
+			if prefix and prefix[-1].isdigit():
+				return match.group(0)
+			if name in UNITS:
+				return "\\" + name
+			return r"\mathrm{" + name + "}"
+
+		source = pattern.sub(replacement, source)
+	return source
+
+
 def _mark_unambiguous_units(source):
 	from .symbols_el import UNITS
 
@@ -208,9 +239,28 @@ def _mark_unambiguous_units(source):
 
 		def replacement(match):
 			prefix = source[:match.start()].rstrip()
-			if not prefix or not (prefix[-1].isdigit() or prefix[-1] in "/·⋅×*⁢"):
+			if not prefix:
 				return match.group(0)
-			return r"\mathrm{" + match.group(0) + "}"
+			if prefix[-1].isdigit():
+				return r"\mathrm{" + match.group(0) + "}"
+			if prefix[-1] not in "/·⋅×*⁢":
+				return match.group(0)
+			# Ο τελεστής από μόνος του δεν κάνει μονάδα το σύμβολο: στο «x/L»
+			# ο αριθμητής είναι μεταβλητή, άρα το L είναι «λάμδα» και όχι
+			# «λίτρα». Το ίδιο ισχύει για «P/V», «n/N», «y/K». Απαιτείται ο
+			# προηγούμενος όρος να είναι και αυτός μονάδα, όπως στο «m/s».
+			before = prefix[:-1].rstrip()
+			marked = re.search(r"\\mathrm\{([^{}]+)\}$", before)
+			if marked is not None:
+				return (
+					r"\mathrm{" + match.group(0) + "}"
+					if marked.group(1) in UNITS
+					else match.group(0)
+				)
+			token = re.search(r"[A-Za-zΑ-Ωα-ω]+$", before)
+			if token is not None and token.group(0) in UNITS:
+				return r"\mathrm{" + match.group(0) + "}"
+			return match.group(0)
 
 		source = pattern.sub(replacement, source)
 	return source
@@ -252,6 +302,7 @@ def unicodemath_to_latex(source):
 	text = _convert_parenthesized_scripts(text)
 	text = _convert_grouped_fractions(text)
 	text = _convert_postfix_dagger(text)
+	text = _mark_function_names(text)
 	text = _convert_compound_unit_fractions(text)
 	text = _mark_unambiguous_units(text)
 	return "".join(_COMMANDS.get(char, char) for char in text)

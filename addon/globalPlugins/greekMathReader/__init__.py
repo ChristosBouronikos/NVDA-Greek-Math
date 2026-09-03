@@ -1621,6 +1621,17 @@ _WORD_NATIVE_MATH_WORDS = tuple(
 	source for source, _replacement in _WORD_NATIVE_TEXT_REPLACEMENTS
 )
 
+# Bare Latin letters as Word verbalizes them. These are deliberately NOT part of
+# _WORD_NATIVE_MATH_WORDS: that tuple gates math detection with any(), so a lone
+# letter there would classify ordinary prose as an equation. They only translate
+# text that some other word has already confirmed as mathematics. Matching is
+# case-sensitive because the Greek reading of a capital differs from its
+# lowercase form for most letters (a "άλφα" vs A "άλφα" agree, but b "μπε" vs
+# B "βήτα" do not); k and K both read "κάπα".
+_WORD_NATIVE_LETTER_REPLACEMENTS = (
+	("k", "κάπα"), ("K", "κάπα"),
+)
+
 
 def _normalizeWordNativeMathText(text):
 	"""Translate explicit English structure in Word's unstructured fallback."""
@@ -1632,6 +1643,12 @@ def _normalizeWordNativeMathText(text):
 			replacement,
 			text,
 			flags=re.IGNORECASE,
+		)
+	for source, replacement in _WORD_NATIVE_LETTER_REPLACEMENTS:
+		text = re.sub(
+			rf"(?<!\w){re.escape(source)}(?!\w)",
+			replacement,
+			text,
 		)
 	return re.sub(r"\s+", " ", text).strip()
 
