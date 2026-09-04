@@ -21,6 +21,6 @@ list once the user downloads a runtime and at least one voice from the add-on's
 settings. Nothing here runs, and nothing is downloaded, unless the user asks.
 """
 
-from . import catalogue, engine, installer, layout, paths, platforms  # noqa: F401
+from . import catalogue, installer, layout, paths, platforms, synthesis  # noqa: F401
 
-__all__ = ["catalogue", "engine", "installer", "layout", "paths", "platforms"]
+__all__ = ["catalogue", "installer", "layout", "paths", "platforms", "synthesis"]

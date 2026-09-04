@@ -25,7 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "addon" / "globalPlugins" / "greekMathReader"))
 
-from neural import catalogue, engine, installer, layout, paths, platforms  # noqa: E402
+from neural import catalogue, installer, layout, paths, platforms, synthesis  # noqa: E402
 
 
 def fakeOpener(payload):
@@ -357,20 +357,20 @@ class FakeSherpa:
 
 class TestAudioConversion(unittest.TestCase):
 	def test_float_samples_become_signed_16_bit_little_endian(self):
-		data = engine._toPcm16([0.0, 1.0, -1.0])
+		data = synthesis._toPcm16([0.0, 1.0, -1.0])
 		self.assertEqual(len(data), 6)
 		self.assertEqual(data[0:2], b"\x00\x00")
 		self.assertEqual(data[2:4], b"\xff\x7f")
 
 	def test_samples_beyond_full_scale_are_clipped_rather_than_wrapped(self):
 		# A wrapped sample is heard as a loud click, so this must saturate.
-		data = engine._toPcm16([4.0, -4.0])
+		data = synthesis._toPcm16([4.0, -4.0])
 		self.assertEqual(data[0:2], b"\xff\x7f")
 		self.assertEqual(data[2:4], b"\x01\x80")
 
 	def test_volume_scales_the_output(self):
-		loud = engine._toPcm16([1.0], volume=1.0)
-		quiet = engine._toPcm16([1.0], volume=0.5)
+		loud = synthesis._toPcm16([1.0], volume=1.0)
+		quiet = synthesis._toPcm16([1.0], volume=0.5)
 		self.assertGreater(
 			int.from_bytes(loud, "little", signed=True), int.from_bytes(quiet, "little", signed=True)
 		)
@@ -386,7 +386,7 @@ class TestSpeechEngine(unittest.TestCase):
 				handle.write("x")
 
 	def _engine(self, sherpa, family="vits"):
-		return engine.SpeechEngine("/runtime", self.directory, family, sherpa=sherpa)
+		return synthesis.SpeechEngine("/runtime", self.directory, family, sherpa=sherpa)
 
 	def test_a_vits_voice_is_configured_from_the_downloaded_files(self):
 		sherpa = FakeSherpa()
@@ -422,12 +422,12 @@ class TestSpeechEngine(unittest.TestCase):
 		self.assertAlmostEqual(sherpa.lastGeneration.speed, 1.75)
 
 	def test_an_unsupported_family_is_rejected(self):
-		with self.assertRaises(engine.EngineError):
+		with self.assertRaises(synthesis.EngineError):
 			self._engine(FakeSherpa(), family="nonsense").load()
 
 	def test_a_missing_runtime_directory_is_reported_clearly(self):
-		with self.assertRaises(engine.EngineError):
-			engine.importSherpaOnnx("/definitely/not/here")
+		with self.assertRaises(synthesis.EngineError):
+			synthesis.importSherpaOnnx("/definitely/not/here")
 
 
 if __name__ == "__main__":

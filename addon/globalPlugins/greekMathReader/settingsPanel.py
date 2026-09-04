@@ -261,10 +261,11 @@ class GreekMathSettingsPanel(SettingsPanel):
 		"""Open the voice manager, enabling the feature first if needed.
 
 		Downloading a voice is pointless while the synthesizer stays hidden from
-		NVDA's list, so opening the manager implies turning the option on.
+		NVDA's list, so opening the manager ticks the option. It is only written
+		to the configuration by onSave, like every other control on this panel,
+		so cancelling the settings dialog still cancels it.
 		"""
 		self.neuralVoicesCheckbox.SetValue(True)
-		config.conf["greekMathReader"]["neuralVoicesEnabled"] = True
 		try:
 			from .neuralVoicesDialog import NeuralVoicesDialog
 		except ImportError:

@@ -29,7 +29,7 @@ import shutil
 
 from . import catalogue as catalogueModule
 from . import installer, paths, platforms
-from .engine import SpeechEngine
+from .synthesis import SpeechEngine
 
 
 def defaultConfigPath():
@@ -172,8 +172,8 @@ class VoiceManager:
 		voice = self.catalogue.voice(voiceId)
 		if voice is None:
 			raise KeyError(voiceId)
-		engine = SpeechEngine(
+		speech = SpeechEngine(
 			self.runtimeDirectory, self.voiceDirectory(voiceId), voice.family, numThreads=numThreads
 		)
-		engine.load()
-		return engine
+		speech.load()
+		return speech
