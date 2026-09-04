@@ -36,7 +36,7 @@ import addonHandler
 import nvwave
 import synthDriverHandler
 from logHandler import log
-from speech.commands import BreakCommand, IndexCommand, LangChangeCommand
+from speech.commands import BreakCommand, IndexCommand, LangChangeCommand, RateCommand
 from synthDriverHandler import SynthDriver, VoiceInfo, synthDoneSpeaking, synthIndexReached
 
 addonHandler.initTranslation()
@@ -67,7 +67,29 @@ def _importManager():
 #: Break commands shorter than this are not worth a separate silence buffer.
 _MIN_BREAK_MS = 10
 
-#: Sentence-ish split points used to keep the time-to-first-word low.
+#: NVDA's wave player reports a buffer as done once it has been played, so an
+#: index rides on a buffer this short. Inaudible, but reliably scheduled.
+_INDEX_TICK_MS = 2
+
+_BITS_PER_SAMPLE = 16
+
+
+def _prosodyMultiplier(command):
+	"""Return the speed factor a relative prosody command asks for."""
+	try:
+		if command.isDefault():
+			return 1.0
+	except Exception:
+		pass
+	multiplier = getattr(command, "multiplier", None)
+	try:
+		multiplier = float(multiplier)
+	except (TypeError, ValueError):
+		return 1.0
+	return multiplier if multiplier > 0 else 1.0
+
+#: Sentence ends. Both semicolons are deliberate: ASCII ";" and U+037E, the
+#: Greek question mark. "·" is the Greek ano teleia.
 _CHUNK_TERMINATORS = ".;!?:;·\n"
 
 #: Longest chunk synthesised in one call when no terminator is found.
@@ -77,14 +99,19 @@ _MAX_CHUNK_CHARACTERS = 200
 def splitIntoChunks(text, limit=_MAX_CHUNK_CHARACTERS):
 	"""Split ``text`` into sentence-sized pieces for incremental synthesis.
 
-	Greek uses ``;`` as its question mark and ``·`` as a semicolon, so both
-	are treated as sentence ends alongside the Latin punctuation.
+	A terminator only ends a chunk when whitespace or the end of the text
+	follows it, so "3.14" and "2:3" are not torn in half; a decimal point spoken
+	mid-number would otherwise become a chunk boundary and be heard as a pause
+	in the middle of a figure.
 	"""
 	chunks = []
 	current = ""
-	for character in text:
+	length = len(text)
+	for position, character in enumerate(text):
 		current += character
-		if character in _CHUNK_TERMINATORS and len(current.strip()) > 1:
+		atEnd = position + 1 >= length
+		endsWord = atEnd or text[position + 1].isspace()
+		if character in _CHUNK_TERMINATORS and endsWord and len(current.strip()) > 1:
 			chunks.append(current)
 			current = ""
 		elif len(current) >= limit and character.isspace():
@@ -106,7 +133,7 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 		SynthDriver.RateBoostSetting(),
 		SynthDriver.VolumeSetting(),
 	)
-	supportedCommands = {IndexCommand, BreakCommand, LangChangeCommand}
+	supportedCommands = {IndexCommand, BreakCommand, LangChangeCommand, RateCommand}
 	supportedNotifications = {synthIndexReached, synthDoneSpeaking}
 
 	@classmethod
@@ -220,16 +247,20 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 		return self._engine
 
 	def _ensurePlayer(self, sampleRate):
+		"""Create the wave player, tolerating NVDA's changing signature.
+
+		``WavePlayer`` gained and lost keyword arguments across the NVDA range
+		this add-on supports, so the keyword form is tried first and the
+		positional form is used as a fallback.
+		"""
 		if self._player is not None:
 			return self._player
-		self._player = nvwave.WavePlayer(
-			channels=1,
-			samplesPerSec=sampleRate,
-			bitsPerSample=16,
-			outputDevice=synthDriverHandler.getOutputDeviceName()
-			if hasattr(synthDriverHandler, "getOutputDeviceName")
-			else None,
-		)
+		try:
+			self._player = nvwave.WavePlayer(
+				channels=CHANNELS, samplesPerSec=sampleRate, bitsPerSample=_BITS_PER_SAMPLE
+			)
+		except TypeError:
+			self._player = nvwave.WavePlayer(CHANNELS, sampleRate, _BITS_PER_SAMPLE)
 		return self._player
 
 	def _closePlayer(self):
@@ -246,70 +277,75 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 		with self._lock:
 			generation = self._generation
 		language = self._language
+		# The add-on's own math speech asks for a relative rate, so honour a
+		# RateCommand for the rest of the utterance rather than dropping it.
+		multiplier = 1.0
 		text = ""
+
+		def flush():
+			nonlocal text
+			for chunk in splitIntoChunks(text):
+				self._queue.put((generation, "speak", chunk, language, multiplier))
+			text = ""
+
 		for item in speechSequence:
 			if isinstance(item, str):
 				text += item
 			elif isinstance(item, IndexCommand):
-				for chunk in splitIntoChunks(text):
-					self._queue.put((generation, "speak", chunk, language))
-				text = ""
-				self._queue.put((generation, "index", item.index, language))
+				flush()
+				self._queue.put((generation, "index", item.index, language, multiplier))
 			elif isinstance(item, BreakCommand):
-				for chunk in splitIntoChunks(text):
-					self._queue.put((generation, "speak", chunk, language))
-				text = ""
+				flush()
 				if item.time >= _MIN_BREAK_MS:
-					self._queue.put((generation, "break", item.time, language))
+					self._queue.put((generation, "break", item.time, language, multiplier))
+			elif isinstance(item, RateCommand):
+				flush()
+				multiplier = _prosodyMultiplier(item)
 			elif isinstance(item, LangChangeCommand):
+				flush()
 				# Multilingual models pick their language per utterance; the
 				# add-on's own math speech relies on this to stay Greek.
 				language = (item.lang or "").split("_")[0].split("-")[0].lower()
-		for chunk in splitIntoChunks(text):
-			self._queue.put((generation, "speak", chunk, language))
-		self._queue.put((generation, "done", None, language))
+		flush()
+		self._queue.put((generation, "done", None, language, multiplier))
 
 	def _run(self):
 		while True:
 			item = self._queue.get()
 			if item is None:
 				return
-			generation, kind, payload, language = item
+			generation, kind, payload, language, multiplier = item
 			with self._lock:
 				if generation != self._generation:
 					continue
 			try:
-				self._handle(kind, payload, language, generation)
+				self._handle(kind, payload, language, multiplier, generation)
 			except Exception:
 				log.error("greekMathVoice: could not speak", exc_info=True)
 				synthDoneSpeaking.notify(synth=self)
 
-	def _handle(self, kind, payload, language, generation):
+	def _handle(self, kind, payload, language, multiplier, generation):
 		if kind == "done":
 			player = self._player
 			if player is not None:
+				# Block until the queued audio has actually been heard, so NVDA
+				# is not told the utterance finished while it is still playing.
 				player.idle()
 			synthDoneSpeaking.notify(synth=self)
 			return
 		if kind == "index":
-			player = self._player
-			index = payload
-			if player is None:
-				synthIndexReached.notify(synth=self, index=index)
-			else:
-				player.feed(b"", onDone=lambda index=index: synthIndexReached.notify(synth=self, index=index))
+			self._notifyIndexAfterQueuedAudio(payload)
 			return
 		if kind == "break":
-			engine = self._engine
-			if engine is None or not engine.sampleRate:
+			engine = self._ensureEngine()
+			if not engine.sampleRate:
 				return
-			silence = b"\0" * (2 * int(engine.sampleRate * payload / 1000.0))
-			self._ensurePlayer(engine.sampleRate).feed(silence)
+			self._ensurePlayer(engine.sampleRate).feed(self._silence(engine.sampleRate, payload))
 			return
 		engine = self._ensureEngine()
 		audio = engine.synthesize(
 			payload,
-			speed=self._speed,
+			speed=self._speed * multiplier,
 			language=language or None,
 			volume=self._volume / 100.0,
 		)
@@ -319,6 +355,28 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 		if not audio:
 			return
 		self._ensurePlayer(engine.sampleRate).feed(audio)
+
+	@staticmethod
+	def _silence(sampleRate, milliseconds):
+		frames = int(sampleRate * milliseconds / 1000.0)
+		return b"\0" * (frames * (_BITS_PER_SAMPLE // 8))
+
+	def _notifyIndexAfterQueuedAudio(self, index):
+		"""Report an index once the audio queued before it has been played.
+
+		The notification is hung off a very short silent buffer rather than an
+		empty one: an empty buffer is not necessarily scheduled, and NVDA relies
+		on these callbacks to keep the caret and braille in step with speech.
+		"""
+		player = self._player
+		engine = self._engine
+		if player is None or engine is None or not engine.sampleRate:
+			synthIndexReached.notify(synth=self, index=index)
+			return
+		player.feed(
+			self._silence(engine.sampleRate, _INDEX_TICK_MS),
+			onDone=lambda index=index: synthIndexReached.notify(synth=self, index=index),
+		)
 
 	def cancel(self):
 		with self._lock:
