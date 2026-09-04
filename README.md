@@ -21,9 +21,9 @@
 
 Μετά την εγκατάσταση, τα μαθηματικά στις ιστοσελίδες (Βικιπαίδεια, πλατφόρμες τηλεκπαίδευσης, περιεχόμενο MathJax), στα βιβλία EPUB, στις προσβάσιμες εξισώσεις PDF και στις εξισώσεις του Word διαβάζονται αυτόματα στα ελληνικά όταν η εφαρμογή εκθέτει MathML στο NVDA.
 
-> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση 2.0.0 δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word της 2.0.0 χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
+> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση **2.2.0** δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word, που προστέθηκε στην 2.0.0, χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
 
-> Η έκδοση πηγαίου κώδικα **2.1.0-dev** είναι προεπισκόπηση της νέας σημασιολογικής μηχανής. Παραμένει στο κανάλι ανάπτυξης ώσπου να ολοκληρωθούν η επιστημονική/γλωσσική έγκριση και οι ακροάσεις από τυφλούς Έλληνες χρήστες NVDA που ορίζονται στο [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md).
+> Η τρέχουσα έκδοση (**2.2.0**) κυκλοφορεί στο σταθερό κανάλι, ύστερα από ρητή απόφαση του συντηρητή. Οι πύλες ελέγχου της νέας σημασιολογικής ορολογίας (επιστημονική/γλωσσική έγκριση και ακροάσεις από τυφλούς Έλληνες χρήστες NVDA) παραμένουν ανοιχτές — δείτε [RELEASE_GATES.md](RELEASE_GATES.md) και [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md).
 
 ### Χρήση
 
@@ -380,9 +380,9 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 
 After installation, math on web pages (Wikipedia, e-learning platforms, MathJax content), in EPUB books, accessible PDF formulas, and Word equations is automatically read in Greek whenever the application exposes MathML to NVDA.
 
-> Requires NVDA 2024.1 or later. Version 2.0.0 declares compatibility through NVDA 2026.1.1. Its final Word speech filter is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
+> Requires NVDA 2024.1 or later. Version **2.2.0** declares compatibility through NVDA 2026.1.1. Its Word final-speech filter, added in 2.0.0, is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
 
-> Source version **2.1.0-dev** previews the semantic engine and remains on the development channel until the expert, language, and blind-user listening gates in [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md) are complete.
+> The current version (**2.2.0**) ships on the stable channel by explicit maintainer decision. The semantic terminology's review gates (specialist/language approval and listening tests with blind Greek NVDA users) remain open — see [RELEASE_GATES.md](RELEASE_GATES.md) and [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md).
 
 ### Usage
 
