@@ -49,6 +49,17 @@ class TestTokens(unittest.TestCase):
 	def test_latin_letters(self):
 		self.assertEqual(spoken(math("<mi>x</mi><mo>+</mo><mi>y</mi>")), "χι συν ψι")
 
+	def test_latin_letters_literal_mode(self):
+		tokens = speak_mathml(
+			math("<mi>l</mi><mo>+</mo><mi>y</mi>"),
+			ReadingConfig(latin_literal=True),
+		)
+		self.assertEqual(tokens_to_text(tokens), "l συν y")
+
+	def test_latin_letters_greek_school_mode_is_default(self):
+		tokens = speak_mathml(math("<mi>l</mi>"), ReadingConfig())
+		self.assertEqual(tokens_to_text(tokens), "λάμδα")
+
 	def test_greek_letters(self):
 		self.assertEqual(spoken(math("<mi>α</mi><mo>+</mo><mi>β</mi>")), "άλφα συν βήτα")
 
@@ -144,6 +155,26 @@ class TestPowers(unittest.TestCase):
 
 	def test_degrees(self):
 		self.assertEqual(spoken(math("<msup><mn>30</mn><mo>∘</mo></msup>")), "30 μοίρες")
+
+	def test_degree_sign_as_bare_operator(self):
+		self.assertEqual(spoken(math("<mn>90</mn><mo>°</mo>")), "90 μοίρες")
+
+	def test_degree_sign_in_fallback_mtext(self):
+		# Ό,τι φτάνει ως ακατέργαστο κείμενο (π.χ. από το τελευταίο δίχτυ
+		# ασφαλείας του Word όταν δεν υπάρχουν δομημένα MathML) πρέπει να
+		# διαβάζει "μοίρες" και όχι τον αγγλικό χαρακτήρα αναλλοίωτο.
+		self.assertEqual(spoken(math("<mtext>90°</mtext>")), "90 μοίρες")
+
+	def test_ring_operator_in_fallback_mtext(self):
+		self.assertEqual(spoken(math("<mtext>30∘</mtext>")), "30 μοίρες")
+
+	def test_fraction_words_in_fallback_mtext(self):
+		# Το Word εκφωνεί απλά κλάσματα ως "two thirds": χωρίς λεξιλόγιο για τους
+		# παρονομαστές, μόνο ο αριθμητής μεταφραζόταν και έμενε μισό αγγλικά.
+		self.assertEqual(spoken(math("<mtext>two thirds</mtext>")), "2 τρίτα")
+
+	def test_half_word_in_fallback_mtext(self):
+		self.assertEqual(spoken(math("<mtext>one half</mtext>")), "1 δεύτερο")
 
 	def test_prime(self):
 		self.assertEqual(spoken(math("<msup><mi>f</mi><mo>′</mo></msup>")), "εφ τόνος")

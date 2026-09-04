@@ -45,6 +45,10 @@ CONFIG_SPEC = {
 	"decimalComma": "boolean(default=True)",
 	"forceGreekLanguage": "boolean(default=True)",
 	"terminologyProfile": "option('standard', 'school', 'university', default='standard')",
+	# 'greek_school': λατινικά γράμματα με την ελληνική σχολική απόδοσή τους
+	# (l -> "λάμδα"). 'literal': παραμένουν αγγλικά, για τύπους που αναμιγνύουν
+	# ελληνικό και αγγλικό κείμενο.
+	"latinLetterMode": "option('greek_school', 'literal', default='greek_school')",
 	"domainHint": "option('auto', 'general_math', 'geometry', 'probability_statistics', 'linear_algebra', 'vector_calculus', 'physics', 'quantum_physics', 'algebra', default='auto')",
 	"relativeRate": "integer(default=100, min=1, max=100)",
 	"pauseFactor": "integer(default=50, min=0, max=100)",
@@ -1273,6 +1277,7 @@ def resetRecommendedDefaults():
 	section = config.conf["greekMathReader"]
 	section["verbosity"] = 1
 	section["decimalComma"] = True
+	section["latinLetterMode"] = "greek_school"
 	section["translateUnconfirmedWordMath"] = True
 	section["terminologyProfile"] = "standard"
 	section["domainHint"] = "auto"
@@ -1601,6 +1606,21 @@ _WORD_NATIVE_TEXT_REPLACEMENTS = (
 	("close paren", "κλείνει η παρένθεση"),
 	("degrees", "μοίρες"),
 	("degree", "μοίρες"),
+	# Ονόματα παρονομαστών όπως τα εκφωνεί το Word για απλά κλάσματα
+	# ("two thirds"): χωρίς αυτά, μόνο ο αριθμητής μεταφράζεται και το κλάσμα
+	# βγαίνει μισό ελληνικά μισό αγγλικά.
+	("halves", "δεύτερα"), ("half", "δεύτερο"),
+	("thirds", "τρίτα"), ("third", "τρίτο"),
+	("quarters", "τέταρτα"), ("quarter", "τέταρτο"),
+	("fourths", "τέταρτα"), ("fourth", "τέταρτο"),
+	("fifths", "πέμπτα"), ("fifth", "πέμπτο"),
+	("sixths", "έκτα"), ("sixth", "έκτο"),
+	("sevenths", "έβδομα"), ("seventh", "έβδομο"),
+	("eighths", "όγδοα"), ("eighth", "όγδοο"),
+	("ninths", "ένατα"), ("ninth", "ένατο"),
+	("tenths", "δέκατα"), ("tenth", "δέκατο"),
+	("hundredths", "εκατοστά"), ("hundredth", "εκατοστό"),
+	("thousandths", "χιλιοστά"), ("thousandth", "χιλιοστό"),
 	("percent", "τοις εκατό"),
 	("infinity", "άπειρο"),
 	("prime", "τόνος"),
@@ -1637,6 +1657,9 @@ def _normalizeWordNativeMathText(text):
 	"""Translate explicit English structure in Word's unstructured fallback."""
 	import re
 
+	# Ο χαρακτήρας του βαθμού ("90°") δεν είναι λέξη, οπότε δεν πιάνεται από
+	# τις αντικαταστάσεις λέξεων παρακάτω (που ήδη καλύπτουν "degree"/"degrees").
+	text = re.sub(r"[°∘]", " μοίρες ", text)
 	for source, replacement in _WORD_NATIVE_TEXT_REPLACEMENTS:
 		text = re.sub(
 			rf"(?<!\w){re.escape(source)}(?!\w)",
@@ -1745,6 +1768,11 @@ def _looksLikeWordNativeMathSpeech(text):
 		return False
 	import re
 
+	# Ο βαθμός μπορεί να φτάσει εδώ ως ο ίδιος ο χαρακτήρας (π.χ. "90°") αντί
+	# για την αγγλική λέξη "degree" — χρειάζεται δικό του έλεγχο, όχι μόνο
+	# αναζήτηση λέξεων στο _WORD_NATIVE_MATH_WORDS.
+	if re.search(r"[°∘]", text):
+		return True
 	return any(
 		re.search(rf"(?<!\w){re.escape(word)}(?!\w)", text, flags=re.IGNORECASE)
 		for word in _WORD_NATIVE_MATH_WORDS

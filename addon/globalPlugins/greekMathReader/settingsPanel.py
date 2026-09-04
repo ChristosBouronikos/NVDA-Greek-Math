@@ -147,6 +147,18 @@ class GreekMathSettingsPanel(SettingsPanel):
 		)
 		self.decimalCommaCheckbox.SetValue(bool(section["decimalComma"]))
 
+		self.latinLiteralCheckbox = helper.addItem(
+			# Translators: Label of a checkbox in the settings panel. When off,
+			# Latin letters in formulas are read with their Greek school names
+			# (e.g. "l" as "λάμδα"); when on, they are read as literal English
+			# letters, useful for formulas that mix Greek and English text.
+			wx.CheckBox(
+				self,
+				label=_("Read Latin letters in formulas as literal &English letters"),
+			)
+		)
+		self.latinLiteralCheckbox.SetValue(section.get("latinLetterMode", "greek_school") == "literal")
+
 		self.unconfirmedBackupCheckbox = helper.addItem(
 			# Translators: Label of a checkbox enabling the backup translation of
 			# English math speech in Word when no equation can be confirmed.
@@ -301,6 +313,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 		resetRecommendedDefaults()
 		self.verbosityChoice.SetSelection(1)
 		self.decimalCommaCheckbox.SetValue(True)
+		self.latinLiteralCheckbox.SetValue(False)
 		self.unconfirmedBackupCheckbox.SetValue(True)
 		self.terminologyProfileChoice.SetSelection(0)
 		self.domainHintChoice.SetSelection(0)
@@ -337,6 +350,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 		section["enabled"] = True
 		section["verbosity"] = self.verbosityChoice.GetSelection()
 		section["decimalComma"] = self.decimalCommaCheckbox.GetValue()
+		section["latinLetterMode"] = "literal" if self.latinLiteralCheckbox.GetValue() else "greek_school"
 		section["translateUnconfirmedWordMath"] = self.unconfirmedBackupCheckbox.GetValue()
 		section["terminologyProfile"] = ("standard", "school", "university")[
 			self.terminologyProfileChoice.GetSelection()

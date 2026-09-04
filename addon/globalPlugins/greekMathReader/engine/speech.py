@@ -99,6 +99,7 @@ class ReadingConfig(object):
 		relative_rate=100,
 		pause_factor=50,
 		terminology_overrides=None,
+		latin_literal=False,
 	):
 		self.verbosity = verbosity
 		self.decimal_comma = decimal_comma
@@ -108,6 +109,7 @@ class ReadingConfig(object):
 		self.relative_rate = max(1, min(100, int(relative_rate)))
 		self.pause_factor = max(0, min(100, int(pause_factor)))
 		self.terminology_overrides = dict(terminology_overrides or {})
+		self.latin_literal = bool(latin_literal)
 
 
 _PRIMES = {"′": 1, "″": 2, "‴": 3, "⁗": 4, "'": 1, "’": 1}
@@ -174,6 +176,22 @@ _ENGLISH_MATH_MTEXT_REPLACEMENTS = (
 	("plus", "συν"),
 	("minus", "πλην"),
 	("times", "επί"),
+	# Ονόματα παρονομαστών όπως τα εκφωνεί το Word για απλά κλάσματα
+	# ("two thirds"): χωρίς αυτά, μόνο ο αριθμητής μεταφράζεται (μέσω
+	# _ENGLISH_MATH_TOKEN_REPLACEMENTS) και το κλάσμα βγαίνει μισό ελληνικά
+	# μισό αγγλικά.
+	("halves", "δεύτερα"), ("half", "δεύτερο"),
+	("thirds", "τρίτα"), ("third", "τρίτο"),
+	("quarters", "τέταρτα"), ("quarter", "τέταρτο"),
+	("fourths", "τέταρτα"), ("fourth", "τέταρτο"),
+	("fifths", "πέμπτα"), ("fifth", "πέμπτο"),
+	("sixths", "έκτα"), ("sixth", "έκτο"),
+	("sevenths", "έβδομα"), ("seventh", "έβδομο"),
+	("eighths", "όγδοα"), ("eighth", "όγδοο"),
+	("ninths", "ένατα"), ("ninth", "ένατο"),
+	("tenths", "δέκατα"), ("tenth", "δέκατο"),
+	("hundredths", "εκατοστά"), ("hundredth", "εκατοστό"),
+	("thousandths", "χιλιοστά"), ("thousandth", "χιλιοστό"),
 )
 _ENGLISH_MATH_MTEXT_TRIGGER_RE = re.compile(
 	"|".join(
@@ -195,9 +213,18 @@ _ENGLISH_MATH_TOKEN_REPLACEMENTS = {
 }
 
 
+_DEGREE_SIGN_MTEXT_RE = re.compile(r"[°∘]")
+
+
 def _normalize_english_math_mtext(text):
 	"""Translate only explicit English math vocabulary inside fallback mtext."""
-	if not _ENGLISH_MATH_MTEXT_TRIGGER_RE.search(text):
+	hasDegreeSign = _DEGREE_SIGN_MTEXT_RE.search(text) is not None
+	if hasDegreeSign:
+		# «90°» φτάνει εδώ ως ακατέργαστο κείμενο (όχι ξεχωριστό <mo>) όταν το
+		# Word δεν εκθέτει δομημένα MathML· χωρίς αυτό, ο χαρακτήρας περνάει
+		# αναλλοίωτος στη σύνθεση φωνής, που τον διαβάζει "βαθμοί".
+		text = _DEGREE_SIGN_MTEXT_RE.sub(" μοίρες ", text)
+	if not hasDegreeSign and not _ENGLISH_MATH_MTEXT_TRIGGER_RE.search(text):
 		return text
 	for source, replacement in _ENGLISH_MATH_MTEXT_REPLACEMENTS:
 		text = re.sub(
@@ -745,7 +772,9 @@ class MathSpeaker(object):
 			return [symbols.FUNCTION_NAMES[text]]
 		if len(text) == 1:
 			reading = symbols.letter_reading(
-				text, verbose=(self.config.verbosity == VERBOSE or self.config.announce_capitals)
+				text,
+				verbose=(self.config.verbosity == VERBOSE or self.config.announce_capitals),
+				latin_literal=self.config.latin_literal,
 			)
 			if reading:
 				return [reading]
@@ -762,7 +791,9 @@ class MathSpeaker(object):
 			record_fallback(f"multi-letter-identifier-spelled:{text}")
 			if not text.isupper():
 				record_unknown(text, "identifier")
-			readings = [symbols.letter_reading(c) or c for c in text]
+			readings = [
+				symbols.letter_reading(c, latin_literal=self.config.latin_literal) or c for c in text
+			]
 			return [" ".join(readings)]
 		if re.search(r"[A-Za-z]", text):
 			record_unknown(text, "identifier")
@@ -804,7 +835,7 @@ class MathSpeaker(object):
 			return [symbols.FENCES_OPEN[text]]
 		if text in symbols.FENCES_CLOSE:
 			return [symbols.FENCES_CLOSE[text]]
-		letter = symbols.letter_reading(text)
+		letter = symbols.letter_reading(text, latin_literal=self.config.latin_literal)
 		if letter:
 			return [letter]
 		record_unknown(text, "operator")
@@ -1174,10 +1205,15 @@ class MathSpeaker(object):
 			if nodes is not None:
 				out.extend(nodes)
 			else:
-				readings = [symbols.letter_reading(c) or c for c in function_part]
+				readings = [
+					symbols.letter_reading(c, latin_literal=self.config.latin_literal) or c
+					for c in function_part
+				]
 				out.append(" ".join(readings))
 		out.append("ως προς")
-		var_readings = [symbols.letter_reading(c) or c for c in den_vars]
+		var_readings = [
+			symbols.letter_reading(c, latin_literal=self.config.latin_literal) or c for c in den_vars
+		]
 		out.append(" και ".join(var_readings) if len(var_readings) > 1 else var_readings[0])
 		return out
 

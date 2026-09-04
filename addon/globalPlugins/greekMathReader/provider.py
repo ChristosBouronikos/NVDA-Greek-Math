@@ -95,6 +95,7 @@ def getReadingConfig():
 		relative_rate=int(section.get("relativeRate", 100)),
 		pause_factor=int(section.get("pauseFactor", 50)),
 		terminology_overrides=overrides,
+		latin_literal=section.get("latinLetterMode", "greek_school") == "literal",
 	)
 
 

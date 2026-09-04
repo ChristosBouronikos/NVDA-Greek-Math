@@ -633,8 +633,16 @@ for _table in (OPERATORS, RELATIONS, ARROWS, SET_AND_LOGIC, GEOMETRY, BIG_OPERAT
 	ALL_SYMBOLS.update(_table)
 
 
-def letter_reading(char, verbose=False):
-	"""Πώς διαβάζεται ένα μεμονωμένο γράμμα (ελληνικό ή λατινικό)."""
+def letter_reading(char, verbose=False, latin_literal=False):
+	"""Πώς διαβάζεται ένα μεμονωμένο γράμμα (ελληνικό ή λατινικό).
+
+	Όταν latin_literal=True, τα λατινικά γράμματα διαβάζονται όπως είναι
+	(αγγλικά), αντί για την ελληνική σχολική απόδοσή τους (π.χ. "l" ≠ "λάμδα").
+	Χρήσιμο σε τύπους που αναμιγνύουν ελληνικό και αγγλικό κείμενο, όπου η
+	σχολική σύμβαση μπερδεύει τα δύο.
+	"""
+	if latin_literal and (char in LATIN_LETTERS or char in LATIN_CAPITALS):
+		return char
 	if char in GREEK_LETTERS:
 		return GREEK_LETTERS[char]
 	if char in GREEK_CAPITALS:
