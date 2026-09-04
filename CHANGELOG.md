@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.0 — 2026-09-04
+
+Bug-fix release, on the stable channel.
+
+* Fixes the degree sign (`°`) reading as «βαθμοί» instead of «μοίρες» whenever Word narrates an equation as flat text instead of routing it through structured MathML — for example reading a line with the mouse or arrow keys, rather than through NVDA's math object navigation (`NVDA+Alt+G`). The Word speech fallback only recognized the spelled-out English word "degree"/"degrees", never the symbol itself (`°` or `∘`); the same gap is fixed in the fallback's `<mtext>` normalization path.
+* Fixes mixed-language fraction readings in the same fallback path — «two thirds» was read «δύο thirds», with only the numerator translated. Adds the missing Greek denominator vocabulary (halves, thirds, quarters/fourths, fifths, sixths, sevenths, eighths, ninths, tenths, hundredths, thousandths), matching the wording the fully structured engine already uses for fractions.
+* Adds a new setting, "Read Latin letters in formulas as literal English letters" (off by default). Latin letters in formulas are read with their established Greek-school names by default (`l` as «λάμδα»), which is correct for geometry point/segment labels; the new option reads them literally in English instead, for formulas that genuinely mix English text with Greek.
+
 ## 2.1.0 — 2026-09-03
 
 First staged semantic release. Shipped on the stable channel by maintainer decision; see `RELEASE_GATES.md` for the NVDA/document matrix and human-approval rows that remain open at this version.

@@ -40,11 +40,11 @@ Includes interactive navigation to explore complex expressions part by part,
 and three verbosity levels (terse, smart, verbose)."""
 	),
 	# version
-	addon_version="2.1.0",
+	addon_version="2.2.0",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.1.0: shared semantic MathML/LaTeX/UnicodeMath reading, versioned Greek terminology profiles and overrides, vector-calculus/probability/quantum concepts, SI agreement, automatic MathCAT Greek delegation, richer diagnostics, and expanded navigation. Fractions inside trigonometric arguments are read with explicit structure, juxtaposed factors are separated by a short pause, and a bare k is read «κάπα» in Word's fallback."""
+		"""Version 2.2.0: fixes mixed-language readings in Word's unstructured speech fallback (used when a mouse click or arrow keys land on an equation instead of NVDA's math object navigation) — the degree sign now reads «μοίρες» instead of «βαθμοί», and simple fractions such as "two thirds" no longer keep their denominator in English. Adds a new setting, "Read Latin letters in formulas as literal English letters", for formulas that mix genuine English text with Greek."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",

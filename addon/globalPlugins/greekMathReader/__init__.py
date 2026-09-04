@@ -33,8 +33,8 @@ from .provider import GreekMathProvider, getGreekVoiceSupport, tokensToSpeechSeq
 
 addonHandler.initTranslation()
 
-ADDON_VERSION = "2.1.0-dev"
-BUILD_ID = "20260801-semantic-preview"
+ADDON_VERSION = "2.2.0"
+BUILD_ID = "20260904-word-fallback-language-fixes"
 _WORD_UIA_ALWAYS = 3
 
 CONFIG_SPEC = {
