@@ -1,0 +1,272 @@
+{
+	"schemaVersion": 1,
+	"runtime": {
+		"package": "sherpa-onnx",
+		"version": "1.13.7",
+		"license": "Apache-2.0",
+		"licenseUrl": "https://github.com/k2-fsa/sherpa-onnx/blob/master/LICENSE",
+		"bindings": {
+			"cp310-win32": {
+				"filename": "sherpa_onnx-1.13.7-cp310-cp310-win32.whl",
+				"url": "https://files.pythonhosted.org/packages/4b/f5/ff929ac7bcf8d85a8c26b21ec70f7492bd277085cf21b2a74293ea6d4aa4/sherpa_onnx-1.13.7-cp310-cp310-win32.whl",
+				"size": 1960860,
+				"sha256": "655d7a9a535dbcb217946bf962906478d72bda8250312376574c886bf8a92aea"
+			},
+			"cp310-win_amd64": {
+				"filename": "sherpa_onnx-1.13.7-cp310-cp310-win_amd64.whl",
+				"url": "https://files.pythonhosted.org/packages/46/e9/275cfbc917bea9ae5b825f209a789af2e2f2617a8bdcfefd04bc4bc6c34c/sherpa_onnx-1.13.7-cp310-cp310-win_amd64.whl",
+				"size": 2274067,
+				"sha256": "c652b0baa71eb46bc73fee5125e319370b18c68b67b067e823fe96703763ea71"
+			},
+			"cp311-win32": {
+				"filename": "sherpa_onnx-1.13.7-cp311-cp311-win32.whl",
+				"url": "https://files.pythonhosted.org/packages/2d/81/dbed4befa8d6e32f5efffe59c6cf499fd79a8af691b3db1296baff1ed1cd/sherpa_onnx-1.13.7-cp311-cp311-win32.whl",
+				"size": 1961573,
+				"sha256": "511edfcedf9b90c4b3b44a14725e9397da95e9b9322efd6772c8e7d7e520d0de"
+			},
+			"cp311-win_amd64": {
+				"filename": "sherpa_onnx-1.13.7-cp311-cp311-win_amd64.whl",
+				"url": "https://files.pythonhosted.org/packages/13/d1/31b1cc0d53c6b074723b78a75fc13cfebe9328590cea6b67a3f49511080d/sherpa_onnx-1.13.7-cp311-cp311-win_amd64.whl",
+				"size": 2277232,
+				"sha256": "7b3bef2a558f57c403bb7afb994e081cd242e5df3384295b6738b198cb2f8382"
+			},
+			"cp311-win_arm64": {
+				"filename": "sherpa_onnx-1.13.7-cp311-cp311-win_arm64.whl",
+				"url": "https://files.pythonhosted.org/packages/79/74/9d2fe7f81062a4d961ef7a186608ea34f5d52e6c33002863bf8709c1c659/sherpa_onnx-1.13.7-cp311-cp311-win_arm64.whl",
+				"size": 2239366,
+				"sha256": "6dc8cd03e88a9d1e451bf83d3956c72cd78c5eb4d5a1af602243de75f77ff976"
+			},
+			"cp312-win32": {
+				"filename": "sherpa_onnx-1.13.7-cp312-cp312-win32.whl",
+				"url": "https://files.pythonhosted.org/packages/96/01/a938f5bff5238536e41bc55935252b2ca420bdef5e5ffebc531328f971ff/sherpa_onnx-1.13.7-cp312-cp312-win32.whl",
+				"size": 1962873,
+				"sha256": "c5d99c89a1c83bed2e930798f614deed05c41136e0e3cc046977320132f56473"
+			},
+			"cp312-win_amd64": {
+				"filename": "sherpa_onnx-1.13.7-cp312-cp312-win_amd64.whl",
+				"url": "https://files.pythonhosted.org/packages/46/3d/7b5cdf6a1c01080b6c579134fba082c4fc35b13bc6e35d85285ab8fc9380/sherpa_onnx-1.13.7-cp312-cp312-win_amd64.whl",
+				"size": 2282452,
+				"sha256": "d6b8adb339e0e89cf9914de610c85d2d5e4715b09f566eaf796a92eb72c014d1"
+			},
+			"cp312-win_arm64": {
+				"filename": "sherpa_onnx-1.13.7-cp312-cp312-win_arm64.whl",
+				"url": "https://files.pythonhosted.org/packages/0c/41/0bd297439f143f573b176ab6a59354e51c9c59886174580efab1308ff2bf/sherpa_onnx-1.13.7-cp312-cp312-win_arm64.whl",
+				"size": 2239075,
+				"sha256": "0e9445d5d3f65a87b7a158edad4c630f21fcb1692aa006d19d70cbbccd38d71d"
+			},
+			"cp313-win32": {
+				"filename": "sherpa_onnx-1.13.7-cp313-cp313-win32.whl",
+				"url": "https://files.pythonhosted.org/packages/bc/67/dbcb4928a9d3269f32582ad590b25edc80ff862f52a0854a07688e2c9cf4/sherpa_onnx-1.13.7-cp313-cp313-win32.whl",
+				"size": 1963507,
+				"sha256": "68183b11eda2a866231b9e9aaa35b77222918edef5848a4ff6add6d89f523f6d"
+			},
+			"cp313-win_amd64": {
+				"filename": "sherpa_onnx-1.13.7-cp313-cp313-win_amd64.whl",
+				"url": "https://files.pythonhosted.org/packages/e9/cf/29c88ff25004b8ab6e6f93cd3a27cc259ab7dcb82b6a842e166b5ca85311/sherpa_onnx-1.13.7-cp313-cp313-win_amd64.whl",
+				"size": 2282759,
+				"sha256": "9fb46a9b0844b2636b099dfa5ef26513fa0b91df28cd710a97d1cda2c9344fec"
+			},
+			"cp313-win_arm64": {
+				"filename": "sherpa_onnx-1.13.7-cp313-cp313-win_arm64.whl",
+				"url": "https://files.pythonhosted.org/packages/ef/e8/20ced5f876271bbaf2e3bbe2a884265a4e31e382433ec6a3975e8ef0d082/sherpa_onnx-1.13.7-cp313-cp313-win_arm64.whl",
+				"size": 2241664,
+				"sha256": "c2e9c56d453bc804592d65834504e376a4fa90488adba042becf5213cf226328"
+			},
+			"cp314-win32": {
+				"filename": "sherpa_onnx-1.13.7-cp314-cp314-win32.whl",
+				"url": "https://files.pythonhosted.org/packages/a2/ad/93ec56bc3470841755be3e29f824428f3a7244f728d2335cfcc666647823/sherpa_onnx-1.13.7-cp314-cp314-win32.whl",
+				"size": 2002910,
+				"sha256": "4a149bb0e5d8ff382d9d0ec906411d5ba220b8732a7155c0e0cbee27b5a5ff19"
+			},
+			"cp314-win_amd64": {
+				"filename": "sherpa_onnx-1.13.7-cp314-cp314-win_amd64.whl",
+				"url": "https://files.pythonhosted.org/packages/f5/39/67a7024adafa3b4e3593b4ad7e138ee754eb4972cd53ef7749fc7d7b6a93/sherpa_onnx-1.13.7-cp314-cp314-win_amd64.whl",
+				"size": 2348192,
+				"sha256": "d22753738497c162f381c545c35ee245d160031faa3993b5e3d3424ceb80c3a3"
+			},
+			"cp314-win_arm64": {
+				"filename": "sherpa_onnx-1.13.7-cp314-cp314-win_arm64.whl",
+				"url": "https://files.pythonhosted.org/packages/8c/07/58fb06acf48e3040ee9aba95a7330f0804bf5ec8868ae49e90872b4bf979/sherpa_onnx-1.13.7-cp314-cp314-win_arm64.whl",
+				"size": 2305339,
+				"sha256": "52ca4392620bb4a0cb30373f245861107516c8831bface1c82c17a9e34f3f5c9"
+			},
+			"cp37-win_amd64": {
+				"filename": "sherpa_onnx-1.13.7-cp37-cp37m-win_amd64.whl",
+				"url": "https://files.pythonhosted.org/packages/3f/d6/f502fba0593b6d0fbafef61fa8949d4987f810129de94ae63df487f356bb/sherpa_onnx-1.13.7-cp37-cp37m-win_amd64.whl",
+				"size": 2284463,
+				"sha256": "b01019a51bc6c7be3285d75f542067dd9fd1a3fc1dd11708aa376ef00c7953ec"
+			},
+			"cp38-win32": {
+				"filename": "sherpa_onnx-1.13.7-cp38-cp38-win32.whl",
+				"url": "https://files.pythonhosted.org/packages/dc/9b/05fc89e28a74cfaf54faa72f7ab5c5e3eb8464899fe55736f82abb467cee/sherpa_onnx-1.13.7-cp38-cp38-win32.whl",
+				"size": 1960386,
+				"sha256": "827db74b27216520b3e10680aadee77f1842532814ef492bed73c08de8baf4d9"
+			},
+			"cp38-win_amd64": {
+				"filename": "sherpa_onnx-1.13.7-cp38-cp38-win_amd64.whl",
+				"url": "https://files.pythonhosted.org/packages/23/92/de8d7c7e05df35815fd2b3c68f8ca2b040d6e28239c72ce9b1a883239825/sherpa_onnx-1.13.7-cp38-cp38-win_amd64.whl",
+				"size": 2276268,
+				"sha256": "16194c0a1cfb890834ec199c7c60929a30d59701cb1486b276a1936a7a497f50"
+			},
+			"cp39-win32": {
+				"filename": "sherpa_onnx-1.13.7-cp39-cp39-win32.whl",
+				"url": "https://files.pythonhosted.org/packages/c7/ff/fbfaa6a8aaafff8c4b0a389cb0103142a6cac3dd258f16daf15216445d6c/sherpa_onnx-1.13.7-cp39-cp39-win32.whl",
+				"size": 1960547,
+				"sha256": "4e8b40e84a5ea56de95171140f734445da2af58e0e52a999fabd8c48149f835c"
+			},
+			"cp39-win_amd64": {
+				"filename": "sherpa_onnx-1.13.7-cp39-cp39-win_amd64.whl",
+				"url": "https://files.pythonhosted.org/packages/97/f9/a76dc7c0a83baf2cf551d7ea4415cb6c56d55c1cc39e0ac21c798235b8a7/sherpa_onnx-1.13.7-cp39-cp39-win_amd64.whl",
+				"size": 2382823,
+				"sha256": "b570eedfb22d9391b61c3b31657e6be635f7147e988a4c0be957769f70c71582"
+			}
+		},
+		"core": {
+			"win32": {
+				"filename": "sherpa_onnx_core-1.13.7-py3-none-win32.whl",
+				"url": "https://files.pythonhosted.org/packages/ca/6c/ff34618f69bb1671f86056b9d1856b13be8376823a382353498f96c423ce/sherpa_onnx_core-1.13.7-py3-none-win32.whl",
+				"size": 14530298,
+				"sha256": "07de22f590299a68d9b5c985264f380579600a831ee95510ab12f4068800d08c"
+			},
+			"win_amd64": {
+				"filename": "sherpa_onnx_core-1.13.7-py3-none-win_amd64.whl",
+				"url": "https://files.pythonhosted.org/packages/20/87/2ac78c15d4b6bc8ba663b4fef8a9d01ef32a09c336b828d27af3e4962116/sherpa_onnx_core-1.13.7-py3-none-win_amd64.whl",
+				"size": 16526006,
+				"sha256": "cbcb78ef8a3bb74acf0b9d0a8715e9b857491be8e2b1e8f589f09ecf3d2f2a0b"
+			},
+			"win_arm64": {
+				"filename": "sherpa_onnx_core-1.13.7-py3-none-win_arm64.whl",
+				"url": "https://files.pythonhosted.org/packages/44/0e/77f9f9243245a865854b174d65eae52e7805cad885f8328f0eb1774fc6a7/sherpa_onnx_core-1.13.7-py3-none-win_arm64.whl",
+				"size": 15689427,
+				"sha256": "befe8193f02ed7935875acf540b8a554da0a89060965b32c1364f37c4ca7f3b3"
+			}
+		}
+	},
+	"voices": [
+		{
+			"id": "piper-el-int8",
+			"archive": "vits-piper-el_GR-rapunzelina-low-int8.tar.bz2",
+			"family": "vits",
+			"languages": [
+				"el"
+			],
+			"label": "Rapunzelina (Greek, Piper, compact)",
+			"licenseId": "CC0-1.0",
+			"licenseName": "CC0 1.0 (public domain)",
+			"licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+			"licenseAcceptance": false,
+			"recommended": true,
+			"notes": "Quantised build of the only public-domain neural Greek voice. Trained on about four hours of single-speaker audiobook speech (CSS10 Greek), fine-tuned from a US English voice, 16 kHz.",
+			"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-el_GR-rapunzelina-low-int8.tar.bz2",
+			"size": 21090546,
+			"sha256": "1fbab58d6380dda2a392ef531de89e8d1202d2dca804db7ebcff5be2b30c823a"
+		},
+		{
+			"id": "piper-el-fp16",
+			"archive": "vits-piper-el_GR-rapunzelina-low-fp16.tar.bz2",
+			"family": "vits",
+			"languages": [
+				"el"
+			],
+			"label": "Rapunzelina (Greek, Piper, balanced)",
+			"licenseId": "CC0-1.0",
+			"licenseName": "CC0 1.0 (public domain)",
+			"licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+			"licenseAcceptance": false,
+			"recommended": false,
+			"notes": "Half-precision build of the same voice. Larger download, slightly cleaner output.",
+			"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-el_GR-rapunzelina-low-fp16.tar.bz2",
+			"size": 35822591,
+			"sha256": "8057d4a3d986cb904fb3d0668a2be032a5409e65836a0766a8c4a6c43732c448"
+		},
+		{
+			"id": "piper-el-full",
+			"archive": "vits-piper-el_GR-rapunzelina-low.tar.bz2",
+			"family": "vits",
+			"languages": [
+				"el"
+			],
+			"label": "Rapunzelina (Greek, Piper, full precision)",
+			"licenseId": "CC0-1.0",
+			"licenseName": "CC0 1.0 (public domain)",
+			"licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+			"licenseAcceptance": false,
+			"recommended": false,
+			"notes": "Unquantised build. Highest fidelity of the three, slowest to synthesise.",
+			"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-el_GR-rapunzelina-low.tar.bz2",
+			"size": 67105521,
+			"sha256": "bb868070a9ba0d7220b3d7c9291a998c2f60accdb73525bd63b8751b86dd4839"
+		},
+		{
+			"id": "mimic3-el",
+			"archive": "vits-mimic3-el_GR-rapunzelina_low.tar.bz2",
+			"family": "vits",
+			"languages": [
+				"el"
+			],
+			"label": "Rapunzelina (Greek, Mimic 3)",
+			"licenseId": "CC0-1.0",
+			"licenseName": "CC0 1.0 (public domain)",
+			"licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+			"licenseAcceptance": false,
+			"recommended": false,
+			"notes": "Independent Mimic 3 training of the same public-domain corpus. Worth comparing against the Piper builds; the two differ audibly.",
+			"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-mimic3-el_GR-rapunzelina_low.tar.bz2",
+			"size": 66887821,
+			"sha256": "4381f051511db09553e1c54e78407758576880f9763b28af8e7e9e4ad0419013"
+		},
+		{
+			"id": "supertonic-3",
+			"archive": "sherpa-onnx-supertonic-3-tts-int8-2026-05-11.tar.bz2",
+			"family": "supertonic",
+			"languages": [
+				"el",
+				"en",
+				"de",
+				"fr",
+				"es",
+				"it",
+				"pt",
+				"ru",
+				"zh",
+				"ja",
+				"ko"
+			],
+			"label": "Supertonic 3 (multilingual, includes Greek)",
+			"licenseId": "OpenRAIL-M",
+			"licenseName": "BigScience Open RAIL-M",
+			"licenseUrl": "https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE",
+			"licenseAcceptance": true,
+			"recommended": false,
+			"notes": "Modern multilingual model, markedly newer than the Piper voices. Its licence adds use restrictions that must be passed to anyone you redistribute it to, so this add-on cannot ship it - you download it yourself after accepting the terms.",
+			"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/sherpa-onnx-supertonic-3-tts-int8-2026-05-11.tar.bz2",
+			"size": 128774318,
+			"sha256": "82fa96f91c4ef8abaae3a14a3f4153facf88bed821d1f7331cec2700f432c427"
+		},
+		{
+			"id": "kokoro-multi-int8",
+			"archive": "kokoro-int8-multi-lang-v1_1.tar.bz2",
+			"family": "kokoro",
+			"languages": [
+				"en",
+				"es",
+				"fr",
+				"hi",
+				"it",
+				"ja",
+				"pt",
+				"zh"
+			],
+			"label": "Kokoro v1.1 (multilingual, no Greek)",
+			"licenseId": "Apache-2.0",
+			"licenseName": "Apache 2.0",
+			"licenseUrl": "https://huggingface.co/hexgrad/Kokoro-82M",
+			"licenseAcceptance": false,
+			"recommended": false,
+			"notes": "Does NOT speak Greek. Offered for users who also read English or another supported language and want one neural voice for that.",
+			"url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-int8-multi-lang-v1_1.tar.bz2",
+			"size": 147031220,
+			"sha256": "a1e94694776049035c4f2c6529f003aaece993c76aae9a78995831c3c4dcafc6"
+		}
+	]
+}

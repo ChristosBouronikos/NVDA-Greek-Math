@@ -226,11 +226,53 @@ class GreekMathSettingsPanel(SettingsPanel):
 		)
 		self.repairButton.Bind(wx.EVT_BUTTON, self.onRepair)
 
+		helper.addItem(
+			wx.StaticText(
+				self,
+				# Translators: Introduces the optional downloadable neural voices.
+				label=_(
+					"Optional: NVDA's built-in Greek voices can sound robotic. Neural "
+					"voices are free, run entirely offline, and are downloaded only if "
+					"you ask. They replace the voice for all of NVDA, not just maths."
+				),
+			)
+		)
+		self.neuralVoicesCheckbox = helper.addItem(
+			wx.CheckBox(
+				self,
+				# Translators: Master switch for the optional downloadable neural voices.
+				label=_("&Offer downloadable neural voices in NVDA's synthesizer list"),
+			)
+		)
+		self.neuralVoicesCheckbox.SetValue(bool(section.get("neuralVoicesEnabled", False)))
+		self.manageVoicesButton = helper.addItem(
+			# Translators: Opens the dialog that downloads and removes neural voices.
+			wx.Button(self, label=_("&Manage neural voices..."))
+		)
+		self.manageVoicesButton.Bind(wx.EVT_BUTTON, self.onManageVoices)
+
 		self.copyDiagnosticsButton = helper.addItem(
 			# Translators: Copies exact add-on, provider, equation exposure, and voice details.
 			wx.Button(self, label=_("&Copy diagnostics"))
 		)
 		self.copyDiagnosticsButton.Bind(wx.EVT_BUTTON, self.onCopyDiagnostics)
+
+	def onManageVoices(self, event):
+		"""Open the voice manager, enabling the feature first if needed.
+
+		Downloading a voice is pointless while the synthesizer stays hidden from
+		NVDA's list, so opening the manager implies turning the option on.
+		"""
+		self.neuralVoicesCheckbox.SetValue(True)
+		config.conf["greekMathReader"]["neuralVoicesEnabled"] = True
+		try:
+			from .neuralVoicesDialog import NeuralVoicesDialog
+		except ImportError:
+			# Translators: Shown if the neural voice component is unavailable.
+			ui.message(_("The neural voice manager could not be opened"))
+			return
+		with NeuralVoicesDialog(self) as dialog:
+			dialog.ShowModal()
 
 	def onTestSpeech(self, event):
 		from . import speakSelfTest
@@ -359,6 +401,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 		section["relativeRate"] = self.relativeRateControl.GetValue()
 		section["pauseFactor"] = self.pauseFactorControl.GetValue()
 		section["autoMathCatBackend"] = self.autoMathCatCheckbox.GetValue()
+		section["neuralVoicesEnabled"] = self.neuralVoicesCheckbox.GetValue()
 		section["terminologyOverrides"] = json.dumps(
 			self._terminologyOverrides,
 			ensure_ascii=False,

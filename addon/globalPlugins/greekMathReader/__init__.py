@@ -58,6 +58,11 @@ CONFIG_SPEC = {
 	# math even when no native OMath or UIA math field confirms an equation
 	# (COM unavailable, protected view, Outlook reading pane and similar).
 	"translateUnconfirmedWordMath": "boolean(default=True)",
+	# Optional downloadable neural voices. Off by default: the add-on speaks
+	# through whatever synthesizer NVDA is set to, and nothing is downloaded
+	# unless the user turns this on and picks a voice. While it is off, the
+	# synthesizer does not appear in NVDA's synthesizer list at all.
+	"neuralVoicesEnabled": "boolean(default=False)",
 }
 
 config.conf.spec["greekMathReader"] = CONFIG_SPEC
@@ -1363,6 +1368,18 @@ def _getSynthDiagnostics():
 		return f"synthDiagnosticsError={error!r}"
 
 
+def _getNeuralVoiceDiagnostics():
+	"""Summarise the optional neural speech state for a support report."""
+	try:
+		if not config.conf["greekMathReader"].get("neuralVoicesEnabled", False):
+			return "disabled"
+		from .neural.manager import VoiceManager
+
+		return repr(VoiceManager().diagnostics())
+	except Exception as error:
+		return "unavailable ({0})".format(error)
+
+
 def _getPlatformDiagnostics():
 	"""Return Windows details relevant to Word's custom MathML extension."""
 	try:
@@ -1483,6 +1500,7 @@ def buildDiagnostics():
 			f"wordNativeMath={_isWordNativeMathEnabled()}",
 			f"wordUIAAlways={_isWordUIAAlwaysEnabled()}",
 			f"translateUnconfirmedWordMath={bool(config.conf['greekMathReader'].get('translateUnconfirmedWordMath', True))}",
+			f"neuralVoices={_getNeuralVoiceDiagnostics()}",
 			f"health={health!r}",
 			f"backend={getattr(_provider, 'lastBackend', backendDiagnostic['backend']) if _provider is not None else backendDiagnostic['backend']}; backendDetail={backendDiagnostic['detail']}",
 			f"terminologyVersion={TERMINOLOGY_VERSION}; profile={section.get('terminologyProfile', 'standard')}; domainHint={section.get('domainHint', 'auto')}",

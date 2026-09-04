@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+Adds optional neural voices. Off by default; nothing is downloaded unless you ask for it.
+
+* Adds an optional synthesizer, "Greek Math Reader neural voices", which appears in NVDA's own Speech settings beside eSpeak NG and Windows OneCore once you enable it and download a voice. It speaks all of NVDA, not only mathematics: NVDA chooses a synthesizer globally, so a math-only neural voice is not something an add-on can offer.
+* Adds a voice manager to the add-on settings ("Manage neural voices…") that downloads and removes voices. Five of the six catalogue entries speak Greek: three builds of the Piper *Rapunzelina* voice (compact 21 MB, balanced 36 MB, full precision 67 MB), an independent Mimic 3 training of the same public-domain corpus, and multilingual Supertonic 3. Kokoro is offered for English and seven other languages, and is labelled as not speaking Greek.
+* Every download is pinned to a SHA-256 recorded by reading the actual bytes, is fetched over HTTPS only, and is verified before it is unpacked. An entry without a digest is refused rather than installed unverified. Archives are unpacked member by member with the destination re-checked each time, and links are skipped, so an archive cannot write outside its own directory.
+* The speech runtime (sherpa-onnx, Apache 2.0, about 19 MB) is downloaded on first use rather than bundled, which keeps the add-on package at 193 KB instead of roughly 80 MB. Separate builds are kept per architecture, so a configuration shared between 32-bit NVDA 2025.x and 64-bit NVDA 2026.1 does not mix incompatible binaries.
+* Supertonic 3 is published under the BigScience Open RAIL-M licence, whose conditions bind anyone it is passed on to. That is incompatible with redistributing it inside a GPL-3.0-or-later add-on, so it is never shipped: the add-on shows the licence and downloads it only after you accept.
+* Adds the neural speech state to the diagnostics report.
+
+**A caution on quality.** The Greek Piper voices are built on about four hours of single-speaker audiobook speech and were fine-tuned from an English voice; the corpus authors flagged Greek as their weakest language. These voices may sound warmer than Microsoft Stefanos but less reliable in pronunciation, and neural voices degrade faster than formant synthesis at very high speech rates. Try one before relying on it. Note also that the pronunciation respellings the add-on applies to short Greek letter names were tuned for OneCore and do not necessarily transfer.
+
 ## 2.2.0 — 2026-09-04
 
 Bug-fix release, on the stable channel.
