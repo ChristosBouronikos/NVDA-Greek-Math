@@ -116,3 +116,120 @@ factor on a low-end Windows laptop.
 - NVDA add-on review criteria: https://addons.nvda-project.org/processes
 - NVDA 64-bit porting guide: https://groups.google.com/a/nvaccess.org/g/nvda-users/c/z_TOySDuatE
 - Dengjen (ex-Sonata): https://github.com/OnjLouis/dengjen-nvda
+
+---
+
+## 6. Specifically-requested candidates — why each was excluded
+
+| Candidate | What it actually is | Verdict |
+|---|---|---|
+| **Breeze TTS 2** (`BreezeBlue/Breeze-TTS-2`) | Open-**weight** TTS, Aug 2026. #1 open model on the Artificial Analysis TTS leaderboard | ❌ Two independent blockers: **weights are research/non-commercial only** (inference code is Apache-2.0, the weights are not) → incompatible with the store's GPL-2-or-later requirement; and it supports **English + Chinese only** — no Greek. Also PyTorch, far too heavy for NVDA |
+| **Kokoro-82M** | 82 M-param StyleTTS2-derived model, Apache-2.0 | ❌ Licence is perfect, size is perfect, but **no Greek**: en-US, en-GB, es, fr, hi, it, ja, pt-BR, zh only. Nothing to gain for a Greek add-on |
+| **Meltemi** (`ilsp/Meltemi-7B`) | **Not a TTS model.** A 7 B-param bilingual Greek *text* LLM from ILSP / Athena RC, continual-pretrained from Mistral-7B on 28.5 B Greek tokens, Apache-2.0 | ❌ Category mismatch — it generates text, not speech. ILSP does run a long-standing Greek TTS research programme, but has not published open TTS **weights**; their synthesis is offered as a demo/service, not a downloadable model. (ILSP's speech release, VOX-KRIKRI, is speech→text, i.e. ASR, not TTS) |
+| **RealtimeTTS** (`KoljaB/RealtimeTTS`) | **Not a model — an orchestration library.** MIT-licensed Python wrapper providing one streaming API over ~12 backends (System, Azure, ElevenLabs, Coqui XTTS, StyleTTS2, Piper, gTTS, Edge, Parler, Kokoro, Orpheus, OpenAI) | ❌ Adds no Greek voice of its own. Its only license-clean local Greek path is **Piper — i.e. back to `rapunzelina`**. Meanwhile it pulls a large async/PyAudio dependency stack and owns its own playback loop, which conflicts with NVDA's speech manager (NVDA drives buffering, indexing and interruption itself via `nvwave`). Wrong layer for a `synthDriver` |
+
+Takeaway: the 2025–26 wave of high-quality open TTS (Breeze, Kokoro, Zonos,
+MeloTTS, Orpheus) is uniformly English/Chinese-first. **None of them speak
+Greek.** Greek availability, not model quality, is what constrains this feature.
+
+---
+
+## 7. OpenRAIL-M analysis for `Supertone/supertonic-3`
+
+Licence text is BigScience Open RAIL-M. Sample code is MIT; **weights** are RAIL.
+
+**Permissions granted:** commercial use ✔, redistribution ✔, derivative works ✔.
+
+**Attachment A use restrictions (13 clauses).** Prohibits use to: break the law
+(a); exploit or harm minors (b); generate disinformation intended to harm (c);
+generate PII usable to harm someone (d); disseminate machine-generated content
+without intelligibly disclaiming its origin (e); defame or harass (f);
+impersonate / deepfake without consent (g); make automated decisions adversely
+affecting legal rights (h); discriminate on social behaviour or predicted
+personal characteristics (i); exploit a group's vulnerabilities to cause harm
+(j); discriminate on legally protected characteristics (k); give medical advice
+or interpret results (l); generate material for justice, law enforcement,
+immigration or asylum administration (m).
+
+**Does any clause obstruct a screen reader?** No. Reading a user's own document
+aloud to that same user touches none of (a)–(m). Clause (e) is the only one
+worth a glance, and it concerns *disseminating* generated content to third
+parties — a screen reader speaks to its operator and disseminates nothing.
+**The use case itself is clearly permitted.**
+
+**So why is it still blocked for bundling?** The downstream-obligation clause:
+every redistribution and every derivative "will always have to include — at
+minimum — the same use-based restrictions", and each recipient must be given
+the licence and notified. That is an additional restriction on downstream
+recipients, which **GPL-3.0 §7 / §10 forbid us from imposing**. Shipping the
+weights inside a GPL-3.0-or-later `.nvda-addon` would therefore be a licence
+conflict, independent of whether the restrictions are reasonable.
+
+**Conclusion — usable, but only user-fetched:**
+
+- ❌ Cannot bundle the weights in the add-on package.
+- ✅ *Can* support the format and let the **user** download the weights
+  themselves after being shown the licence. We would be distributing a client,
+  not the model — the same posture Dengjen/piper-nvda take with their voice
+  catalogues. Requires an explicit licence-acceptance step in the download UI.
+- Practical upside if we do: 31 languages including Greek from one 99 M-param
+  ONNX model, already supported by sherpa-onnx as `supertonic-3-el`.
+
+---
+
+## 8. Written quality assessment — `el_GR-rapunzelina-low` vs Microsoft Stefanos
+
+No audio comparison run; this is a documentary assessment of what the voice is
+built from, for verification on Windows later.
+
+### Provenance — the main concern
+
+- **Training corpus: CSS10 Greek**, ~**4 h 08 m** of LibriVox audiobook speech
+  from a single speaker. That is very small for neural TTS.
+- The CSS10 authors report Greek as their weakest language: they **could not
+  train Tacotron on Greek at all** because of the data size, and their DCTTS
+  Greek model came out at "notably lower quality" than the other nine
+  languages. The dataset's own authors flag Greek as the problem case.
+- Piper's voice was **fine-tuned from the US-English "Ryan" model**, so
+  English phonetic colouring in the output is a live risk.
+- Quality tier is **"low"** — 16 kHz output, reduced model. **No medium or high
+  tier exists for Greek**, so there is no upgrade path within Piper.
+
+### Screen-reader-specific risks to verify on Windows
+
+1. **Speech rate.** Many NVDA users run 300–800 wpm. VITS voices scale rate via
+   `length_scale`, which degrades intelligibility much faster than a formant or
+   concatenative synth. This is the single most likely reason a neural voice
+   loses to Stefanos in daily use, and it must be tested at *your* rate, not at
+   default.
+2. **Mixed Greek/Latin text — directly relevant to this add-on.** A Greek-only
+   phoneme model has no sane handling of embedded Latin. Piper issue #696
+   reports `el_GR-rapunzelina-low` rendering English input as "English with a
+   heavy French accent". Version 2.2.0 just added the *"read Latin letters as
+   literal English letters"* option — that option and this voice may interact
+   badly.
+3. **`SPEECH_PRONUNCIATION` is tuned for Stefanos.** The respellings in
+   `provider.py` (βε→βέ, ψι→ψί …) exist because OneCore *spells* short
+   unaccented monosyllables. A different synth will have entirely different
+   failure modes, so that table would need re-deriving per voice — it cannot be
+   assumed to transfer.
+4. **No user dictionary.** Piper has no lexicon override mechanism; any
+   mispronounced mathematical term can only be fixed by respelling upstream in
+   our engine.
+5. **Latency.** Neural synthesis has a per-utterance startup cost that formant
+   synths do not. For character echo while typing, this is felt immediately.
+
+### Honest expectation
+
+Stefanos is a competent commercial voice. `rapunzelina-low` is a low-tier model
+trained on four hours of audiobook by a single speaker, fine-tuned off English,
+flagged as weak by its own dataset authors. It will very likely sound **less
+robotic in tone but less reliable in pronunciation**, and may lose outright at
+high speech rates. It should be treated as *unproven* until heard on Windows —
+it is not a safe assumption that this feature improves the user's daily
+experience.
+
+**Recommended verification order on Windows:** install Dengjen or piper-nvda
+from the Add-on Store, add the Greek voice, and live with it for a day at your
+normal speech rate before any driver work starts here. That is a zero-code test
+of the exact voice this feature would ship.
