@@ -45,7 +45,7 @@ and voice download options for OneCore and Vocalizer Expressive."""
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.5.6: scratch and defer experimental neural voices from active settings and synthesizer options, cleanly organizing voice tools and preserving code for future releases."""
+		"""Version 2.5.6: moves math speech rate and pauses into General settings alongside an editable, prefilled speech preview transcript, while deferring experimental neural voices from active options."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",

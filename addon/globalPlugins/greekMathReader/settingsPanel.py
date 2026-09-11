@@ -49,14 +49,13 @@ class GreekMathSettingsPanel(SettingsPanel):
 			generalHelper, tabGeneral = createTabPage(_("General"))
 			mathHelper, tabMath = createTabPage(_("Math & Notation"))
 			navHelper, tabNav = createTabPage(_("Matrices & Navigation"))
-			previewHelper, tabPreview = createTabPage(_("Rate & Preview"))
 			termsHelper, tabTerms = createTabPage(_("Symbols & Terminology"))
 			voicesHelper, tabVoices = createTabPage(_("Voices & Tools"))
 		else:
 			self.notebook = None
 			generalHelper = gui.guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
-			mathHelper = navHelper = previewHelper = termsHelper = voicesHelper = generalHelper
-			tabGeneral = tabMath = tabNav = tabPreview = tabTerms = tabVoices = self
+			mathHelper = navHelper = termsHelper = voicesHelper = generalHelper
+			tabGeneral = tabMath = tabNav = tabTerms = tabVoices = self
 
 		# =========================================================================
 		# Tab 1: General & Speech Behavior
@@ -122,6 +121,71 @@ class GreekMathSettingsPanel(SettingsPanel):
 			wx.CheckBox(tabGeneral, label=_("Announce capital letters independently of verbosity"))
 		)
 		self.announceCapitalsCheckbox.SetValue(bool(section.get("announceCapitals", False)))
+
+		# --- Section: Math Speech Rate & Pauses ---
+		self.relativeRateControl = generalHelper.addLabeledControl(
+			_("Math speech rate (% of normal NVDA speech, 100 = normal):"),
+			wx.SpinCtrl,
+			min=1,
+			max=100,
+			initial=int(section.get("relativeRate", 100)),
+		)
+		self.pauseFactorControl = generalHelper.addLabeledControl(
+			_("Math pauses (% of standard breaks: 0 = none, 100 = normal, 200 = double):"),
+			wx.SpinCtrl,
+			min=0,
+			max=200,
+			initial=2 * int(section.get("pauseFactor", 50)),
+		)
+
+		# --- Section: Math Speech Preview ---
+		from .settingsSupport import PREVIEW_EXAMPLES
+
+		generalHelper.addItem(
+			wx.StaticText(
+				tabGeneral,
+				label=_(
+					"Preview uses unsaved choices in the local Greek engine and does not run Repair. "
+					"You can edit the transcript below or select an example to test speech."
+				),
+			)
+		)
+		self.exampleChoice = generalHelper.addLabeledControl(
+			_("Preview example:"),
+			wx.Choice,
+			choices=[_(label) for label, source in PREVIEW_EXAMPLES],
+		)
+		self.exampleChoice.SetSelection(0)
+		self.exampleChoice.Bind(wx.EVT_CHOICE, self.onExampleChoiceChange)
+
+		self.previewTranscript = generalHelper.addLabeledControl(
+			_("Preview transcript:"),
+			wx.TextCtrl,
+			style=wx.TE_MULTILINE,
+			size=(-1, 90),
+		)
+		self.previewTranscript.SetValue(
+			_(
+				"Έστω η δευτεροβάθμια εξίσωση: f(x) = x² - 5x + 6 = 0, με ρίζες x₁ = 2 και x₂ = 3.\n"
+				"Επίσης, θεωρούμε το ολοκλήρωμα: ∫₀¹ (2x + 1) dx = 2, και την ταυτότητα a² + b² = c²."
+			)
+		)
+		self.previewTranscript.Bind(wx.EVT_TEXT, self.onTranscriptEdit)
+		self._userEditedTranscript = True
+		self._lastEvaluatedExample = 0
+
+		self.previewStatus = generalHelper.addItem(wx.StaticText(tabGeneral, label=""))
+		self.testSpeechButton = generalHelper.addItem(
+			# Translators: Button that speaks the sample equation or custom transcript using the add-on's Greek engine.
+			wx.Button(tabGeneral, label=_("Listen to transcript / example (including rate and pauses)"))
+		)
+		self.testSpeechButton.Bind(wx.EVT_BUTTON, self.onTestSpeech)
+		self.currentSpeechButton = generalHelper.addItem(
+			wx.Button(tabGeneral, label=_("Listen to current expression"))
+		)
+		self.currentSpeechButton.Bind(wx.EVT_BUTTON, self.onCurrentSpeech)
+
+		# --- Section: Integrations & Fallbacks ---
 
 		self.unconfirmedBackupCheckbox = generalHelper.addItem(
 			# Translators: Label of a checkbox enabling the backup translation of
@@ -260,59 +324,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 		self.boundarySampleButton.Bind(wx.EVT_BUTTON, self.onBoundarySample)
 
 		# =========================================================================
-		# Tab 4: Speech Rate, Pauses & Preview
-		# =========================================================================
-		self.relativeRateControl = previewHelper.addLabeledControl(
-			_("Math speech rate (% of normal NVDA speech, 100 = normal):"),
-			wx.SpinCtrl,
-			min=1,
-			max=100,
-			initial=int(section.get("relativeRate", 100)),
-		)
-		self.pauseFactorControl = previewHelper.addLabeledControl(
-			_("Math pauses (% of standard breaks: 0 = none, 100 = normal, 200 = double):"),
-			wx.SpinCtrl,
-			min=0,
-			max=200,
-			initial=2 * int(section.get("pauseFactor", 50)),
-		)
-
-		from .settingsSupport import PREVIEW_EXAMPLES
-
-		previewHelper.addItem(
-			wx.StaticText(
-				tabPreview,
-				label=_(
-					"Preview uses unsaved choices in the local Greek engine and does not run Repair. "
-					"Read an expression before opening Settings to preview it here."
-				),
-			)
-		)
-		self.exampleChoice = previewHelper.addLabeledControl(
-			_("Preview example:"),
-			wx.Choice,
-			choices=[_(label) for label, source in PREVIEW_EXAMPLES],
-		)
-		self.exampleChoice.SetSelection(0)
-		self.previewTranscript = previewHelper.addLabeledControl(
-			_("Preview transcript:"),
-			wx.TextCtrl,
-			style=wx.TE_MULTILINE | wx.TE_READONLY,
-			size=(-1, 90),
-		)
-		self.previewStatus = previewHelper.addItem(wx.StaticText(tabPreview, label=""))
-		self.testSpeechButton = previewHelper.addItem(
-			# Translators: Button that directly speaks a sample equation using the add-on's Greek engine.
-			wx.Button(tabPreview, label=_("Listen to example (including rate and pauses)"))
-		)
-		self.testSpeechButton.Bind(wx.EVT_BUTTON, self.onTestSpeech)
-		self.currentSpeechButton = previewHelper.addItem(
-			wx.Button(tabPreview, label=_("Listen to current expression"))
-		)
-		self.currentSpeechButton.Bind(wx.EVT_BUTTON, self.onCurrentSpeech)
-
-		# =========================================================================
-		# Tab 5: Symbols & Terminology
+		# Tab 4: Symbols & Terminology
 		# =========================================================================
 		from .engine.symbols_el import validate_pronunciations
 
@@ -368,7 +380,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 		self._refreshTerminologyChoices()
 
 		# =========================================================================
-		# Tab 6: Voices & Tools
+		# Tab 5: Voices & Tools
 		# =========================================================================
 		# --- Section: Neural Voices (Deferred / commented out for future releases) ---
 		# voicesHelper.addItem(
@@ -553,7 +565,26 @@ class GreekMathSettingsPanel(SettingsPanel):
 				self._pronunciationProfiles = dialog.profiles
 				self._pronunciationCourse = dialog.course
 
-	def _preview(self, source, inputFormat):
+	def onExampleChoiceChange(self, event):
+		from .settingsSupport import PREVIEW_EXAMPLES
+		idx = self.exampleChoice.GetSelection()
+		if 0 <= idx < len(PREVIEW_EXAMPLES):
+			self._lastEvaluatedExample = idx
+			self._userEditedTranscript = False
+			self._preview(PREVIEW_EXAMPLES[idx][1], "mathml", speak=False)
+
+	def onTranscriptEdit(self, event):
+		self._userEditedTranscript = True
+
+	def _speakCustomTranscript(self, text):
+		import speech
+		from .provider import getReadingConfig, tokensToSpeechSequence
+		readingConfig = getReadingConfig(self._pendingSection())
+		sequence = tokensToSpeechSequence([text], readingConfig)
+		self.previewStatus.SetLabel("")
+		speech.speak(sequence)
+
+	def _preview(self, source, inputFormat, speak=True):
 		import speech
 		from .provider import getReadingConfig, tokensToSpeechSequence
 		from .settingsSupport import preview_tokens
@@ -571,18 +602,37 @@ class GreekMathSettingsPanel(SettingsPanel):
 		unknown = get_last_engine_diagnostics()["unknown"]
 		self.previewStatus.SetLabel(_("Unknown symbols or identifiers: {symbols}").format(
 			symbols=", ".join(item.split(":", 1)[-1] for item in unknown)) if unknown else "")
-		speech.speak(sequence)
+		if speak:
+			speech.speak(sequence)
 
 	def onTestSpeech(self, event):
 		from .settingsSupport import PREVIEW_EXAMPLES
-		self._preview(PREVIEW_EXAMPLES[self.exampleChoice.GetSelection()][1], "mathml")
+		idx = self.exampleChoice.GetSelection()
+		if getattr(self, "_lastEvaluatedExample", None) != idx:
+			if 0 <= idx < len(PREVIEW_EXAMPLES):
+				self._lastEvaluatedExample = idx
+				self._userEditedTranscript = False
+				self._preview(PREVIEW_EXAMPLES[idx][1], "mathml", speak=True)
+				return
+		if getattr(self, "_userEditedTranscript", False):
+			text = self.previewTranscript.GetValue().strip()
+			if text:
+				self._speakCustomTranscript(text)
+				return
+		if 0 <= idx < len(PREVIEW_EXAMPLES):
+			self._preview(PREVIEW_EXAMPLES[idx][1], "mathml", speak=True)
+		else:
+			text = self.previewTranscript.GetValue().strip()
+			if text:
+				self._speakCustomTranscript(text)
 
 	def onCurrentSpeech(self, event):
 		from .provider import lastReading
 		if lastReading is None:
 			ui.message(_("Read an expression first, then reopen Settings."))
 			return
-		self._preview(lastReading["expression"], lastReading["format"])
+		self._userEditedTranscript = False
+		self._preview(lastReading["expression"], lastReading["format"], speak=True)
 
 	def onBoundarySample(self, event):
 		import tones
@@ -691,6 +741,15 @@ class GreekMathSettingsPanel(SettingsPanel):
 		self.matrixPositionsCheckbox.SetValue(False)
 		self.boundarySoundControl.SetValue(100)
 		self.autoMathCatCheckbox.SetValue(True)
+		self.exampleChoice.SetSelection(0)
+		self.previewTranscript.SetValue(
+			_(
+				"Έστω η δευτεροβάθμια εξίσωση: f(x) = x² - 5x + 6 = 0, με ρίζες x₁ = 2 και x₂ = 3.\n"
+				"Επίσης, θεωρούμε το ολοκλήρωμα: ∫₀¹ (2x + 1) dx = 2, και την ταυτότητα a² + b² = c²."
+			)
+		)
+		self._userEditedTranscript = True
+		self._lastEvaluatedExample = 0
 		# Translators: Announced after reset; Word must recreate its accessibility objects.
 		ui.message(
 			_(

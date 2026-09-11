@@ -187,6 +187,22 @@ class TestSettingsWorkflows(unittest.TestCase):
 		self.panel.onCurrentSpeech(None)
 		self.assertIn('Read an expression first', self.messages[-1])
 
+	def test_preview_transcript_is_prefilled_and_editable(self):
+		transcript = self.panel.previewTranscript.GetValue()
+		self.assertIn("δευτεροβάθμια εξίσωση", transcript)
+		self.assertIn("f(x)", transcript)
+		self.assertIn("ολοκλήρωμα", transcript)
+		# Verify wx.TE_READONLY is not in the style
+		style = getattr(self.panel.previewTranscript, "style", 0)
+		self.assertFalse(style & self.wx.TE_READONLY)
+
+	def test_preview_transcript_custom_edit_speaks_custom_text(self):
+		self.panel.previewTranscript.SetValue("χ στο τετράγωνο συν ένα")
+		self.panel.onTranscriptEdit(None)
+		self.panel.onTestSpeech(None)
+		spoken = " ".join(item for item in self.audio[-1] if isinstance(item, str))
+		self.assertIn("χ στο τετράγωνο συν ένα", spoken)
+
 	def test_symbol_editor_distinguishes_case_reset_and_cancel(self):
 		profiles = {'Default': {}, 'Physics': {'G': 'δοκιμή'}}
 		dialog = self.dialogs.PronunciationDialog(Control(), profiles, 'Default', self.provider.getReadingConfig())

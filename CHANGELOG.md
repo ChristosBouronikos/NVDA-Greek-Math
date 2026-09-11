@@ -4,6 +4,8 @@
 
 Maintenance release on the stable channel.
 
+* Integrates math speech rate, pauses, and math speech preview directly into the primary General tab for immediate access upon opening settings.
+* Makes the preview transcript fully editable and prefills it with Greek mathematical text and equations, allowing users to test custom expressions with configured rates and pauses.
 * Scratches and defers experimental neural voices from active settings and synthesizer options, removing all relative neural settings and model management controls from the settings panel.
 * Keeps the underlying neural voice implementation intact in the codebase, commented out and dormant for future releases.
 * Cleans up the Voices & Tools tab to feature only stable Greek speech options (Windows OneCore and Nuance Vocalizer Expressive) and maintenance tools.
