@@ -33,8 +33,8 @@ from .provider import GreekMathProvider, getGreekVoiceSupport, tokensToSpeechSeq
 
 addonHandler.initTranslation()
 
-ADDON_VERSION = "2.5.4"
-BUILD_ID = "20260911-settings-tabs-and-vocalizer"
+ADDON_VERSION = "2.5.5"
+BUILD_ID = "20260911-onecore-and-vocalizer-voices"
 _WORD_UIA_ALWAYS = 3
 
 CONFIG_SPEC = {

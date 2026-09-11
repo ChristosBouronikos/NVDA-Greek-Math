@@ -3,6 +3,10 @@
 These gates record the evidence still required for reviewed semantic and voice
 quality. A blank approval is not an implicit pass.
 
+## Status of 2.5.5 stable (2026-09-11)
+
+**Version 2.5.5 is being released on the stable channel to add a direct download button for additional Greek voice options in Windows OneCore via Windows Speech Settings.** Automated engine, packaging and lifecycle checks pass. Manual review gates for semantic terminology and optional neural voices remain pending as documented below.
+
 ## Status of 2.5.4 stable (2026-09-11)
 
 **Version 2.5.4 is being released on the stable channel to organize the settings panel into clean categories and provide a direct download button for Nuance Vocalizer Expressive.** Automated engine, packaging and lifecycle checks pass. Manual review gates for semantic terminology and optional neural voices remain pending as documented below.

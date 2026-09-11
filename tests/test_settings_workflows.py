@@ -291,6 +291,13 @@ class TestSettingsWorkflows(unittest.TestCase):
 		self.assertEqual(opened, ['https://www.tiflotecnia.net/en/downloads.htm'])
 		self.assertIn('Opening Vocalizer Expressive download page', self.messages[-1])
 
+	def test_onecore_download_button_opens_settings_and_notifies(self):
+		opened = []
+		with patch('webbrowser.open', opened.append):
+			self.panel.onDownloadOneCore(None)
+		self.assertEqual(opened, ['ms-settings:speech'])
+		self.assertIn('Opening Windows Speech Settings', self.messages[-1])
+
 	def test_settings_panel_tabs_and_controls_exist(self):
 		self.assertIsNotNone(self.panel.notebook)
 		self.assertIsNotNone(self.panel.verbosityChoice)
@@ -302,4 +309,5 @@ class TestSettingsWorkflows(unittest.TestCase):
 		self.assertIsNotNone(self.panel.pauseFactorControl)
 		self.assertIsNotNone(self.panel.symbolEditorButton)
 		self.assertIsNotNone(self.panel.neuralVoicesCheckbox)
+		self.assertIsNotNone(self.panel.downloadOneCoreButton)
 		self.assertIsNotNone(self.panel.downloadVocalizerButton)

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.5.5 — 2026-09-11
+
+Maintenance release on the stable channel.
+
+* Adds a button in the Voices & Tools settings tab to download additional Greek voice packages for Windows OneCore via Windows Speech Settings.
+* Organizes the settings panel into 6 clean, accessible tabs: General, Math & Notation, Matrices & Navigation, Rate & Preview, Symbols & Terminology, and Voices & Tools.
+* Adds a direct download button in Voices & Tools for Nuance Vocalizer Expressive (Melina / Nikos) from Tiflotecnia.
+
 ## 2.5.4 — 2026-09-11
 
 Maintenance release on the stable channel.

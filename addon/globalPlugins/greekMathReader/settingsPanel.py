@@ -397,6 +397,21 @@ class GreekMathSettingsPanel(SettingsPanel):
 		)
 		self.manageVoicesButton.Bind(wx.EVT_BUTTON, self.onManageVoices)
 
+		# --- Section: Windows OneCore Voices ---
+		voicesHelper.addItem(
+			wx.StaticText(
+				tabVoices,
+				label=_(
+					"Windows OneCore voices include Microsoft Stefanos and additional downloadable language packages. "
+					"Use Windows Settings to download and install more Greek voice options."
+				),
+			)
+		)
+		self.downloadOneCoreButton = voicesHelper.addItem(
+			wx.Button(tabVoices, label=_("&Download more Greek voices for Windows OneCore..."))
+		)
+		self.downloadOneCoreButton.Bind(wx.EVT_BUTTON, self.onDownloadOneCore)
+
 		# --- Section: Nuance Vocalizer Expressive ---
 		voicesHelper.addItem(
 			wx.StaticText(
@@ -444,6 +459,31 @@ class GreekMathSettingsPanel(SettingsPanel):
 
 	def onNeuralVoicesToggle(self, event):
 		config.conf["greekMathReader"]["neuralVoicesEnabled"] = self.neuralVoicesCheckbox.GetValue()
+
+	def onDownloadOneCore(self, event):
+		"""Open Windows Speech Settings to download and install more Greek voice packages."""
+		ui.message(
+			_(
+				"Opening Windows Speech Settings... Select 'Add voices' under 'Manage voices' "
+				"to download more Greek voice options."
+			)
+		)
+		try:
+			import os
+
+			if hasattr(os, "startfile"):
+				os.startfile("ms-settings:speech")
+			else:
+				import webbrowser
+
+				webbrowser.open("ms-settings:speech")
+		except Exception:
+			try:
+				import webbrowser
+
+				webbrowser.open("ms-settings:speech")
+			except Exception:
+				pass
 
 	def onDownloadVocalizer(self, event):
 		"""Open the official Vocalizer Expressive downloads page in the browser."""

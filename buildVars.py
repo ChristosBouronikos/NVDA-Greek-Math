@@ -41,11 +41,11 @@ three verbosity levels, configurable pronunciations and matrix reading, unsaved 
 and optional downloadable offline neural voices."""
 	),
 	# version
-	addon_version="2.5.4",
+	addon_version="2.5.5",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.5.4: organizes settings into clean, categorized tabs (General, Math & Notation, Matrices & Navigation, Rate & Preview, Symbols & Terminology, Voices & Tools) and adds a direct download button for Nuance Vocalizer Expressive (Melina / Nikos)."""
+		"""Version 2.5.5: adds direct buttons to download additional Greek voice options for Windows OneCore (via Windows Speech Settings) and Nuance Vocalizer Expressive (Melina / Nikos via Tiflotecnia), within the newly categorized settings tabs."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",
