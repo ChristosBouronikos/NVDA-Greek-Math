@@ -194,6 +194,18 @@ class TestDriverIsInertUntilEnabled(unittest.TestCase):
 		finally:
 			self.module._importManager = original
 
+	def test_the_synthesizer_is_offered_when_enabled_and_a_voice_is_ready(self):
+		class ReadyManager:
+			def isReady(self):
+				return True
+
+		original = self.module._importManager
+		self.module._importManager = lambda: ReadyManager
+		try:
+			self.assertTrue(self._check(True))
+		finally:
+			self.module._importManager = original
+
 	def test_the_driver_declares_itself_as_a_separate_synthesizer(self):
 		# It is an alternative to OneCore/eSpeak, not a replacement for the
 		# add-on's math provider, so it must not collide with NVDA's own names.
@@ -211,6 +223,14 @@ class TestPackagingKeepsTheAddonSmall(unittest.TestCase):
 			if path.is_file() and path.suffix in (".onnx", ".whl", ".dll", ".pyd", ".bz2")
 		]
 		self.assertEqual(heavy, [])
+
+
+class TestNeuralVoiceDialogLifecycle(unittest.TestCase):
+	def test_both_close_controls_end_the_modal_dialog(self):
+		source = (PLUGIN / "neuralVoicesDialog.py").read_text(encoding="utf-8")
+		self.assertIn("closeButton.Bind(wx.EVT_BUTTON, self.onClose)", source)
+		self.assertIn("self.Bind(wx.EVT_CLOSE, self.onClose)", source)
+		self.assertIn("self.EndModal(wx.ID_CLOSE)", source)
 
 
 if __name__ == "__main__":

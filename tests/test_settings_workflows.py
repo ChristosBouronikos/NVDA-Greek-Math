@@ -154,6 +154,16 @@ class TestSettingsWorkflows(unittest.TestCase):
 		self.assertEqual(settings.gradient_name, 'κλίση')
 		self.assertTrue(settings.explain_composition)
 
+	def test_closing_voice_manager_then_saving_enables_the_synthesizer(self):
+		dialogModule = types.ModuleType(fixture.PACKAGE_NAME + '.neuralVoicesDialog')
+		dialogModule.NeuralVoicesDialog = Control
+		self._stub(fixture.PACKAGE_NAME + '.neuralVoicesDialog', dialogModule)
+		self.config['neuralVoicesEnabled'] = False
+		self.panel.neuralVoicesCheckbox.SetValue(False)
+		self.panel.onManageVoices(None)
+		self.panel.onSave()
+		self.assertTrue(self.config['neuralVoicesEnabled'])
+
 	def test_preview_examples_and_missing_current(self):
 		for index in range(len(self.support.PREVIEW_EXAMPLES)):
 			self.panel.exampleChoice.SetSelection(index)

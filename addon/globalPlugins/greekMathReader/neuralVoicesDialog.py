@@ -118,10 +118,11 @@ class NeuralVoicesDialog(wx.Dialog):
 		buttons.Add(self.removeButton, flag=wx.RIGHT, border=8)
 		# Translators: Button that closes the neural voice dialog.
 		closeButton = wx.Button(self, wx.ID_CLOSE, _("&Close"))
-		closeButton.Bind(wx.EVT_BUTTON, lambda event: self.Close())
+		closeButton.Bind(wx.EVT_BUTTON, self.onClose)
 		buttons.Add(closeButton)
 		helper.addItem(buttons)
 
+		self.Bind(wx.EVT_CLOSE, self.onClose)
 		self.SetEscapeId(wx.ID_CLOSE)
 		self.SetSizerAndFit(mainSizer)
 		self.refresh()
@@ -200,6 +201,13 @@ class NeuralVoicesDialog(wx.Dialog):
 
 	# -- actions -------------------------------------------------------------
 
+	def onClose(self, event):
+		"""End the modal session for both the Close button and window X."""
+		if self.IsModal():
+			self.EndModal(wx.ID_CLOSE)
+		else:
+			self.Destroy()
+
 	def _confirmLicence(self, voice):
 		"""Ask the user to accept a licence that binds them personally."""
 		if not voice.requiresLicenseAcceptance:
@@ -269,7 +277,8 @@ class NeuralVoicesDialog(wx.Dialog):
 				# Translators: Shown after a voice downloads successfully.
 				_(
 					"{label} is ready.\n\n"
-					"To use it, choose \"Greek Math Reader neural voices\" as your "
+					"Close this voice manager, then press OK in Greek Math Reader settings. "
+					"After that, choose \"Greek Math Reader neural voices\" as your "
 					"synthesizer in NVDA's Speech settings."
 				).format(label=voice.label),
 				# Translators: Title of the download success message.
