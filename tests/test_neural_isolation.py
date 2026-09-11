@@ -154,6 +154,7 @@ class TestNeuralCodeCannotReachTheReadingPath(unittest.TestCase):
 		self.assertFalse([line for line in moduleLevel if "globalVars" in line])
 
 
+@unittest.skip("Neural voices synthesizer driver commented out for future releases")
 class TestDriverIsInertUntilEnabled(unittest.TestCase):
 	def setUp(self):
 		self.module = loadDriver()

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.5.6 — 2026-09-11
+
+Maintenance release on the stable channel.
+
+* Scratches and defers experimental neural voices from active settings and synthesizer options, removing all relative neural settings and model management controls from the settings panel.
+* Keeps the underlying neural voice implementation intact in the codebase, commented out and dormant for future releases.
+* Cleans up the Voices & Tools tab to feature only stable Greek speech options (Windows OneCore and Nuance Vocalizer Expressive) and maintenance tools.
+
 ## 2.5.5 — 2026-09-11
 
 Maintenance release on the stable channel.

@@ -155,6 +155,7 @@ class TestSettingsWorkflows(unittest.TestCase):
 		self.assertEqual(settings.gradient_name, 'κλίση')
 		self.assertTrue(settings.explain_composition)
 
+	@unittest.skip("Neural voices scratched from settings; preserved for future releases")
 	def test_closing_voice_manager_then_saving_enables_the_synthesizer(self):
 		dialogModule = types.ModuleType(fixture.PACKAGE_NAME + '.neuralVoicesDialog')
 		dialogModule.NeuralVoicesDialog = Control
@@ -167,6 +168,7 @@ class TestSettingsWorkflows(unittest.TestCase):
 		self.panel.onSave()
 		self.assertTrue(self.config['neuralVoicesEnabled'])
 
+	@unittest.skip("Neural voices scratched from settings; preserved for future releases")
 	def test_neural_voices_checkbox_toggle_immediately_updates_config(self):
 		self.config['neuralVoicesEnabled'] = False
 		self.panel.neuralVoicesCheckbox.SetValue(True)
@@ -308,6 +310,7 @@ class TestSettingsWorkflows(unittest.TestCase):
 		self.assertIsNotNone(self.panel.relativeRateControl)
 		self.assertIsNotNone(self.panel.pauseFactorControl)
 		self.assertIsNotNone(self.panel.symbolEditorButton)
-		self.assertIsNotNone(self.panel.neuralVoicesCheckbox)
+		self.assertFalse(hasattr(self.panel, "neuralVoicesCheckbox"))
+		self.assertFalse(hasattr(self.panel, "manageVoicesButton"))
 		self.assertIsNotNone(self.panel.downloadOneCoreButton)
 		self.assertIsNotNone(self.panel.downloadVocalizerButton)

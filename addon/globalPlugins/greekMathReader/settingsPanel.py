@@ -370,32 +370,32 @@ class GreekMathSettingsPanel(SettingsPanel):
 		# =========================================================================
 		# Tab 6: Voices & Tools
 		# =========================================================================
-		# --- Section: Neural Voices ---
-		voicesHelper.addItem(
-			wx.StaticText(
-				tabVoices,
-				# Translators: Introduces the optional downloadable neural voices.
-				label=_(
-					"Optional offline neural voices: replace the voice for all of NVDA, "
-					"not just maths. Downloaded only on demand."
-				),
-			)
-		)
-		self.neuralVoicesCheckbox = voicesHelper.addItem(
-			wx.CheckBox(
-				tabVoices,
-				# Translators: Master switch for the optional downloadable neural voices.
-				label=_("&Offer downloadable neural voices in NVDA's synthesizer list"),
-			)
-		)
-		self.neuralVoicesCheckbox.SetValue(bool(section.get("neuralVoicesEnabled", False)))
-		self.neuralVoicesCheckbox.Bind(wx.EVT_CHECKBOX, self.onNeuralVoicesToggle)
-
-		self.manageVoicesButton = voicesHelper.addItem(
-			# Translators: Opens the dialog that downloads and removes neural voices.
-			wx.Button(tabVoices, label=_("&Manage neural voices..."))
-		)
-		self.manageVoicesButton.Bind(wx.EVT_BUTTON, self.onManageVoices)
+		# --- Section: Neural Voices (Deferred / commented out for future releases) ---
+		# voicesHelper.addItem(
+		# 	wx.StaticText(
+		# 		tabVoices,
+		# 		# Translators: Introduces the optional downloadable neural voices.
+		# 		label=_(
+		# 			"Optional offline neural voices: replace the voice for all of NVDA, "
+		# 			"not just maths. Downloaded only on demand."
+		# 		),
+		# 	)
+		# )
+		# self.neuralVoicesCheckbox = voicesHelper.addItem(
+		# 	wx.CheckBox(
+		# 		tabVoices,
+		# 		# Translators: Master switch for the optional downloadable neural voices.
+		# 		label=_("&Offer downloadable neural voices in NVDA's synthesizer list"),
+		# 	)
+		# )
+		# self.neuralVoicesCheckbox.SetValue(bool(section.get("neuralVoicesEnabled", False)))
+		# self.neuralVoicesCheckbox.Bind(wx.EVT_CHECKBOX, self.onNeuralVoicesToggle)
+		#
+		# self.manageVoicesButton = voicesHelper.addItem(
+		# 			# Translators: Opens the dialog that downloads and removes neural voices.
+		# 	wx.Button(tabVoices, label=_("&Manage neural voices..."))
+		# )
+		# self.manageVoicesButton.Bind(wx.EVT_BUTTON, self.onManageVoices)
 
 		# --- Section: Windows OneCore Voices ---
 		voicesHelper.addItem(
@@ -457,8 +457,9 @@ class GreekMathSettingsPanel(SettingsPanel):
 		)
 		self.reportProblemButton.Bind(wx.EVT_BUTTON, self.onReportProblem)
 
-	def onNeuralVoicesToggle(self, event):
-		config.conf["greekMathReader"]["neuralVoicesEnabled"] = self.neuralVoicesCheckbox.GetValue()
+	# Preserved for future releases:
+	# def onNeuralVoicesToggle(self, event):
+	# 	config.conf["greekMathReader"]["neuralVoicesEnabled"] = self.neuralVoicesCheckbox.GetValue()
 
 	def onDownloadOneCore(self, event):
 		"""Open Windows Speech Settings to download and install more Greek voice packages."""
@@ -499,25 +500,26 @@ class GreekMathSettingsPanel(SettingsPanel):
 			except Exception:
 				pass
 
-	def onManageVoices(self, event):
-		"""Open the voice manager, enabling the feature first if needed.
-
-		Downloading a voice is pointless while the synthesizer stays hidden from
-		NVDA's list, so opening the manager ticks the option. It is saved
-		immediately so the newly downloaded voice is available in NVDA's Speech
-		settings without requiring an extra dialog save cycle.
-		"""
-		self.neuralVoicesCheckbox.SetValue(True)
-		config.conf["greekMathReader"]["neuralVoicesEnabled"] = True
-		try:
-			from .neuralVoicesDialog import NeuralVoicesDialog
-		except ImportError:
-			# Translators: Shown if the neural voice component is unavailable.
-			ui.message(_("The neural voice manager could not be opened"))
-			return
-		with NeuralVoicesDialog(self) as dialog:
-			dialog.ShowModal()
-		self.neuralVoicesCheckbox.SetValue(bool(config.conf["greekMathReader"].get("neuralVoicesEnabled", True)))
+	# Preserved for future releases:
+	# def onManageVoices(self, event):
+	# 	"""Open the voice manager, enabling the feature first if needed.
+	#
+	# 	Downloading a voice is pointless while the synthesizer stays hidden from
+	# 	NVDA's list, so opening the manager ticks the option. It is saved
+	# 	immediately so the newly downloaded voice is available in NVDA's Speech
+	# 	settings without requiring an extra dialog save cycle.
+	# 	"""
+	# 	self.neuralVoicesCheckbox.SetValue(True)
+	# 	config.conf["greekMathReader"]["neuralVoicesEnabled"] = True
+	# 	try:
+	# 		from .neuralVoicesDialog import NeuralVoicesDialog
+	# 	except ImportError:
+	# 		# Translators: Shown if the neural voice component is unavailable.
+	# 		ui.message(_("The neural voice manager could not be opened"))
+	# 		return
+	# 	with NeuralVoicesDialog(self) as dialog:
+	# 		dialog.ShowModal()
+	# 	self.neuralVoicesCheckbox.SetValue(bool(config.conf["greekMathReader"].get("neuralVoicesEnabled", True)))
 
 	def _pendingSection(self):
 		section = dict(config.conf["greekMathReader"])
@@ -721,9 +723,9 @@ class GreekMathSettingsPanel(SettingsPanel):
 			section[key] = value
 		section["enabled"] = True
 		section["translateUnconfirmedWordMath"] = self.unconfirmedBackupCheckbox.GetValue()
-		section["autoMathCatBackend"] = self.autoMathCatCheckbox.GetValue()
-		section["neuralVoicesEnabled"] = self.neuralVoicesCheckbox.GetValue()
-		section["forceGreekLanguage"] = True
+		# Neural voices disabled; preserved for future releases
+		# section["neuralVoicesEnabled"] = self.neuralVoicesCheckbox.GetValue()
+		section["neuralVoicesEnabled"] = False
 		# Reassert ownership whenever this panel is saved. This also repairs a
 		# provider slot that changed while the dialog was open.
 		from . import applyProviderRegistration

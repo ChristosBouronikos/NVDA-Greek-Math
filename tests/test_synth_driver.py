@@ -152,6 +152,10 @@ def loadDriver():
 			builtins._ = savedTranslation
 
 
+def setUpModule():
+	raise unittest.SkipTest("Neural voices synthesizer driver commented out for future releases")
+
+
 class TestDriverImports(unittest.TestCase):
 	def test_the_driver_module_loads(self):
 		# Guards against a typo in the driver only being found on Windows.

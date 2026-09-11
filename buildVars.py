@@ -38,14 +38,14 @@ Uses conservative semantic interpretation, terminology profiles, statistics, vec
 quantum notation, SI units, fractions, powers, integrals, derivatives, and matrices.
 Includes interactive navigation to explore complex expressions part by part,
 three verbosity levels, configurable pronunciations and matrix reading, unsaved speech previews,
-and optional downloadable offline neural voices."""
+and voice download options for OneCore and Vocalizer Expressive."""
 	),
 	# version
-	addon_version="2.5.5",
+	addon_version="2.5.6",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.5.5: adds direct buttons to download additional Greek voice options for Windows OneCore (via Windows Speech Settings) and Nuance Vocalizer Expressive (Melina / Nikos via Tiflotecnia), within the newly categorized settings tabs."""
+		"""Version 2.5.6: scratch and defer experimental neural voices from active settings and synthesizer options, cleanly organizing voice tools and preserving code for future releases."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",

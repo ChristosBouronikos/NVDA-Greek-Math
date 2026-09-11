@@ -14,7 +14,11 @@
 # donation — it directly supports continued development. Thank you!
 #   PayPal: https://paypal.me/christosbouronikos
 
-"""The dialog that downloads and removes optional neural voices."""
+"""The dialog that downloads and removes optional neural voices.
+
+NOTE: Neural voices functionality is temporarily scratched / deferred for this release
+and removed from the active settings UI. This code is preserved for future releases.
+"""
 
 import threading
 
