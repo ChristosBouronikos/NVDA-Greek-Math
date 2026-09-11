@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.5.2 — 2026-09-11
+
+Maintenance release on the stable channel.
+
+* Fixes activation of the optional neural synthesizer in NVDA's synthesizer list: downloading a voice now persists the setting immediately, so the synthesizer is available right away without requiring an extra save cycle.
+* Toggling the neural voices checkbox in Greek Math Reader settings immediately updates configuration.
+* Automatically recognizes and enables neural voices on NVDA startup if downloaded voice models are detected on disk.
+* Resolves configuration path normalization using absolute paths to prevent driver check failures.
+* Expands native runtime library discovery and DLL search paths on Windows.
+
 ## 2.5.1 — 2026-09-11
 
 Maintenance release on the stable channel.
