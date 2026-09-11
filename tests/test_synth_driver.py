@@ -58,8 +58,30 @@ def loadDriver():
 	addonHandler = types.ModuleType("addonHandler")
 	addonHandler.initTranslation = lambda: None
 
+	class FakeWavePlayer:
+		created = []
+
+		def __init__(self, *args, **kwargs):
+			self.args = args
+			self.kwargs = kwargs
+			self.fed = []
+			self.stopped = False
+			self.idled = False
+			FakeWavePlayer.created.append(self)
+
+		def feed(self, data, onDone=None):
+			self.fed.append(data)
+			if onDone:
+				onDone()
+
+		def stop(self):
+			self.stopped = True
+
+		def idle(self):
+			self.idled = True
+
 	nvwave = types.ModuleType("nvwave")
-	nvwave.WavePlayer = object
+	nvwave.WavePlayer = FakeWavePlayer
 
 	class StubSetting:
 		def __init__(self, *args, **kwargs):
@@ -78,12 +100,15 @@ def loadDriver():
 			pass
 
 	class StubNotification:
+		def __init__(self):
+			self.calls = []
+
 		def notify(self, **kwargs):
-			pass
+			self.calls.append(kwargs)
 
 	synthDriverHandler = types.ModuleType("synthDriverHandler")
 	synthDriverHandler.SynthDriver = StubSynthDriver
-	synthDriverHandler.VoiceInfo = lambda *args, **kwargs: ("voice", args)
+	synthDriverHandler.VoiceInfo = lambda *args, **kwargs: types.SimpleNamespace(id=args[0], displayName=args[1], language=args[2] if len(args) > 2 else None)
 	synthDriverHandler.synthIndexReached = StubNotification()
 	synthDriverHandler.synthDoneSpeaking = StubNotification()
 
@@ -209,6 +234,109 @@ class TestProsodyMultiplier(unittest.TestCase):
 	def test_a_nonsensical_multiplier_is_ignored_rather_than_silencing_speech(self):
 		self.assertAlmostEqual(self.multiplier(RateCommand(multiplier=0)), 1.0)
 		self.assertAlmostEqual(self.multiplier(RateCommand(multiplier=None)), 1.0)
+
+
+class TestDriverDescription(unittest.TestCase):
+	def test_driver_description_matches_requested_display_name(self):
+		module = loadDriver()
+		self.assertEqual(module.SynthDriver.description, "Neural Voices - by Bouronikos hristos")
+
+
+class TestPlayerCreation(unittest.TestCase):
+	def setUp(self):
+		self.module = loadDriver()
+		self.driver = self.module.SynthDriver.__new__(self.module.SynthDriver)
+		self.driver._player = None
+
+	def test_ensure_player_creates_wave_player_with_mono_and_valid_rate(self):
+		player = self.driver._ensurePlayer(16000)
+		self.assertIsNotNone(player)
+		self.assertEqual(player.kwargs.get("channels"), 1)
+		self.assertEqual(player.kwargs.get("samplesPerSec"), 16000)
+		self.assertEqual(player.kwargs.get("bitsPerSample"), 16)
+
+	def test_ensure_player_defaults_to_16000_when_rate_is_zero(self):
+		player = self.driver._ensurePlayer(0)
+		self.assertEqual(player.kwargs.get("samplesPerSec"), 16000)
+
+	def test_close_player_stops_player_and_clears_reference(self):
+		player = self.driver._ensurePlayer(16000)
+		self.driver._closePlayer()
+		self.assertTrue(player.stopped)
+		self.assertIsNone(self.driver._player)
+
+
+class TestAvailableVoices(unittest.TestCase):
+	def test_available_voices_returns_ordered_dict(self):
+		from collections import OrderedDict
+		module = loadDriver()
+		driver = module.SynthDriver.__new__(module.SynthDriver)
+		voice_stub = types.SimpleNamespace(id="piper-el-rapunzelina", label="Rapunzelina", languages=["el"])
+		driver._manager = types.SimpleNamespace(installedVoices=lambda: [voice_stub])
+		voices = driver._get_availableVoices()
+		self.assertIsInstance(voices, OrderedDict)
+		self.assertIn("piper-el-rapunzelina", voices)
+		self.assertEqual(voices["piper-el-rapunzelina"].displayName, "Rapunzelina")
+
+
+class TestSpeechLifecycle(unittest.TestCase):
+	def setUp(self):
+		import threading
+
+		self.module = loadDriver()
+		self.driver = self.module.SynthDriver.__new__(self.module.SynthDriver)
+		self.driver._player = None
+		self.driver._engine = types.SimpleNamespace(sampleRate=16000, synthesize=lambda *a, **k: b"\x00" * 32)
+		self.driver._rate = 50
+		self.driver._rateBoost = False
+		self.driver._volume = 100
+		self.driver._generation = 1
+		self.driver._lock = threading.Lock()
+
+	def test_handle_done_calls_idle_and_notifies_synth_done_speaking(self):
+		self.module.synthDoneSpeaking.calls = []
+		player = self.driver._ensurePlayer(16000)
+		self.driver._handle("done", None, "", 1.0, 1)
+		self.assertTrue(player.idled)
+		self.assertEqual(len(self.module.synthDoneSpeaking.calls), 1)
+
+	def test_handle_speak_feeds_synthesized_audio_to_player(self):
+		player = self.driver._ensurePlayer(16000)
+		self.driver._handle("speak", "ένα συν δύο", "", 1.0, 1)
+		self.assertEqual(len(player.fed), 1)
+		self.assertEqual(player.fed[0], b"\x00" * 32)
+
+	def test_handle_speak_error_does_not_call_synth_done_speaking_prematurely(self):
+		self.module.synthDoneSpeaking.calls = []
+		self.driver._engine.synthesize = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("synthesis failed"))
+		with self.assertRaises(RuntimeError):
+			self.driver._handle("speak", "ένα", "", 1.0, 1)
+		# _handle does not notify on speak error, _run handles queue and notifies on done
+		self.assertEqual(len(self.module.synthDoneSpeaking.calls), 0)
+
+	def test_run_processes_queue_cleanly(self):
+		import queue
+		self.module.synthDoneSpeaking.calls = []
+		self.driver._queue = queue.Queue()
+		self.driver._queue.put((1, "speak", "ένα", "", 1.0))
+		self.driver._queue.put((1, "done", None, "", 1.0))
+		self.driver._queue.put(None)
+		self.driver._run()
+		self.assertEqual(len(self.module.synthDoneSpeaking.calls), 1)
+		self.assertIsNotNone(self.driver._player)
+		self.assertTrue(self.driver._player.idled)
+
+	def test_run_with_speak_error_notifies_done_exactly_once(self):
+		import queue
+		self.module.synthDoneSpeaking.calls = []
+		self.driver._engine.synthesize = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("synthesis failed"))
+		self.driver._queue = queue.Queue()
+		self.driver._queue.put((1, "speak", "ένα", "", 1.0))
+		self.driver._queue.put((1, "done", None, "", 1.0))
+		self.driver._queue.put(None)
+		self.driver._run()
+		# Exactly one notification from done, no duplicate from speak failure
+		self.assertEqual(len(self.module.synthDoneSpeaking.calls), 1)
 
 
 if __name__ == "__main__":

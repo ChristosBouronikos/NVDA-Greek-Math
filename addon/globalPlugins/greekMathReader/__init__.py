@@ -33,8 +33,8 @@ from .provider import GreekMathProvider, getGreekVoiceSupport, tokensToSpeechSeq
 
 addonHandler.initTranslation()
 
-ADDON_VERSION = "2.5.2"
-BUILD_ID = "20260911-neural-synth-activation-fix"
+ADDON_VERSION = "2.5.3"
+BUILD_ID = "20260911-neural-playback-and-hang-fix"
 _WORD_UIA_ALWAYS = 3
 
 CONFIG_SPEC = {

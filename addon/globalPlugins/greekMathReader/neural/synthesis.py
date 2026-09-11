@@ -38,6 +38,11 @@ CHANNELS = 1
 _FULL_SCALE = 32767
 
 
+#: Kept alive so Windows does not remove the directories from the search path
+#: on garbage collection.
+_DLL_HANDLES = []
+
+
 class EngineError(Exception):
 	"""The runtime could not be loaded or the voice could not be spoken."""
 
@@ -59,13 +64,29 @@ def importSherpaOnnx(runtimeDirectory):
 	libraryPath = os.path.join(runtimeDirectory, "sherpa_onnx", "lib")
 	addDllDirectory = getattr(os, "add_dll_directory", None)
 	for candidate in (libraryPath, os.path.join(runtimeDirectory, "sherpa_onnx"), runtimeDirectory):
-		if addDllDirectory is not None and os.path.isdir(candidate):
+		if os.path.isdir(candidate):
+			if addDllDirectory is not None:
+				try:
+					_DLL_HANDLES.append(addDllDirectory(candidate))
+				except OSError:
+					pass
 			try:
-				addDllDirectory(candidate)
-			except OSError:
+				import ctypes
+
+				ctypes.windll.kernel32.SetDllDirectoryW(candidate)
+			except Exception:
 				pass
 	if os.path.isdir(libraryPath):
 		os.environ["PATH"] = libraryPath + os.pathsep + os.environ.get("PATH", "")
+		for dllName in ("onnxruntime.dll", "sherpa-onnx-c-api.dll", "sherpa-onnx-core.dll"):
+			dllPath = os.path.join(libraryPath, dllName)
+			if os.path.isfile(dllPath):
+				try:
+					import ctypes
+
+					ctypes.CDLL(dllPath)
+				except Exception:
+					pass
 	if runtimeDirectory not in sys.path:
 		sys.path.insert(0, runtimeDirectory)
 	try:
@@ -108,12 +129,13 @@ class SpeechEngine:
 	def _buildConfig(self, sherpa, arguments):
 		"""Assemble the family-specific model configuration."""
 		modelKwargs = {"provider": "cpu", "debug": False, "num_threads": self._numThreads}
+		cleanArgs = {k: v for k, v in arguments.items() if v}
 		if self._family == "vits":
-			modelKwargs["vits"] = sherpa.OfflineTtsVitsModelConfig(**arguments)
+			modelKwargs["vits"] = sherpa.OfflineTtsVitsModelConfig(**cleanArgs)
 		elif self._family == "kokoro":
-			modelKwargs["kokoro"] = sherpa.OfflineTtsKokoroModelConfig(**arguments)
+			modelKwargs["kokoro"] = sherpa.OfflineTtsKokoroModelConfig(**cleanArgs)
 		elif self._family == "supertonic":
-			modelKwargs["supertonic"] = sherpa.OfflineTtsSupertonicModelConfig(**arguments)
+			modelKwargs["supertonic"] = sherpa.OfflineTtsSupertonicModelConfig(**cleanArgs)
 		else:
 			raise EngineError("unsupported model family: {0}".format(self._family))
 		return sherpa.OfflineTtsConfig(
@@ -166,16 +188,26 @@ class SpeechEngine:
 		if not text or not text.strip():
 			return b""
 		generation = self._generationConfig(speed, speakerId, language)
-		try:
-			if generation is not None:
+		audio = None
+		if generation is not None:
+			try:
 				audio = self._tts.generate(text, generation)
-			else:
+			except Exception:
+				audio = None
+		if audio is None:
+			try:
 				audio = self._tts.generate(text, sid=int(speakerId), speed=float(speed))
-		except Exception as error:
-			raise EngineError("speech generation failed: {0}".format(error))
+			except TypeError:
+				try:
+					audio = self._tts.generate(text)
+				except Exception as error:
+					raise EngineError("speech generation failed: {0}".format(error))
+			except Exception as error:
+				raise EngineError("speech generation failed: {0}".format(error))
 		samples = getattr(audio, "samples", None) or []
-		if not self._sampleRate:
-			self._sampleRate = int(getattr(audio, "sample_rate", 0))
+		sampleRate = int(getattr(audio, "sample_rate", 0)) or int(getattr(self._tts, "sample_rate", 0))
+		if sampleRate:
+			self._sampleRate = sampleRate
 		return _toPcm16(samples, volume)
 
 	def close(self):

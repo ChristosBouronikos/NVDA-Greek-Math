@@ -27,6 +27,7 @@ first word, which is the difference between a usable and an unusable screen
 reader.
 """
 
+from collections import OrderedDict
 import os
 import queue
 import sys
@@ -81,6 +82,7 @@ _MIN_BREAK_MS = 10
 #: index rides on a buffer this short. Inaudible, but reliably scheduled.
 _INDEX_TICK_MS = 2
 
+_CHANNELS = 1
 _BITS_PER_SAMPLE = 16
 
 
@@ -135,7 +137,7 @@ def splitIntoChunks(text, limit=_MAX_CHUNK_CHARACTERS):
 class SynthDriver(synthDriverHandler.SynthDriver):
 	name = "greekMathVoice"
 	# Translators: The name of this synthesizer in NVDA's synthesizer list.
-	description = _("Greek Math Reader neural voices")
+	description = _("Neural Voices - by Bouronikos hristos")
 
 	supportedSettings = (
 		SynthDriver.VoiceSetting(),
@@ -204,7 +206,7 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 	# -- settings ------------------------------------------------------------
 
 	def _get_availableVoices(self):
-		voices = {}
+		voices = OrderedDict()
 		for voice in self._manager.installedVoices():
 			language = voice.languages[0] if voice.languages else None
 			voices[voice.id] = VoiceInfo(voice.id, voice.label, language)
@@ -222,7 +224,10 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 		self.cancel()
 		with self._lock:
 			if self._engine is not None:
-				self._engine.close()
+				try:
+					self._engine.close()
+				except Exception:
+					pass
 			self._engine = None
 			self._voiceId = value
 			self._closePlayer()
@@ -278,19 +283,20 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 		"""
 		if self._player is not None:
 			return self._player
+		rate = int(sampleRate) if sampleRate else 16000
 		try:
 			self._player = nvwave.WavePlayer(
-				channels=CHANNELS, samplesPerSec=sampleRate, bitsPerSample=_BITS_PER_SAMPLE
+				channels=_CHANNELS, samplesPerSec=rate, bitsPerSample=_BITS_PER_SAMPLE
 			)
 		except TypeError:
-			self._player = nvwave.WavePlayer(CHANNELS, sampleRate, _BITS_PER_SAMPLE)
+			self._player = nvwave.WavePlayer(_CHANNELS, rate, _BITS_PER_SAMPLE)
 		return self._player
 
 	def _closePlayer(self):
 		if self._player is None:
 			return
 		try:
-			self._player.close()
+			self._player.stop()
 		except Exception:
 			pass
 		self._player = None
@@ -345,25 +351,32 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 				self._handle(kind, payload, language, multiplier, generation)
 			except Exception:
 				log.error("greekMathVoice: could not speak", exc_info=True)
-				synthDoneSpeaking.notify(synth=self)
+				if kind == "done":
+					synthDoneSpeaking.notify(synth=self)
 
 	def _handle(self, kind, payload, language, multiplier, generation):
 		if kind == "done":
-			player = self._player
-			if player is not None:
-				# Block until the queued audio has actually been heard, so NVDA
-				# is not told the utterance finished while it is still playing.
-				player.idle()
-			synthDoneSpeaking.notify(synth=self)
+			try:
+				player = self._player
+				if player is not None:
+					# Block until the queued audio has actually been heard, so NVDA
+					# is not told the utterance finished while it is still playing.
+					player.idle()
+			except Exception:
+				log.debugWarning("greekMathVoice: error idling player", exc_info=True)
+			finally:
+				synthDoneSpeaking.notify(synth=self)
 			return
 		if kind == "index":
 			self._notifyIndexAfterQueuedAudio(payload)
 			return
 		if kind == "break":
-			engine = self._ensureEngine()
-			if not engine.sampleRate:
-				return
-			self._ensurePlayer(engine.sampleRate).feed(self._silence(engine.sampleRate, payload))
+			try:
+				engine = self._ensureEngine()
+				rate = getattr(engine, "sampleRate", 0) or 16000
+				self._ensurePlayer(rate).feed(self._silence(rate, payload))
+			except Exception:
+				log.error("greekMathVoice: break failed", exc_info=True)
 			return
 		engine = self._ensureEngine()
 		audio = engine.synthesize(
@@ -377,7 +390,8 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 				return
 		if not audio:
 			return
-		self._ensurePlayer(engine.sampleRate).feed(audio)
+		rate = getattr(engine, "sampleRate", 0) or 16000
+		self._ensurePlayer(rate).feed(audio)
 
 	@staticmethod
 	def _silence(sampleRate, milliseconds):
@@ -393,13 +407,17 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 		"""
 		player = self._player
 		engine = self._engine
-		if player is None or engine is None or not engine.sampleRate:
+		rate = getattr(engine, "sampleRate", 0) or 16000
+		if player is None or engine is None:
 			synthIndexReached.notify(synth=self, index=index)
 			return
-		player.feed(
-			self._silence(engine.sampleRate, _INDEX_TICK_MS),
-			onDone=lambda index=index: synthIndexReached.notify(synth=self, index=index),
-		)
+		try:
+			player.feed(
+				self._silence(rate, _INDEX_TICK_MS),
+				onDone=lambda index=index: synthIndexReached.notify(synth=self, index=index),
+			)
+		except Exception:
+			synthIndexReached.notify(synth=self, index=index)
 
 	def cancel(self):
 		with self._lock:
@@ -429,7 +447,10 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 		self._queue.put(None)
 		with self._lock:
 			if self._engine is not None:
-				self._engine.close()
+				try:
+					self._engine.close()
+				except Exception:
+					pass
 				self._engine = None
 		self._closePlayer()
 		super().terminate()

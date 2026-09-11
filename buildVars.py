@@ -41,11 +41,11 @@ three verbosity levels, configurable pronunciations and matrix reading, unsaved 
 and optional downloadable offline neural voices."""
 	),
 	# version
-	addon_version="2.5.2",
+	addon_version="2.5.3",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.5.2: fixes activation and discovery of the optional neural voice synthesizer in NVDA's synthesizer list. The synthesizer is now immediately available once a voice is downloaded, persists settings without requiring an extra dialog save cycle, and automatically enables downloaded voices upon NVDA startup."""
+		"""Version 2.5.3: fixes neural voice audio playback (resolving channel configuration and DLL initialization), prevents NVDA settings dialog from hanging on OK, and renames the synthesizer to 'Neural Voices - by Bouronikos hristos'."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",

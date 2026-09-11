@@ -3,6 +3,10 @@
 These gates record the evidence still required for reviewed semantic and voice
 quality. A blank approval is not an implicit pass.
 
+## Status of 2.5.3 stable (2026-09-11)
+
+**Version 2.5.3 is being released on the stable channel to fix neural voice audio playback, resolve the settings dialog hang on OK, and rename the synthesizer.** Automated engine, packaging and lifecycle checks pass. Manual review gates for semantic terminology and optional neural voices remain pending as documented below.
+
 ## Status of 2.5.2 stable (2026-09-11)
 
 **Version 2.5.2 is being released on the stable channel to fix activation and discovery of the optional neural voice synthesizer in NVDA's synthesizer list.** Automated engine, packaging and lifecycle checks pass. Manual review gates for semantic terminology and optional neural voices remain pending as documented below.

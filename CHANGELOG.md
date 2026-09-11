@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.5.3 — 2026-09-11
+
+Maintenance release on the stable channel.
+
+* Fixes neural voice audio playback where missing channel configuration and DLL reference cleanup silenced audio output.
+* Resolves NVDA settings panel hanging on OK when selecting the neural synthesizer by ensuring compliant voice enumeration, safe player shutdown, and synchronized utterance completion notifications.
+* Renames the synthesizer to "Neural Voices - by Bouronikos hristos".
+
 ## 2.5.2 — 2026-09-11
 
 Maintenance release on the stable channel.
