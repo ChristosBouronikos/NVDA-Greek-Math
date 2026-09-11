@@ -21,9 +21,9 @@
 
 Μετά την εγκατάσταση, τα μαθηματικά στις ιστοσελίδες (Βικιπαίδεια, πλατφόρμες τηλεκπαίδευσης, περιεχόμενο MathJax), στα βιβλία EPUB, στις προσβάσιμες εξισώσεις PDF και στις εξισώσεις του Word διαβάζονται αυτόματα στα ελληνικά όταν η εφαρμογή εκθέτει MathML στο NVDA.
 
-> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση **2.2.0** δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word, που προστέθηκε στην 2.0.0, χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
+> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση **2.5.0** δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word, που προστέθηκε στην 2.0.0, χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
 
-> Η τρέχουσα έκδοση (**2.2.0**) κυκλοφορεί στο σταθερό κανάλι, ύστερα από ρητή απόφαση του συντηρητή. Οι πύλες ελέγχου της νέας σημασιολογικής ορολογίας (επιστημονική/γλωσσική έγκριση και ακροάσεις από τυφλούς Έλληνες χρήστες NVDA) παραμένουν ανοιχτές — δείτε [RELEASE_GATES.md](RELEASE_GATES.md) και [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md).
+> Η τρέχουσα έκδοση (**2.5.0**) κυκλοφορεί στο σταθερό κανάλι, ύστερα από ρητή απόφαση του συντηρητή. Οι πύλες ελέγχου της νέας σημασιολογικής ορολογίας και των προαιρετικών νευρωνικών φωνών παραμένουν ανοιχτές — δείτε [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md) και [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
 
 ### Χρήση
 
@@ -57,7 +57,19 @@
 
 Το κουμπί **Επαναφορά ρυθμίσεων και επιδιόρθωση ελληνικών μαθηματικών** επαναφέρει έξυπνη λεπτομέρεια, δεκαδικό κόμμα, αυτόματη εναλλαγή γλώσσας, απενεργοποιημένη εγγενή ανάγνωση Word, Αυτοματισμό UI του Word σε «Πάντα» και όλα τα επίπεδα αποκλειστικής δρομολόγησης. Μετά την επαναφορά επανεκκινήστε NVDA και Word.
 
-### Αλλαγές στην έκδοση 2.1
+### Νέα στην έκδοση 2.5
+
+Η 2.5 προσθέτει ανεξάρτητη αναγγελία κεφαλαίων, επεξεργαστή προφοράς συμβόλων ανά μάθημα, προεπισκόπηση με μη αποθηκευμένες επιλογές και γραπτή μεταγραφή, επιλογές ανάγνωσης πίνακα, σαφέστερα ποσοστά ταχύτητας και παύσεων, καθώς και τοπική αναφορά προβλήματος που ανοίγει ελεγχόμενο προσχέδιο email χωρίς αυτόματη αποστολή. Η υπάρχουσα πλήρης ανάγνωση πίνακα παραμένει η προεπιλογή.
+
+Προστίθενται οι εγκεκριμένες αποδόσεις για δείκτες τανυστών, αρχικές συνθήκες, κατά τμήματα ορισμούς, κανονικές κατανομές, συνάρτηση Γάμα, δέλτα του Ντιράκ, ασφαλώς αναγνωρισμένους μετασχηματισμούς Φουριέ και επιλεγμένη σημειογραφία φυσικής. Το `G/g` εκφωνείται «τζί», το ελληνικό `α` παραμένει «άλφα» και το λατινικό `a` «έι». Τα διαφορικά ολοκληρώματος ακολουθούν την πραγματική μεταβλητή (`dx`, `dy`, `dz`). Για αμφίσημες έννοιες, όπως ομάδα πηλίκο ή πίνακας, απαιτείται επαρκής δομή ή ρητό `intent`.
+
+### Προαιρετικές νευρωνικές φωνές
+
+Η 2.5 περιλαμβάνει έναν προαιρετικό synthesizer NVDA, **Greek Math Reader neural voices**, με τοπικό backend `sherpa-onnx` 1.13.7 σε CPU. Είναι απενεργοποιημένος από προεπιλογή και δεν κατεβάζει τίποτα χωρίς ενέργεια του χρήστη. Από τη **Διαχείριση νευρωνικών φωνών** μπορείτε να εγκαταστήσετε το κατάλληλο runtime και μία φωνή, με HTTPS, έλεγχο μεγέθους και SHA-256 πριν από την αποσυμπίεση. Τα αρχεία αποθηκεύονται στον κατάλογο ρυθμίσεων του NVDA και η σύνθεση λειτουργεί offline μετά τη λήψη.
+
+Ο synthesizer αντικαθιστά τη φωνή για ολόκληρο το NVDA, όχι μόνο για τα μαθηματικά. Οι ελληνικές επιλογές περιλαμβάνουν εκδόσεις Piper/Mimic 3 της Rapunzelina και το πολύγλωσσο Supertonic 3· το Kokoro αναγράφεται ρητά ότι δεν υποστηρίζει ελληνικά. Οι φωνές παραμένουν πειραματικές ώσπου να ολοκληρωθούν πραγματικές δοκιμές σε Windows/NVDA για ποιότητα, καθυστέρηση, διακοπή και υψηλές ταχύτητες ομιλίας.
+
+### Σημασιολογική κάλυψη
 
 Εκτός από τη δομική κάλυψη της 2.0, η τοπική μηχανή αναγνωρίζει πλέον με ασφάλεια συζυγή ανάστροφο/ερμιτιανό συζυγή, βαθμίδα, απόκλιση, στροβιλισμό, λαπλασιανή, εσωτερικό/διανυσματικό/εξωτερικό/τανυστικό γινόμενο, αναμενόμενη και δεσμευμένη αναμενόμενη τιμή, διακύμανση, συνδιακύμανση, ανεξαρτησία, μπρα–κετ, στοιχεία πίνακα και μεταθέτες όταν υπάρχει κατάλληλο πλαίσιο. Το Content MathML μετατρέπεται στην ίδια ενδιάμεση δομή για βασικές πράξεις, δυνάμεις, ρίζες, συναρτήσεις και διαστήματα.
 
@@ -384,9 +396,9 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 
 After installation, math on web pages (Wikipedia, e-learning platforms, MathJax content), in EPUB books, accessible PDF formulas, and Word equations is automatically read in Greek whenever the application exposes MathML to NVDA.
 
-> Requires NVDA 2024.1 or later. Version **2.2.0** declares compatibility through NVDA 2026.1.1. Its Word final-speech filter, added in 2.0.0, is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
+> Requires NVDA 2024.1 or later. Version **2.5.0** declares compatibility through NVDA 2026.1.1. Its Word final-speech filter, added in 2.0.0, is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
 
-> The current version (**2.2.0**) ships on the stable channel by explicit maintainer decision. The semantic terminology's review gates (specialist/language approval and listening tests with blind Greek NVDA users) remain open — see [RELEASE_GATES.md](RELEASE_GATES.md) and [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md).
+> The current version (**2.5.0**) ships on the stable channel by explicit maintainer decision. Review gates for the semantic terminology and optional neural voices remain open — see [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md), and [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
 
 ### Usage
 
@@ -420,7 +432,19 @@ The **Test Greek math speech** button speaks a sample expression directly, indep
 
 The **Reset settings and repair Greek math** button restores smart verbosity, decimal comma, automatic language switching, disabled native Word math, **Word UI Automation: Always**, and every exclusive routing layer. Restart NVDA and Word afterwards.
 
-### 2.1 semantic coverage
+### New in version 2.5
+
+Version 2.5 adds independent capital announcements, course-specific symbol pronunciations, previews using unsaved choices with a transcript, configurable matrix reading, clearer rate and pause percentages, and a local reading-problem report that opens an inspectable email draft without sending it. Whole-matrix reading remains the default.
+
+It adds the approved readings for tensor indices, initial conditions, piecewise definitions, normal distributions, Euler's Gamma function, the Dirac delta, safely recognized Fourier transforms, and selected physics notation. Latin `G/g` is «τζί»; Greek `α` remains «άλφα» and Latin `a` «έι». Integral differentials follow the actual variable (`dx`, `dy`, or `dz`). Ambiguous meanings such as quotient groups or matrix-specific operations still require sufficient structure or explicit author `intent`.
+
+### Optional offline neural voices
+
+Version 2.5 includes an optional NVDA synthesizer named **Greek Math Reader neural voices**, powered locally by the CPU-based `sherpa-onnx` 1.13.7 backend. It is disabled by default and downloads nothing until requested. **Manage neural voices** downloads the runtime matching NVDA's Python/Windows architecture and the selected model over HTTPS, verifies the declared size and SHA-256, and stores the extracted files in NVDA's configuration directory. Speech runs offline after installation.
+
+This synthesizer voices all NVDA speech, not only mathematics. Greek-capable choices include Piper/Mimic 3 Rapunzelina builds and multilingual Supertonic 3; Kokoro is explicitly labelled as not supporting Greek. These voices remain experimental until real Windows/NVDA listening, latency, interruption, character-echo and high-rate tests are completed.
+
+### Semantic coverage
 
 In addition to 2.0's structural coverage, the local engine now safely recognizes adjoints/Hermitian adjoints, gradient, divergence, curl, Laplacian, inner/cross/exterior/tensor products, expectation and conditional expectation, variance, covariance, independence, bra–ket, matrix elements, and context-gated commutators. Basic Content MathML operations, powers, roots, functions, and intervals enter the same intermediate representation.
 

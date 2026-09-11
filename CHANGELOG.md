@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 2.5.0 — 2026-09-11
+
+Feature release on the stable channel.
+
+* Exposes capital-letter announcements independently of verbosity, including multi-letter identifiers and literal Latin-letter mode.
+* Adds a searchable, course-specific symbol-pronunciation editor with preview and reset. Greek and Latin letters remain distinct tokens (`α` is «άλφα», Latin `a` is «έι»), and symbol changes never replace matching text in ordinary Greek prose.
+* Adds previews that use unsaved settings and show a transcript for examples and the most recently read expression, independently of Repair.
+* Adds matrix reading choices for the established whole-matrix reading (still the default), dimensions followed by exploration, rows, or columns. Optional cell positions and adjustable boundary sounds extend keyboard exploration, and zero entries are retained.
+* Presents math rate as a percentage of normal NVDA speech and pauses as a percentage of standard breaks, with sample playback. Rates remain capped at 100% pending synthesizer testing.
+* Adds a local reading-problem report containing the expression, actual and expected speech, input format, preset, backend, settings and voice. The user can inspect, copy or save it, then open a pre-addressed mail draft and add text; nothing is sent automatically.
+* Adds a user choice between «ανάδελτα» and «κλίση» for standalone `∇`/`grad`, and an optional expanded explanation of `f∘g`. Ambiguous quotient-group, matrix and domain-specific readings still require explicit structure or author intent rather than being guessed from a broad subject setting.
+* Applies the maintainer-approved Greek readings for points, congruence modulo `n`, bounded evaluation, scalar multiplication in Physics context, tensor indices, piecewise definitions, initial conditions, expectation notation, normal distributions, Euler's Gamma function, confirmed Fourier transforms, classical Hamiltonians, Newton's force law, relativity indices, Christoffel-style indices and the Dirac delta.
+* Corrects Latin `G/g` to «τζί», preserves the requested Latin/Greek letter distinction, and reads integral differentials from their actual variables, including `∫f(x)dx` as «ολοκλήρωμα της εφ του χι ως προς χ».
+
 Adds optional neural voices. Off by default; nothing is downloaded unless you ask for it.
 
 * Adds an optional synthesizer, "Greek Math Reader neural voices", which appears in NVDA's own Speech settings beside eSpeak NG and Windows OneCore once you enable it and download a voice. It speaks all of NVDA, not only mathematics: NVDA chooses a synthesizer globally, so a math-only neural voice is not something an add-on can offer.

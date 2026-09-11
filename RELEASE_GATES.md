@@ -1,7 +1,17 @@
 # Semantic release gates
 
-Version 2.1 is a development preview until every applicable row below has
-recorded evidence. A blank approval is a blocker, not an implicit pass.
+These gates record the evidence still required for reviewed semantic and voice
+quality. A blank approval is not an implicit pass.
+
+## Status of 2.5.0 stable (2026-09-11)
+
+**Version 2.5.0 is being released on the stable channel by the maintainer's
+explicit decision while the manual rows below remain Pending.** Automated
+engine, packaging and catalogue checks pass. The optional neural synthesizer is
+off by default, but its real Windows/NVDA installation, latency, interruption,
+character echo, high-rate intelligibility and voice quality still require
+manual testing. The README and settings identify it as optional and
+experimental; no neural runtime or model is bundled in the add-on package.
 
 ## Status of 2.1.0 stable (2026-09-03)
 
@@ -47,6 +57,8 @@ the minimum supported NVDA release and the current stable release.
 | Word OMath/OMML fallback | Pending | Pending | conversion, guarded fallback, no English leakage |
 | EPUB | Pending | Pending | browse and navigation |
 | Tagged PDF | Pending | Pending | browse and navigation |
+| Neural voice download and selection | Pending | Pending | runtime/model verification, restart, speech and removal |
+| Neural voice daily use | Pending | Pending | latency, interruption, character echo and high-rate intelligibility |
 
 Manual listening is required with Microsoft Stefanos and eSpeak Greek. Include
 single Latin and Greek letters, pauses, rates, nested expressions, long
@@ -65,7 +77,7 @@ Meaning-changing readings, unreviewed default terminology, silent loss, raw
 English structural leakage, or failure of core navigation block a stable
 release. Preview diagnostics are voluntary and telemetry remains disabled.
 
-Greek mathematical braille is not a 2.1 release target. Production work requires
+Greek mathematical braille is not a 2.5 release target. Production work requires
 an authoritative specification, a Greek braille expert, blind-user validation
 and at least 200 specification-derived examples.
 

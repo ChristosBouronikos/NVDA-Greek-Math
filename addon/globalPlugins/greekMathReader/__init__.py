@@ -33,8 +33,8 @@ from .provider import GreekMathProvider, getGreekVoiceSupport, tokensToSpeechSeq
 
 addonHandler.initTranslation()
 
-ADDON_VERSION = "2.2.0"
-BUILD_ID = "20260904-word-fallback-language-fixes"
+ADDON_VERSION = "2.5.0"
+BUILD_ID = "20260911-settings-terminology-neural-voices"
 _WORD_UIA_ALWAYS = 3
 
 CONFIG_SPEC = {

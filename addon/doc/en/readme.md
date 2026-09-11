@@ -14,7 +14,10 @@ Upstream MathCAT now has an early, in-development Greek rule pack. It may not ye
 * **Three verbosity levels**: terse, smart (default), and verbose.
 * **One semantic engine** for MathML, LaTeX and UnicodeMath: valid `intent` wins, ambiguity is not guessed, and unknown symbols remain in speech and diagnostics.
 * **LaTeX and UnicodeMath reading**: select or copy an expression and press **NVDA+Alt+L**; the format is announced and a double press opens interactive exploration.
-* **2.1 semantic coverage**: adjoints, grad/div/curl/Laplacian, inner/cross/exterior/tensor products, probability/statistics concepts, independence, bra–ket, matrix elements, context-gated commutators, and compound SI units. Preview modules cover university mathematics, physics and specialist terminology through author `intent` until review and automatic inference are safe.
+* **2.5 settings**: independent capital announcements, course-specific symbol pronunciations, unsaved previews with transcripts, whole/dimensions/row/column matrix readings, optional cell positions and boundary sounds, percentage rate and pause controls, and a local reading-problem report with an inspectable email draft.
+* **2.5 approved readings**: tensor indices, initial conditions, piecewise definitions, normal distributions, Euler's Gamma function, the Dirac delta, safely recognized Fourier transforms and selected physics notation. Ambiguous contexts are not guessed.
+* **Optional offline neural voices**: a separate NVDA synthesizer powered by CPU-based `sherpa-onnx` 1.13.7, disabled by default. Runtime and models download only on request, are SHA-256 verified, and run offline. It voices all of NVDA rather than only mathematics and remains experimental until real Windows/NVDA testing is complete.
+* **Semantic coverage**: adjoints, grad/div/curl/Laplacian, inner/cross/exterior/tensor products, probability/statistics concepts, independence, bra–ket, matrix elements, context-gated commutators, and compound SI units. Preview modules cover university mathematics, physics and specialist terminology through author `intent` until review and automatic inference are safe.
 * **Expanded 1.1 vocabulary**: probability and statistics, geometry, number theory, linear algebra, complex analysis, partial derivatives and multiple integrals, plus SI physics units and scientific notation.
 
 ## Installation
@@ -26,7 +29,7 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 3. Open **Available add-ons** and search for **Greek Math Reader**.
 4. Select the add-on, choose **Install**, and restart NVDA when prompted.
 
-This version (2.2.0) ships on the stable channel by explicit maintainer decision. New semantic terms remain “source-checked, pending expert review”: specialist/language approval and listening tests with blind Greek NVDA users are still open, tracked in `RELEASE_GATES.md` and `TERMINOLOGY_REVIEW.md` in the source repository.
+This version (2.5.0) ships on the stable channel by explicit maintainer decision. Review gates for the semantic terminology and optional neural voices remain open, tracked in `RELEASE_GATES.md`, `TERMINOLOGY_REVIEW.md`, and `TTS_ENGINE_RESEARCH.md` in the source repository.
 
 ## Usage
 

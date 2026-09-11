@@ -37,14 +37,15 @@ conventions used in Greek schools and universities.
 Uses conservative semantic interpretation, terminology profiles, statistics, vector calculus,
 quantum notation, SI units, fractions, powers, integrals, derivatives, and matrices.
 Includes interactive navigation to explore complex expressions part by part,
-and three verbosity levels (terse, smart, verbose)."""
+three verbosity levels, configurable pronunciations and matrix reading, unsaved speech previews,
+and optional downloadable offline neural voices."""
 	),
 	# version
-	addon_version="2.2.0",
+	addon_version="2.5.0",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.2.0: fixes mixed-language readings in Word's unstructured speech fallback (used when a mouse click or arrow keys land on an equation instead of NVDA's math object navigation) — the degree sign now reads «μοίρες» instead of «βαθμοί», and simple fractions such as "two thirds" no longer keep their denominator in English. Adds a new setting, "Read Latin letters in formulas as literal English letters", for formulas that mix genuine English text with Greek."""
+		"""Version 2.5.0: adds optional downloadable offline neural voices, independent capital announcements, course-specific symbol pronunciations, unsaved speech previews, configurable matrix reading and navigation cues, clearer rate and pause controls, and a local reading-problem report with an inspectable email draft. It also adds the maintainer-approved Greek readings for tensor indices, distributions, transforms, initial conditions, piecewise definitions, integrals, selected physics notation, and ambiguous symbols while retaining conservative context checks."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",
