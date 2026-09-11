@@ -32,43 +32,69 @@ class GreekMathSettingsPanel(SettingsPanel):
 	title = _("Greek Math Reader")
 
 	def makeSettings(self, settingsSizer):
-		helper = gui.guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
 		section = config.conf["greekMathReader"]
 
-		helper.addItem(
+		hasNotebook = hasattr(wx, "Notebook") and hasattr(wx, "Panel")
+		if hasNotebook:
+			self.notebook = wx.Notebook(self)
+			settingsSizer.Add(self.notebook, proportion=1, flag=wx.EXPAND)
+
+			def createTabPage(title):
+				page = wx.Panel(self.notebook)
+				sizer = wx.BoxSizer(wx.VERTICAL)
+				page.SetSizer(sizer)
+				self.notebook.AddPage(page, title)
+				return gui.guiHelper.BoxSizerHelper(page, sizer=sizer), page
+
+			generalHelper, tabGeneral = createTabPage(_("General"))
+			mathHelper, tabMath = createTabPage(_("Math & Notation"))
+			navHelper, tabNav = createTabPage(_("Matrices & Navigation"))
+			previewHelper, tabPreview = createTabPage(_("Rate & Preview"))
+			termsHelper, tabTerms = createTabPage(_("Symbols & Terminology"))
+			voicesHelper, tabVoices = createTabPage(_("Voices & Tools"))
+		else:
+			self.notebook = None
+			generalHelper = gui.guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
+			mathHelper = navHelper = previewHelper = termsHelper = voicesHelper = generalHelper
+			tabGeneral = tabMath = tabNav = tabPreview = tabTerms = tabVoices = self
+
+		# =========================================================================
+		# Tab 1: General & Speech Behavior
+		# =========================================================================
+		generalHelper.addItem(
 			wx.StaticText(
-				self,
-					# Translators: Explains why Greek does not appear in NVDA's built-in Math language list.
-					label=_(
-						"NVDA 2026.1.1 has no Automatic choice under Math; English is the "
-						"normal MathCAT default. Greek Math Reader bypasses that language box."
-					),
+				tabGeneral,
+				# Translators: Explains why Greek does not appear in NVDA's built-in Math language list.
+				label=_(
+					"NVDA 2026.1.1 has no Automatic choice under Math; English is the "
+					"normal MathCAT default. Greek Math Reader bypasses that language box."
+				),
 			)
 		)
 
-		helper.addItem(
+		generalHelper.addItem(
 			wx.StaticText(
-				self,
-					# Translators: Explains the read-only health check and explicit repair.
-					label=_(
-						"The health check reports settings that can block Greek math. "
-						"Use Repair to change them explicitly."
-					),
+				tabGeneral,
+				# Translators: Explains the read-only health check and explicit repair.
+				label=_(
+					"The health check reports settings that can block Greek math. "
+					"Use Repair under Voices & Tools to change them explicitly."
+				),
 			)
 		)
 		from . import getHealthCheck
 
 		health = getHealthCheck()
-		self.healthStatus = helper.addItem(
+		self.healthStatus = generalHelper.addItem(
 			wx.StaticText(
-				self,
+				tabGeneral,
 				label=_("Health check: ready") if health["healthy"] else _("Health check: repair recommended"),
 			)
 		)
 
-		helper.addItem(
+		generalHelper.addItem(
 			wx.StaticText(
-				self,
+				tabGeneral,
 				# Translators: Status shown because the add-on no longer permits another speech reader.
 				label=_(
 					"Greek Math Reader is the exclusive speech and interaction reader "
@@ -77,7 +103,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 			)
 		)
 
-		self.verbosityChoice = helper.addLabeledControl(
+		self.verbosityChoice = generalHelper.addLabeledControl(
 			# Translators: Label of a combo box in the settings panel.
 			_("Speech &verbosity:"),
 			wx.Choice,
@@ -91,11 +117,37 @@ class GreekMathSettingsPanel(SettingsPanel):
 			],
 		)
 		self.verbosityChoice.SetSelection(int(section["verbosity"]))
-		self.announceCapitalsCheckbox = helper.addItem(
-			wx.CheckBox(self, label=_("Announce capital letters independently of verbosity")))
+
+		self.announceCapitalsCheckbox = generalHelper.addItem(
+			wx.CheckBox(tabGeneral, label=_("Announce capital letters independently of verbosity"))
+		)
 		self.announceCapitalsCheckbox.SetValue(bool(section.get("announceCapitals", False)))
 
-		self.terminologyProfileChoice = helper.addLabeledControl(
+		self.unconfirmedBackupCheckbox = generalHelper.addItem(
+			# Translators: Label of a checkbox enabling the backup translation of
+			# English math speech in Word when no equation can be confirmed.
+			wx.CheckBox(
+				tabGeneral,
+				label=_(
+					"&Backup mode: translate English math speech in Word and Outlook "
+					"even when the equation cannot be confirmed"
+				),
+			)
+		)
+		self.unconfirmedBackupCheckbox.SetValue(bool(section["translateUnconfirmedWordMath"]))
+
+		self.autoMathCatCheckbox = generalHelper.addItem(
+			wx.CheckBox(
+				tabGeneral,
+				label=_("Use the installed MathCAT Greek backend automatically when available"),
+			)
+		)
+		self.autoMathCatCheckbox.SetValue(bool(section.get("autoMathCatBackend", True)))
+
+		# =========================================================================
+		# Tab 2: Mathematics & Notation
+		# =========================================================================
+		self.terminologyProfileChoice = mathHelper.addLabeledControl(
 			_("Greek &terminology profile:"),
 			wx.Choice,
 			choices=[
@@ -109,7 +161,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 			{"standard": 0, "school": 1, "university": 2}.get(profile, 0)
 		)
 
-		self.domainHintChoice = helper.addLabeledControl(
+		self.domainHintChoice = mathHelper.addLabeledControl(
 			_("Notation &context:"),
 			wx.Choice,
 			choices=[
@@ -129,14 +181,95 @@ class GreekMathSettingsPanel(SettingsPanel):
 			domainIndex = 0
 		self.domainHintChoice.SetSelection(domainIndex)
 
-		self.relativeRateControl = helper.addLabeledControl(
+		self.decimalCommaCheckbox = mathHelper.addItem(
+			# Translators: Label of a checkbox in the settings panel.
+			wx.CheckBox(tabMath, label=_("Read the decimal &point as a Greek decimal comma (3.14 as 3,14)"))
+		)
+		self.decimalCommaCheckbox.SetValue(bool(section["decimalComma"]))
+
+		self.decimalDigitsCheckbox = mathHelper.addItem(
+			wx.CheckBox(tabMath, label=_("Read decimal digits &individually"))
+		)
+		self.decimalDigitsCheckbox.SetValue(bool(section.get("decimalDigits", False)))
+
+		self.latinLiteralCheckbox = mathHelper.addItem(
+			# Translators: Label of a checkbox in the settings panel.
+			wx.CheckBox(
+				tabMath,
+				label=_("Read Latin letters in formulas as literal &English letters"),
+			)
+		)
+		self.latinLiteralCheckbox.SetValue(section.get("latinLetterMode", "greek_school") == "literal")
+
+		self.gradientChoice = mathHelper.addLabeledControl(
+			_("Name for ∇ and grad (gradient):"),
+			wx.Choice,
+			choices=["ανάδελτα", "κλίση"],
+		)
+		self.gradientChoice.SetSelection(1 if section.get("gradientName") == "κλίση" else 0)
+		mathHelper.addItem(
+			wx.StaticText(tabMath, label=_("A course-specific custom name for ∇ takes precedence over this choice."))
+		)
+
+		self.compositionCheckbox = mathHelper.addItem(
+			wx.CheckBox(tabMath, label=_("Explain function composition (apply the right function first)"))
+		)
+		self.compositionCheckbox.SetValue(bool(section.get("explainComposition", False)))
+
+		# =========================================================================
+		# Tab 3: Matrices & Navigation
+		# =========================================================================
+		self.matrixChoice = navHelper.addLabeledControl(
+			_("Matrix reading:"),
+			wx.Choice,
+			choices=[
+				_("Whole matrix (current reading — default)"),
+				_("Dimensions, then explore cells"),
+				_("Read by rows"),
+				_("Read by columns"),
+			],
+		)
+		self._matrixValues = ("whole", "explore", "rows", "columns")
+		self.matrixChoice.SetSelection(self._matrixValues.index(section.get("matrixReading", "whole")))
+
+		self.matrixPositionsCheckbox = navHelper.addItem(
+			wx.CheckBox(tabNav, label=_("Announce matrix cell positions"))
+		)
+		self.matrixPositionsCheckbox.SetValue(bool(section.get("matrixPositions", False)))
+
+		navHelper.addItem(
+			wx.StaticText(
+				tabNav,
+				label=_(
+					"In matrix interaction: R reads the current row, C reads the current column, "
+					"Control+arrows move between cells. Zero entries are read."
+				),
+			)
+		)
+
+		self.boundarySoundControl = navHelper.addLabeledControl(
+			_("Navigation boundary sound (% of current volume, 0 = off):"),
+			wx.SpinCtrl,
+			min=0,
+			max=100,
+			initial=int(section.get("boundarySound", 100)),
+		)
+		self.boundarySampleButton = navHelper.addItem(
+			wx.Button(tabNav, label=_("Listen to boundary sound"))
+		)
+		self.boundarySampleButton.Bind(wx.EVT_BUTTON, self.onBoundarySample)
+
+		# =========================================================================
+		# Tab 4: Speech Rate, Pauses & Preview
+		# =========================================================================
+		self.relativeRateControl = previewHelper.addLabeledControl(
 			_("Math speech rate (% of normal NVDA speech, 100 = normal):"),
 			wx.SpinCtrl,
 			min=1,
 			max=100,
 			initial=int(section.get("relativeRate", 100)),
 		)
-		self.pauseFactorControl = helper.addLabeledControl(
+		self.pauseFactorControl = previewHelper.addLabeledControl(
 			_("Math pauses (% of standard breaks: 0 = none, 100 = normal, 200 = double):"),
 			wx.SpinCtrl,
 			min=0,
@@ -144,76 +277,65 @@ class GreekMathSettingsPanel(SettingsPanel):
 			initial=2 * int(section.get("pauseFactor", 50)),
 		)
 
-		self.decimalCommaCheckbox = helper.addItem(
-			# Translators: Label of a checkbox in the settings panel.
-			wx.CheckBox(self, label=_("Read the decimal &point as a Greek decimal comma (3.14 as 3,14)"))
-		)
-		self.decimalCommaCheckbox.SetValue(bool(section["decimalComma"]))
-		self.decimalDigitsCheckbox = helper.addItem(
-			wx.CheckBox(self, label=_("Read decimal digits &individually"))
-		)
-		self.decimalDigitsCheckbox.SetValue(bool(section.get("decimalDigits", False)))
+		from .settingsSupport import PREVIEW_EXAMPLES
 
-		self.latinLiteralCheckbox = helper.addItem(
-			# Translators: Label of a checkbox in the settings panel. When off,
-			# Latin letters in formulas are read with their Greek school names
-			# (e.g. "l" as "λάμδα"); when on, they are read as literal English
-			# letters, useful for formulas that mix Greek and English text.
-			wx.CheckBox(
-				self,
-				label=_("Read Latin letters in formulas as literal &English letters"),
+		previewHelper.addItem(
+			wx.StaticText(
+				tabPreview,
+				label=_(
+					"Preview uses unsaved choices in the local Greek engine and does not run Repair. "
+					"Read an expression before opening Settings to preview it here."
+				),
 			)
 		)
-		self.latinLiteralCheckbox.SetValue(section.get("latinLetterMode", "greek_school") == "literal")
+		self.exampleChoice = previewHelper.addLabeledControl(
+			_("Preview example:"),
+			wx.Choice,
+			choices=[_(label) for label, source in PREVIEW_EXAMPLES],
+		)
+		self.exampleChoice.SetSelection(0)
+		self.previewTranscript = previewHelper.addLabeledControl(
+			_("Preview transcript:"),
+			wx.TextCtrl,
+			style=wx.TE_MULTILINE | wx.TE_READONLY,
+			size=(-1, 90),
+		)
+		self.previewStatus = previewHelper.addItem(wx.StaticText(tabPreview, label=""))
+		self.testSpeechButton = previewHelper.addItem(
+			# Translators: Button that directly speaks a sample equation using the add-on's Greek engine.
+			wx.Button(tabPreview, label=_("Listen to example (including rate and pauses)"))
+		)
+		self.testSpeechButton.Bind(wx.EVT_BUTTON, self.onTestSpeech)
+		self.currentSpeechButton = previewHelper.addItem(
+			wx.Button(tabPreview, label=_("Listen to current expression"))
+		)
+		self.currentSpeechButton.Bind(wx.EVT_BUTTON, self.onCurrentSpeech)
+
+		# =========================================================================
+		# Tab 5: Symbols & Terminology
+		# =========================================================================
 		from .engine.symbols_el import validate_pronunciations
+
 		try:
 			profiles = json.loads(section.get("symbolPronunciations", "{}"))
 		except (TypeError, ValueError):
 			profiles = {}
-		self._pronunciationProfiles = {name: validate_pronunciations(values)
-			for name, values in profiles.items() if isinstance(name, str) and name.strip()} if isinstance(profiles, dict) else {}
+		self._pronunciationProfiles = (
+			{
+				name: validate_pronunciations(values)
+				for name, values in profiles.items()
+				if isinstance(name, str) and name.strip()
+			}
+			if isinstance(profiles, dict)
+			else {}
+		)
 		self._pronunciationCourse = section.get("pronunciationCourse", "Default")
 		self._pronunciationProfiles.setdefault(self._pronunciationCourse, {})
-		self.symbolEditorButton = helper.addItem(wx.Button(self, label=_("Symbol pronunciations and ambiguous symbols...")))
+
+		self.symbolEditorButton = termsHelper.addItem(
+			wx.Button(tabTerms, label=_("Symbol pronunciations and ambiguous symbols..."))
+		)
 		self.symbolEditorButton.Bind(wx.EVT_BUTTON, self.onSymbolEditor)
-		self.gradientChoice = helper.addLabeledControl(_("Name for ∇ and grad (gradient):"), wx.Choice, choices=["ανάδελτα", "κλίση"])
-		self.gradientChoice.SetSelection(1 if section.get("gradientName") == "κλίση" else 0)
-		helper.addItem(wx.StaticText(self, label=_("A course-specific custom name for ∇ takes precedence over this choice.")))
-		self.compositionCheckbox = helper.addItem(wx.CheckBox(self, label=_("Explain function composition (apply the right function first)")))
-		self.compositionCheckbox.SetValue(bool(section.get("explainComposition", False)))
-		self.matrixChoice = helper.addLabeledControl(_("Matrix reading:"), wx.Choice, choices=[
-			_("Whole matrix (current reading — default)"), _("Dimensions, then explore cells"),
-			_("Read by rows"), _("Read by columns")])
-		self._matrixValues = ("whole", "explore", "rows", "columns")
-		self.matrixChoice.SetSelection(self._matrixValues.index(section.get("matrixReading", "whole")))
-		self.matrixPositionsCheckbox = helper.addItem(wx.CheckBox(self, label=_("Announce matrix cell positions")))
-		self.matrixPositionsCheckbox.SetValue(bool(section.get("matrixPositions", False)))
-		helper.addItem(wx.StaticText(self, label=_("In matrix interaction: R reads the current row, C reads the current column, Control+arrows move between cells. Zero entries are read.")))
-		self.boundarySoundControl = helper.addLabeledControl(_("Navigation boundary sound (% of current volume, 0 = off):"),
-			wx.SpinCtrl, min=0, max=100, initial=int(section.get("boundarySound", 100)))
-		self.boundarySampleButton = helper.addItem(wx.Button(self, label=_("Listen to boundary sound")))
-		self.boundarySampleButton.Bind(wx.EVT_BUTTON, self.onBoundarySample)
-
-		self.unconfirmedBackupCheckbox = helper.addItem(
-			# Translators: Label of a checkbox enabling the backup translation of
-			# English math speech in Word when no equation can be confirmed.
-			wx.CheckBox(
-				self,
-				label=_(
-					"&Backup mode: translate English math speech in Word and Outlook "
-					"even when the equation cannot be confirmed"
-				),
-			)
-		)
-		self.unconfirmedBackupCheckbox.SetValue(bool(section["translateUnconfirmedWordMath"]))
-
-		self.autoMathCatCheckbox = helper.addItem(
-			wx.CheckBox(
-				self,
-				label=_("Use the installed MathCAT Greek backend automatically when available"),
-			)
-		)
-		self.autoMathCatCheckbox.SetValue(bool(section.get("autoMathCatBackend", True)))
 
 		try:
 			self._terminologyOverrides = json.loads(section.get("terminologyOverrides", "{}"))
@@ -222,92 +344,120 @@ class GreekMathSettingsPanel(SettingsPanel):
 		if not isinstance(self._terminologyOverrides, dict):
 			self._terminologyOverrides = {}
 
-		self.importTerminologyButton = helper.addItem(
-			wx.Button(self, label=_("&Import personal terminology..."))
+		self.importTerminologyButton = termsHelper.addItem(
+			wx.Button(tabTerms, label=_("&Import personal terminology..."))
 		)
 		self.importTerminologyButton.Bind(wx.EVT_BUTTON, self.onImportTerminology)
-		self.exportTerminologyButton = helper.addItem(
-			wx.Button(self, label=_("E&xport personal terminology..."))
+		self.exportTerminologyButton = termsHelper.addItem(
+			wx.Button(tabTerms, label=_("E&xport personal terminology..."))
 		)
 		self.exportTerminologyButton.Bind(wx.EVT_BUTTON, self.onExportTerminology)
-		self.clearTerminologyButton = helper.addItem(
-			wx.Button(self, label=_("&Clear personal terminology"))
+		self.clearTerminologyButton = termsHelper.addItem(
+			wx.Button(tabTerms, label=_("&Clear personal terminology"))
 		)
 		self.clearTerminologyButton.Bind(wx.EVT_BUTTON, self.onClearTerminology)
-		self.resetTerminologyChoice = helper.addLabeledControl(
+		self.resetTerminologyChoice = termsHelper.addLabeledControl(
 			_("Personal term to &reset:"),
 			wx.Choice,
 			choices=[],
 		)
-		self.resetSelectedTerminologyButton = helper.addItem(
-			wx.Button(self, label=_("Reset &selected personal term"))
+		self.resetSelectedTerminologyButton = termsHelper.addItem(
+			wx.Button(tabTerms, label=_("Reset &selected personal term"))
 		)
 		self.resetSelectedTerminologyButton.Bind(wx.EVT_BUTTON, self.onResetSelectedTerminology)
 		self._refreshTerminologyChoices()
 
-		from .settingsSupport import PREVIEW_EXAMPLES
-		helper.addItem(wx.StaticText(self, label=_("Preview uses unsaved choices in the local Greek engine and does not run Repair. Read an expression before opening Settings to preview it here.")))
-		self.exampleChoice = helper.addLabeledControl(_("Preview example:"), wx.Choice,
-			choices=[_(label) for label, source in PREVIEW_EXAMPLES])
-		self.exampleChoice.SetSelection(0)
-		self.previewTranscript = helper.addLabeledControl(_("Preview transcript:"), wx.TextCtrl,
-			style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 90))
-		self.previewStatus = helper.addItem(wx.StaticText(self, label=""))
-		self.testSpeechButton = helper.addItem(
-			# Translators: Button that directly speaks a sample equation using the add-on's Greek engine.
-			wx.Button(self, label=_("Listen to example (including rate and pauses)"))
-		)
-		self.testSpeechButton.Bind(wx.EVT_BUTTON, self.onTestSpeech)
-		self.currentSpeechButton = helper.addItem(wx.Button(self, label=_("Listen to current expression")))
-		self.currentSpeechButton.Bind(wx.EVT_BUTTON, self.onCurrentSpeech)
-
-		self.resetButton = helper.addItem(
-			# Translators: Resets add-on settings and repairs all exclusive provider hooks.
-			wx.Button(self, label=_("&Reset settings and repair Greek math"))
-		)
-		self.resetButton.Bind(wx.EVT_BUTTON, self.onReset)
-		self.repairButton = helper.addItem(
-			wx.Button(self, label=_("&Repair required NVDA settings"))
-		)
-		self.repairButton.Bind(wx.EVT_BUTTON, self.onRepair)
-
-		helper.addItem(
+		# =========================================================================
+		# Tab 6: Voices & Tools
+		# =========================================================================
+		# --- Section: Neural Voices ---
+		voicesHelper.addItem(
 			wx.StaticText(
-				self,
+				tabVoices,
 				# Translators: Introduces the optional downloadable neural voices.
 				label=_(
-					"Optional: NVDA's built-in Greek voices can sound robotic. Neural "
-					"voices are free, run entirely offline, and are downloaded only if "
-					"you ask. They replace the voice for all of NVDA, not just maths."
+					"Optional offline neural voices: replace the voice for all of NVDA, "
+					"not just maths. Downloaded only on demand."
 				),
 			)
 		)
-		self.neuralVoicesCheckbox = helper.addItem(
+		self.neuralVoicesCheckbox = voicesHelper.addItem(
 			wx.CheckBox(
-				self,
+				tabVoices,
 				# Translators: Master switch for the optional downloadable neural voices.
 				label=_("&Offer downloadable neural voices in NVDA's synthesizer list"),
 			)
 		)
 		self.neuralVoicesCheckbox.SetValue(bool(section.get("neuralVoicesEnabled", False)))
 		self.neuralVoicesCheckbox.Bind(wx.EVT_CHECKBOX, self.onNeuralVoicesToggle)
-		self.manageVoicesButton = helper.addItem(
+
+		self.manageVoicesButton = voicesHelper.addItem(
 			# Translators: Opens the dialog that downloads and removes neural voices.
-			wx.Button(self, label=_("&Manage neural voices..."))
+			wx.Button(tabVoices, label=_("&Manage neural voices..."))
 		)
 		self.manageVoicesButton.Bind(wx.EVT_BUTTON, self.onManageVoices)
 
-		self.copyDiagnosticsButton = helper.addItem(
+		# --- Section: Nuance Vocalizer Expressive ---
+		voicesHelper.addItem(
+			wx.StaticText(
+				tabVoices,
+				label=_(
+					"Nuance Vocalizer Expressive provides high-quality Greek voices (Melina and Nikos). "
+					"Download the driver and voice packages from Tiflotecnia, then install them via Add-on Store."
+				),
+			)
+		)
+		self.downloadVocalizerButton = voicesHelper.addItem(
+			wx.Button(tabVoices, label=_("&Download Vocalizer Expressive (Melina / Nikos)..."))
+		)
+		self.downloadVocalizerButton.Bind(wx.EVT_BUTTON, self.onDownloadVocalizer)
+
+		# --- Section: Maintenance & Diagnostics ---
+		voicesHelper.addItem(
+			wx.StaticText(
+				tabVoices,
+				label=_("Maintenance and problem diagnostics:"),
+			)
+		)
+		self.repairButton = voicesHelper.addItem(
+			wx.Button(tabVoices, label=_("&Repair required NVDA settings"))
+		)
+		self.repairButton.Bind(wx.EVT_BUTTON, self.onRepair)
+
+		self.resetButton = voicesHelper.addItem(
+			# Translators: Resets add-on settings and repairs all exclusive provider hooks.
+			wx.Button(tabVoices, label=_("&Reset settings and repair Greek math"))
+		)
+		self.resetButton.Bind(wx.EVT_BUTTON, self.onReset)
+
+		self.copyDiagnosticsButton = voicesHelper.addItem(
 			# Translators: Copies exact add-on, provider, equation exposure, and voice details.
-			wx.Button(self, label=_("&Copy diagnostics"))
+			wx.Button(tabVoices, label=_("&Copy diagnostics"))
 		)
 		self.copyDiagnosticsButton.Bind(wx.EVT_BUTTON, self.onCopyDiagnostics)
+
 		# Keep reporting at the end of Settings, after all preferences and tools.
-		self.reportProblemButton = helper.addItem(wx.Button(self, label=_("Report a reading problem / email the maintainer...")))
+		self.reportProblemButton = voicesHelper.addItem(
+			wx.Button(tabVoices, label=_("Report a reading problem / email the maintainer..."))
+		)
 		self.reportProblemButton.Bind(wx.EVT_BUTTON, self.onReportProblem)
 
 	def onNeuralVoicesToggle(self, event):
 		config.conf["greekMathReader"]["neuralVoicesEnabled"] = self.neuralVoicesCheckbox.GetValue()
+
+	def onDownloadVocalizer(self, event):
+		"""Open the official Vocalizer Expressive downloads page in the browser."""
+		url = "https://www.tiflotecnia.net/en/downloads.htm"
+		ui.message(_("Opening Vocalizer Expressive download page in your browser..."))
+		try:
+			import webbrowser
+
+			webbrowser.open(url)
+		except Exception:
+			try:
+				wx.LaunchDefaultBrowser(url)
+			except Exception:
+				pass
 
 	def onManageVoices(self, event):
 		"""Open the voice manager, enabling the feature first if needed.

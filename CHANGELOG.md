@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.5.4 — 2026-09-11
+
+Maintenance release on the stable channel.
+
+* Organizes the settings panel into 6 clean, accessible tabs: General, Math & Notation, Matrices & Navigation, Rate & Preview, Symbols & Terminology, and Voices & Tools.
+* Adds a dedicated button in Voices & Tools to download Nuance Vocalizer Expressive (Melina / Nikos) from Tiflotecnia.
+
 ## 2.5.3 — 2026-09-11
 
 Maintenance release on the stable channel.

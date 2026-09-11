@@ -44,6 +44,7 @@ class Control:
 	def CreateButtonSizer(self, *args): return Control()
 	def EndModal(self, result): self.modal = result
 	def ShowModal(self): return self.modal
+	def AddPage(self, *args, **kwargs): pass
 	def __enter__(self): return self
 	def __exit__(self, *args): pass
 
@@ -68,7 +69,7 @@ class TestSettingsWorkflows(unittest.TestCase):
 		self.repairs = []
 		sys.modules['speech'].speak = self.audio.append
 		self.wx = types.ModuleType('wx')
-		for name in ('Dialog', 'TextCtrl', 'CheckBox', 'Choice', 'SpinCtrl', 'StaticText', 'Button', 'ListBox', 'ComboBox', 'BoxSizer'):
+		for name in ('Dialog', 'TextCtrl', 'CheckBox', 'Choice', 'SpinCtrl', 'StaticText', 'Button', 'ListBox', 'ComboBox', 'BoxSizer', 'Notebook', 'Panel'):
 			setattr(self.wx, name, Control)
 		for name in ('EVT_BUTTON', 'EVT_CHOICE', 'EVT_TEXT', 'EVT_CHECKBOX', 'EVT_LISTBOX', 'TE_MULTILINE', 'TE_READONLY', 'VERTICAL', 'ALL', 'ALIGN_RIGHT', 'OK', 'CANCEL', 'CLOSE', 'EXPAND', 'DEFAULT_DIALOG_STYLE', 'RESIZE_BORDER'):
 			setattr(self.wx, name, 1)
@@ -282,3 +283,23 @@ class TestSettingsWorkflows(unittest.TestCase):
 		before = len(self.beeps)
 		interaction.script_tableRight(None)
 		self.assertEqual(len(self.beeps), before)
+
+	def test_vocalizer_download_button_opens_browser_and_notifies(self):
+		opened = []
+		with patch('webbrowser.open', opened.append):
+			self.panel.onDownloadVocalizer(None)
+		self.assertEqual(opened, ['https://www.tiflotecnia.net/en/downloads.htm'])
+		self.assertIn('Opening Vocalizer Expressive download page', self.messages[-1])
+
+	def test_settings_panel_tabs_and_controls_exist(self):
+		self.assertIsNotNone(self.panel.notebook)
+		self.assertIsNotNone(self.panel.verbosityChoice)
+		self.assertIsNotNone(self.panel.announceCapitalsCheckbox)
+		self.assertIsNotNone(self.panel.terminologyProfileChoice)
+		self.assertIsNotNone(self.panel.domainHintChoice)
+		self.assertIsNotNone(self.panel.matrixChoice)
+		self.assertIsNotNone(self.panel.relativeRateControl)
+		self.assertIsNotNone(self.panel.pauseFactorControl)
+		self.assertIsNotNone(self.panel.symbolEditorButton)
+		self.assertIsNotNone(self.panel.neuralVoicesCheckbox)
+		self.assertIsNotNone(self.panel.downloadVocalizerButton)

@@ -41,11 +41,11 @@ three verbosity levels, configurable pronunciations and matrix reading, unsaved 
 and optional downloadable offline neural voices."""
 	),
 	# version
-	addon_version="2.5.3",
+	addon_version="2.5.4",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.5.3: fixes neural voice audio playback (resolving channel configuration and DLL initialization), prevents NVDA settings dialog from hanging on OK, and renames the synthesizer to 'Neural Voices - by Bouronikos hristos'."""
+		"""Version 2.5.4: organizes settings into clean, categorized tabs (General, Math & Notation, Matrices & Navigation, Rate & Preview, Symbols & Terminology, Voices & Tools) and adds a direct download button for Nuance Vocalizer Expressive (Melina / Nikos)."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",
