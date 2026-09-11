@@ -47,7 +47,7 @@ class TestTokens(unittest.TestCase):
 		self.assertEqual(spoken(math("<mn>2</mn><mo>+</mo><mn>3</mn><mo>=</mo><mn>5</mn>")), "2 συν 3 ίσον 5")
 
 	def test_latin_letters(self):
-		self.assertEqual(spoken(math("<mi>x</mi><mo>+</mo><mi>y</mi>")), "χι συν ψι")
+		self.assertEqual(spoken(math("<mi>x</mi><mo>+</mo><mi>y</mi>")), 'χι συν γουάι')
 
 	def test_latin_letters_literal_mode(self):
 		tokens = speak_mathml(
@@ -58,7 +58,7 @@ class TestTokens(unittest.TestCase):
 
 	def test_latin_letters_greek_school_mode_is_default(self):
 		tokens = speak_mathml(math("<mi>l</mi>"), ReadingConfig())
-		self.assertEqual(tokens_to_text(tokens), "λάμδα")
+		self.assertEqual(tokens_to_text(tokens), "έλ")
 
 	def test_greek_letters(self):
 		self.assertEqual(spoken(math("<mi>α</mi><mo>+</mo><mi>β</mi>")), "άλφα συν βήτα")
@@ -73,12 +73,12 @@ class TestTokens(unittest.TestCase):
 		self.assertEqual(spoken(math("<mo>-</mo><mi>x</mi>")), "μείον χι")
 
 	def test_binary_minus(self):
-		self.assertEqual(spoken(math("<mi>a</mi><mo>−</mo><mi>b</mi>")), "α πλην μπε")
+		self.assertEqual(spoken(math("<mi>a</mi><mo>−</mo><mi>b</mi>")), 'έι πλην μπί')
 
 	def test_unary_minus_after_operator(self):
 		self.assertEqual(
 			spoken(math("<mi>a</mi><mo>+</mo><mo>−</mo><mn>2</mn>")),
-			"α συν μείον 2",
+			'έι συν μείον 2',
 		)
 
 	def test_invisible_times_is_silent(self):
@@ -91,7 +91,7 @@ class TestTokens(unittest.TestCase):
 		self.assertEqual(spoken(math("<mi>n</mi><mo>!</mo>")), "νι παραγοντικό")
 
 	def test_plus_minus(self):
-		self.assertEqual(spoken(math("<mi>a</mi><mo>±</mo><mi>b</mi>")), "α συν πλην μπε")
+		self.assertEqual(spoken(math("<mi>a</mi><mo>±</mo><mi>b</mi>")), 'έι συν πλην μπί')
 
 	def test_infinity(self):
 		self.assertEqual(spoken(math("<mi>∞</mi>")), "άπειρο")
@@ -150,7 +150,7 @@ class TestPowers(unittest.TestCase):
 	def test_complex_exponent(self):
 		self.assertEqual(
 			spoken(math("<msup><mi>e</mi><mrow><mi>x</mi><mo>+</mo><mn>1</mn></mrow></msup>")),
-			"ε υψωμένο σε χι συν 1",
+			"ί υψωμένο σε χι συν 1",
 		)
 
 	def test_degrees(self):
@@ -183,7 +183,7 @@ class TestPowers(unittest.TestCase):
 		self.assertEqual(spoken(math("<msup><mi>f</mi><mo>″</mo></msup>")), "εφ δύο τόνοι")
 
 	def test_transpose(self):
-		self.assertEqual(spoken(math("<msup><mi>A</mi><mi>T</mi></msup>")), "ανάστροφος του άλφα")
+		self.assertEqual(spoken(math("<msup><mi>A</mi><mi>T</mi></msup>")), "ανάστροφος του πίνακα έι")
 
 	def test_conjugate(self):
 		self.assertEqual(spoken(math("<msup><mi>z</mi><mo>*</mo></msup>")), "συζυγής του ζήτα")
@@ -271,7 +271,7 @@ class TestFractions(unittest.TestCase):
 class TestDerivatives(unittest.TestCase):
 	def test_leibniz_first(self):
 		mathml = math("<mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac>")
-		self.assertEqual(spoken(mathml), "παράγωγος του ψι ως προς χι")
+		self.assertEqual(spoken(mathml), 'παράγωγος του γουάι ως προς χι')
 
 	def test_leibniz_second_order(self):
 		mathml = math(
@@ -280,7 +280,7 @@ class TestDerivatives(unittest.TestCase):
 			"<mrow><mi>d</mi><msup><mi>x</mi><mn>2</mn></msup></mrow>"
 			"</mfrac>"
 		)
-		self.assertEqual(spoken(mathml), "δεύτερη παράγωγος του ψι ως προς χι")
+		self.assertEqual(spoken(mathml), 'δεύτερη παράγωγος του γουάι ως προς χι')
 
 	def test_partial_derivative(self):
 		mathml = math("<mfrac><mrow><mo>∂</mo><mi>f</mi></mrow><mrow><mo>∂</mo><mi>x</mi></mrow></mfrac>")
@@ -327,11 +327,11 @@ class TestFunctions(unittest.TestCase):
 			"<mi>f</mi><mo>&#x2061;</mo>"
 			"<mrow><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo></mrow>"
 		)
-		self.assertEqual(spoken(mathml), "εφ του χι κόμμα ψι")
+		self.assertEqual(spoken(mathml), 'εφ του χι κόμμα γουάι')
 
 	def test_function_without_apply_char(self):
 		mathml = math("<mi>g</mi><mrow><mo>(</mo><mi>x</mi><mo>)</mo></mrow>")
-		self.assertEqual(spoken(mathml), "ζε του χι")
+		self.assertEqual(spoken(mathml), 'τζί του χι')
 
 	def test_prime_function_call(self):
 		mathml = math(
@@ -345,7 +345,7 @@ class TestFunctions(unittest.TestCase):
 
 	def test_function_definition(self):
 		mathml = math("<mi>f</mi><mo>:</mo><mi>A</mi><mo>→</mo><mi>B</mi>")
-		self.assertEqual(spoken(mathml), "συνάρτηση εφ από το άλφα στο βήτα")
+		self.assertEqual(spoken(mathml), 'συνάρτηση εφ από το έι στο μπί')
 
 
 class TestBigOperators(unittest.TestCase):
@@ -354,20 +354,20 @@ class TestBigOperators(unittest.TestCase):
 			"<msubsup><mo>∫</mo><mn>0</mn><mn>1</mn></msubsup>"
 			"<msup><mi>x</mi><mn>2</mn></msup><mi>d</mi><mi>x</mi>"
 		)
-		self.assertEqual(spoken(mathml), "ολοκλήρωμα από 0 έως 1 του χι στο τετράγωνο ντε χι")
+		self.assertEqual(spoken(mathml), 'ολοκλήρωμα από 0 έως 1 του χι στο τετράγωνο ως προς χ')
 
 	def test_indefinite_integral(self):
 		mathml = math("<mo>∫</mo><mi>f</mi><mo>&#x2061;</mo><mrow><mo>(</mo><mi>x</mi><mo>)</mo></mrow><mi>d</mi><mi>x</mi>")
-		self.assertEqual(spoken(mathml), "ολοκλήρωμα του εφ του χι ντε χι")
+		self.assertEqual(spoken(mathml), 'ολοκλήρωμα της εφ του χι ως προς χ')
 
 	def test_double_integral(self):
 		mathml = math("<mo>∬</mo><mi>f</mi><mi>d</mi><mi>A</mi>")
-		self.assertEqual(spoken(mathml), "διπλό ολοκλήρωμα του εφ ντε άλφα")
+		self.assertEqual(spoken(mathml), 'διπλό ολοκλήρωμα του εφ ως προς έι')
 
 	def test_contour_integral(self):
 		mathml = math("<msub><mo>∮</mo><mi>C</mi></msub>")
 		# msub με βάση μεγάλο τελεστή: απλή ανάγνωση με δείκτη
-		self.assertEqual(spoken(mathml), "επικαμπύλιο ολοκλήρωμα σε")
+		self.assertEqual(spoken(mathml), 'επικαμπύλιο ολοκλήρωμα σί')
 
 	def test_sum_with_bounds(self):
 		mathml = math(
@@ -445,7 +445,7 @@ class TestMatrices(unittest.TestCase):
 		)
 		self.assertEqual(
 			spoken(mathml),
-			"ορίζουσα 2 επί 2, γραμμή 1: α, μπε, γραμμή 2: σε, ντε τέλος ορίζουσας",
+			'ορίζουσα 2 επί 2, γραμμή 1: έι, μπί, γραμμή 2: σί, ντί τέλος ορίζουσας',
 		)
 
 	def test_column_vector(self):
@@ -468,8 +468,8 @@ class TestMatrices(unittest.TestCase):
 		)
 		self.assertEqual(
 			spoken(mathml),
-			"σύστημα 2 εξισώσεων, εξίσωση 1: χι συν ψι ίσον 3,"
-			" εξίσωση 2: χι πλην ψι ίσον 1 τέλος συστήματος",
+			"σύστημα 2 εξισώσεων, εξίσωση 1: χι συν γουάι ίσον 3,"
+			" εξίσωση 2: χι πλην γουάι ίσον 1 τέλος συστήματος",
 		)
 
 
@@ -484,7 +484,7 @@ class TestFencesAndSets(unittest.TestCase):
 
 	def test_norm(self):
 		mathml = math("<mrow><mo>‖</mo><mi>v</mi><mo>‖</mo></mrow>")
-		self.assertEqual(spoken(mathml), "νόρμα του βε")
+		self.assertEqual(spoken(mathml), 'νόρμα του βί')
 
 	def test_closed_interval(self):
 		mathml = math("<mrow><mo>[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>]</mo></mrow>")
@@ -534,7 +534,7 @@ class TestFencesAndSets(unittest.TestCase):
 class TestAccents(unittest.TestCase):
 	def test_vector_arrow(self):
 		mathml = math("<mover><mi>v</mi><mo>→</mo></mover>")
-		self.assertEqual(spoken(mathml), "διάνυσμα βε")
+		self.assertEqual(spoken(mathml), 'διάνυσμα βί')
 
 	def test_vector_two_letters(self):
 		mathml = math("<mover><mi>ΑΒ</mi><mo>→</mo></mover>")
@@ -565,9 +565,9 @@ class TestQuadraticFormula(unittest.TestCase):
 		)
 		self.assertEqual(
 			spoken(mathml),
-			"χι ίσον κλάσμα με αριθμητή μείον μπε συν πλην"
-			" τετραγωνική ρίζα του μπε στο τετράγωνο πλην 4 α σε,"
-			" και παρονομαστή 2 α, τέλος κλάσματος",
+			"χι ίσον κλάσμα με αριθμητή μείον μπί συν πλην"
+			" τετραγωνική ρίζα του μπί στο τετράγωνο πλην 4 έι σί,"
+			" και παρονομαστή 2 έι, τέλος κλάσματος",
 		)
 
 
@@ -580,7 +580,7 @@ class TestUnicodeMathAlphanumerics(unittest.TestCase):
 
 	def test_math_bold_capital(self):
 		# 𝐀 (U+1D400, MATHEMATICAL BOLD CAPITAL A)
-		self.assertEqual(spoken(math("<mi>𝐀</mi>")), "άλφα")
+		self.assertEqual(spoken(math("<mi>𝐀</mi>")), "έι")
 
 	def test_math_bold_digit(self):
 		# 𝟑 (U+1D7D1, MATHEMATICAL BOLD DIGIT THREE)
@@ -591,7 +591,7 @@ class TestUnicodeMathAlphanumerics(unittest.TestCase):
 		self.assertEqual(spoken(math("<mi>𝛼</mi>")), "άλφα")
 
 	def test_script_letter_folded(self):
-		self.assertEqual(spoken(math("<mi>ℒ</mi>")), "λάμδα")
+		self.assertEqual(spoken(math("<mi>ℒ</mi>")), "έλ")
 
 	def test_number_sets_not_folded(self):
 		self.assertEqual(
@@ -619,7 +619,7 @@ class TestNumberSets(unittest.TestCase):
 
 	def test_r_to_the_n(self):
 		mathml = math("<msup><mi>ℝ</mi><mi>n</mi></msup>")
-		self.assertEqual(spoken(mathml), "ρο στη νιοστή")
+		self.assertEqual(spoken(mathml), "πραγματικός χώρος νι διαστάσεων")
 
 
 class TestExtendedOrdinals(unittest.TestCase):
@@ -651,7 +651,7 @@ class TestExtendedOrdinals(unittest.TestCase):
 			"<mrow><mi>d</mi><msup><mi>x</mi><mn>11</mn></msup></mrow>"
 			"</mfrac>"
 		)
-		self.assertEqual(spoken(mathml), "ενδέκατη παράγωγος του ψι ως προς χι")
+		self.assertEqual(spoken(mathml), 'ενδέκατη παράγωγος του γουάι ως προς χι')
 
 	def test_fraction_23_hundredths(self):
 		self.assertEqual(spoken(math("<mfrac><mn>23</mn><mn>100</mn></mfrac>")), "23 εκατοστά")
@@ -685,12 +685,12 @@ class TestAnglesAndDecimals(unittest.TestCase):
 
 class TestExpandedSymbols(unittest.TestCase):
 	def test_precedes(self):
-		self.assertEqual(spoken(math("<mi>x</mi><mo>≺</mo><mi>y</mi>")), "χι προηγείται του ψι")
+		self.assertEqual(spoken(math("<mi>x</mi><mo>≺</mo><mi>y</mi>")), 'χι προηγείται του γουάι')
 
 	def test_not_less_or_equal(self):
 		self.assertEqual(
 			spoken(math("<mi>a</mi><mo>≰</mo><mi>b</mi>")),
-			"α όχι μικρότερο ή ίσο του μπε",
+			'έι όχι μικρότερο ή ίσο του μπί',
 		)
 
 	def test_euro(self):
@@ -699,7 +699,7 @@ class TestExpandedSymbols(unittest.TestCase):
 	def test_mod_operator(self):
 		self.assertEqual(
 			spoken(math("<mi>a</mi><mo>mod</mo><mi>n</mi>")),
-			"α μόντουλο νι",
+			'έι μόντουλο νι',
 		)
 
 	def test_increment_delta(self):
@@ -726,11 +726,11 @@ class TestExpandedSymbols(unittest.TestCase):
 	def test_equilibrium_arrow(self):
 		self.assertEqual(
 			spoken(math("<mi>A</mi><mo>⇌</mo><mi>B</mi>")),
-			"άλφα σε ισορροπία με βήτα",
+			'έι σε ισορροπία με μπί',
 		)
 
 	def test_complement(self):
-		self.assertEqual(spoken(math("<mo>∁</mo><mi>A</mi>")), "συμπλήρωμα του άλφα")
+		self.assertEqual(spoken(math("<mo>∁</mo><mi>A</mi>")), 'συμπλήρωμα του έι')
 
 	def test_digamma(self):
 		self.assertEqual(spoken(math("<mi>ϝ</mi>")), "δίγαμμα")
@@ -739,16 +739,16 @@ class TestExpandedSymbols(unittest.TestCase):
 class TestLinearAlgebra(unittest.TestCase):
 	def test_matrix_inverse(self):
 		mathml = math("<msup><mi>A</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup>")
-		self.assertEqual(spoken(mathml), "αντίστροφος πίνακας άλφα")
+		self.assertEqual(spoken(mathml), 'αντίστροφος πίνακας έι')
 
 	def test_transpose_still_works(self):
-		self.assertEqual(spoken(math("<msup><mi>A</mi><mi>T</mi></msup>")), "ανάστροφος του άλφα")
+		self.assertEqual(spoken(math("<msup><mi>A</mi><mi>T</mi></msup>")), "ανάστροφος του πίνακα έι")
 
 	def test_lowercase_inverse_is_not_matrix(self):
 		# Πεζό γράμμα με εκθέτη −1: όχι αντίστροφος πίνακας.
 		self.assertEqual(
 			spoken(math("<msup><mi>a</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup>")),
-			"α στη δύναμη μείον 1",
+			'έι στη δύναμη μείον 1',
 		)
 
 	def test_capital_p_inverse_is_still_a_matrix(self):
@@ -757,14 +757,18 @@ class TestLinearAlgebra(unittest.TestCase):
 
 	def test_inner_product(self):
 		mathml = math("<mrow><mo>⟨</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>⟩</mo></mrow>")
-		self.assertEqual(spoken(mathml), "εσωτερικό γινόμενο χι με ψι")
+		self.assertEqual(spoken(mathml), 'γωνιακή αγκύλη χι κόμμα γουάι κλείνει η γωνιακή αγκύλη')
+		self.assertEqual(
+			tokens_to_text(speak_mathml(mathml, ReadingConfig(domain_hint="linear_algebra"))),
+			'εσωτερικό γινόμενο χι με γουάι',
+		)
 
 	def test_trace_and_rank(self):
 		mathml = math(
 			"<mi>tr</mi><mrow><mo>(</mo><mi>A</mi><mo>)</mo></mrow>"
 			"<mo>+</mo><mi>rank</mi><mrow><mo>(</mo><mi>A</mi><mo>)</mo></mrow>"
 		)
-		self.assertEqual(spoken(mathml), "ίχνος του άλφα συν βαθμός του άλφα")
+		self.assertEqual(spoken(mathml), 'ίχνος του πίνακα έι συν βαθμός του έι')
 
 
 class TestProbabilityAndStatistics(unittest.TestCase):
@@ -776,17 +780,17 @@ class TestProbabilityAndStatistics(unittest.TestCase):
 
 	def test_probability(self):
 		mathml = math("<mi>P</mi><mrow><mo>(</mo><mi>A</mi><mo>)</mo></mrow>")
-		self.assertEqual(spoken(mathml), "πιθανότητα του άλφα")
+		self.assertEqual(spoken(mathml), 'πιθανότητα του έι')
 
 	def test_conditional_probability(self):
 		mathml = math(
 			"<mi>P</mi><mrow><mo>(</mo><mi>A</mi><mo>|</mo><mi>B</mi><mo>)</mo></mrow>"
 		)
-		self.assertEqual(spoken(mathml), "πιθανότητα του άλφα δεδομένου του βήτα")
+		self.assertEqual(spoken(mathml), 'πιθανότητα του έι δεδομένου του μπί')
 
 	def test_expected_value(self):
 		mathml = math("<mi>E</mi><mrow><mo>(</mo><mi>X</mi><mo>)</mo></mrow>")
-		self.assertEqual(spoken(mathml), "μέση τιμή του χι")
+		self.assertEqual(spoken(mathml), 'αναμενόμενη τιμή του χι')
 
 	def test_variance(self):
 		mathml = math(
@@ -798,12 +802,12 @@ class TestProbabilityAndStatistics(unittest.TestCase):
 
 class TestGeometryAndNumberTheory(unittest.TestCase):
 	def test_named_angle(self):
-		self.assertEqual(spoken(math("<mo>∠</mo><mi>ABΓ</mi>")), "γωνία άλφα βήτα γάμα")
+		self.assertEqual(spoken(math("<mo>∠</mo><mi>ABΓ</mi>")), 'γωνία έι μπί γάμα')
 
 	def test_arc(self):
 		self.assertEqual(
 			spoken(math("<mover><mi>AB</mi><mo>⌢</mo></mover>")),
-			"τόξο άλφα βήτα",
+			'τόξο έι μπί',
 		)
 
 	def test_perpendicular_and_parallel(self):
@@ -811,11 +815,11 @@ class TestGeometryAndNumberTheory(unittest.TestCase):
 		self.assertEqual(spoken(mathml), "άλφα κάθετο στο βήτα παράλληλο στο γάμα")
 
 	def test_divisibility(self):
-		self.assertEqual(spoken(math("<mi>a</mi><mo>∣</mo><mi>b</mi>")), "α διαιρεί το μπε")
+		self.assertEqual(spoken(math("<mi>a</mi><mo>∣</mo><mi>b</mi>")), 'έι διαιρεί το μπί')
 
 	def test_gcd(self):
 		mathml = math("<mi>gcd</mi><mrow><mo>(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>)</mo></mrow>")
-		self.assertEqual(spoken(mathml), "μέγιστος κοινός διαιρέτης του α κόμμα μπε")
+		self.assertEqual(spoken(mathml), 'μέγιστος κοινός διαιρέτης του έι κόμμα μπί')
 
 
 class TestComplexAndAdvancedCalculus(unittest.TestCase):
@@ -838,7 +842,7 @@ class TestComplexAndAdvancedCalculus(unittest.TestCase):
 		)
 		self.assertEqual(
 			spoken(mathml),
-			"δεύτερη μερική παράγωγος του εφ ως προς χι και ψι",
+			'δεύτερη μερική παράγωγος του εφ ως προς χι και γουάι',
 		)
 
 	def test_supremum_with_condition(self):
@@ -846,7 +850,7 @@ class TestComplexAndAdvancedCalculus(unittest.TestCase):
 			"<munder><mi>sup</mi><mrow><mi>x</mi><mo>∈</mo><mi>A</mi></mrow></munder>"
 			"<mi>f</mi><mrow><mo>(</mo><mi>x</mi><mo>)</mo></mrow>"
 		)
-		self.assertEqual(spoken(mathml), "σουπρέμουμ για χι ανήκει στο άλφα εφ του χι")
+		self.assertEqual(spoken(mathml), 'σουπρέμουμ για χι ανήκει στο έι εφ του χι')
 
 
 class TestUnits(unittest.TestCase):
@@ -870,7 +874,7 @@ class TestUnits(unittest.TestCase):
 	def test_unit_needs_preceding_number(self):
 		# Χωρίς προηγούμενο αριθμό δεν ερμηνεύεται ως μονάδα: το διγράμματο mi
 		# διαβάζεται γράμμα-γράμμα, όπως και πριν την προσθήκη μονάδων.
-		self.assertEqual(spoken(math("<mi>kg</mi>")), "κάπα ζε")
+		self.assertEqual(spoken(math("<mi>kg</mi>")), 'κάπα τζί')
 
 	def test_metres_per_second(self):
 		mathml = math(
@@ -915,18 +919,22 @@ class TestDefinitionAndOrdering(unittest.TestCase):
 	def test_colon_equals_definition(self):
 		self.assertEqual(
 			spoken(math("<mi>y</mi><mo>≔</mo><mn>2</mn>")),
-			"ψι εξ ορισμού ίσο με 2",
+			'γουάι εξ ορισμού ίσο με 2',
 		)
 
 	def test_lesssim_entity(self):
 		self.assertEqual(
 			spoken(math("<mi>a</mi><mo>&lesssim;</mo><mi>b</mi>")),
-			"α μικρότερο ή περίπου ίσο του μπε",
+			'έι μικρότερο ή περίπου ίσο του μπί',
 		)
 
 	def test_langle_rangle_entities(self):
 		mathml = math("<mrow><mo>&langle;</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo>&rangle;</mo></mrow>")
-		self.assertEqual(spoken(mathml), "εσωτερικό γινόμενο ου με βε")
+		self.assertEqual(spoken(mathml), 'γωνιακή αγκύλη γιού κόμμα βί κλείνει η γωνιακή αγκύλη')
+		self.assertEqual(
+			tokens_to_text(speak_mathml(mathml, ReadingConfig(domain_hint="linear_algebra"))),
+			'εσωτερικό γινόμενο γιού με βί',
+		)
 
 
 class TestParser(unittest.TestCase):
@@ -952,7 +960,7 @@ class TestParser(unittest.TestCase):
 
 	def test_html5_math_entity_preserves_its_meaning(self):
 		# &NotLess; is valid in HTML5 MathML but is outside the small fast-path map.
-		self.assertEqual(spoken(math("<mi>x</mi><mo>&NotLess;</mo><mi>y</mi>")), "χι όχι μικρότερο του ψι")
+		self.assertEqual(spoken(math("<mi>x</mi><mo>&NotLess;</mo><mi>y</mi>")), 'χι όχι μικρότερο του γουάι')
 
 	def test_unknown_named_entity_is_not_silently_removed(self):
 		with self.assertRaises(MathMLParseError):
@@ -960,16 +968,16 @@ class TestParser(unittest.TestCase):
 
 	def test_mfenced_normalization(self):
 		mathml = math("<mfenced><mi>x</mi><mi>y</mi></mfenced>")
-		self.assertEqual(spoken(mathml), "παρένθεση χι κόμμα ψι κλείνει η παρένθεση")
+		self.assertEqual(spoken(mathml), 'παρένθεση χι κόμμα γουάι κλείνει η παρένθεση')
 
 	def test_mfenced_with_empty_separators(self):
 		# MathML's explicit empty value means adjacent fenced items, not a comma.
 		mathml = math('<mfenced separators=""><mi>x</mi><mi>y</mi></mfenced>')
-		self.assertEqual(spoken(mathml), "παρένθεση χι ψι κλείνει η παρένθεση")
+		self.assertEqual(spoken(mathml), 'παρένθεση χι γουάι κλείνει η παρένθεση')
 
 	def test_maction_honours_its_selected_child(self):
 		mathml = math('<maction selection="2"><mi>x</mi><mi>y</mi></maction>')
-		self.assertEqual(spoken(mathml), "ψι")
+		self.assertEqual(spoken(mathml), "γουάι")
 
 	def test_semantics_annotation_skipped(self):
 		mathml = math(
@@ -1033,7 +1041,7 @@ class TestFractionInsideTrigonometricArgument(unittest.TestCase):
 	"""
 
 	FRACTION = "<mfrac><mrow><mi>n</mi><mi>&#960;</mi><mi>x</mi></mrow><mi>L</mi></mfrac>"
-	EXPLICIT = "κλάσμα με αριθμητή νι πι χι, και παρονομαστή λάμδα, τέλος κλάσματος"
+	EXPLICIT = "κλάσμα με αριθμητή νι πι χι, και παρονομαστή έλ, τέλος κλάσματος"
 
 	def test_without_parentheses(self):
 		self.assertEqual(
@@ -1070,21 +1078,21 @@ class TestFractionInsideTrigonometricArgument(unittest.TestCase):
 
 	def test_plain_fraction_still_uses_the_compact_reading(self):
 		"""Η αλλαγή περιορίζεται στα τριγωνομετρικά ορίσματα."""
-		self.assertEqual(spoken(math(self.FRACTION)), "νι πι χι διά λάμδα")
+		self.assertEqual(spoken(math(self.FRACTION)), 'νι πι χι διά έλ')
 
 	def test_non_trigonometric_functions_are_unaffected(self):
 		for notation, reading in (("log", "λογάριθμος"), ("ln", "φυσικός λογάριθμος")):
 			with self.subTest(notation=notation):
 				self.assertEqual(
 					spoken(math(f"<mi>{notation}</mi>{self.FRACTION}")),
-					f"{reading} νι πι χι διά λάμδα",
+					f"{reading} νι πι χι διά έλ",
 				)
 
 	def test_fraction_after_a_trig_call_is_not_captured(self):
 		"""«ημ χ + α/β»: το κλάσμα δεν είναι όρισμα του ημιτόνου."""
 		self.assertEqual(
 			spoken(math("<mi>sin</mi><mi>x</mi><mo>+</mo><mfrac><mi>a</mi><mi>b</mi></mfrac>")),
-			"ημίτονο χι συν α διά μπε",
+			'ημίτονο χι συν έι διά μπί',
 		)
 
 
@@ -1207,7 +1215,7 @@ class TestWholeExpressionAbsoluteValue(unittest.TestCase):
 		"""
 		self.assertEqual(
 			spoken(math("<mo>[</mo><mi>A</mi><mo>,</mo><mi>B</mi><mo>]</mo>")),
-			"αγκύλη άλφα κόμμα βήτα κλείνει η αγκύλη",
+			'αγκύλη έι κόμμα μπί κλείνει η αγκύλη',
 		)
 
 
@@ -1250,14 +1258,14 @@ class TestLeibnizDerivativeOperands(unittest.TestCase):
 			f"<mfrac><mrow>{self.SUP_D}{self.INVISIBLE_TIMES}<mi>y</mi></mrow>"
 			f"<mrow><mi>d</mi>{self.INVISIBLE_TIMES}{self.SUP_X}</mrow></mfrac>"
 		)
-		self.assertEqual(spoken(math(mathml)), "δεύτερη παράγωγος του ψι ως προς χι")
+		self.assertEqual(spoken(math(mathml)), 'δεύτερη παράγωγος του γουάι ως προς χι')
 
 	def test_first_derivative_with_invisible_times(self):
 		mathml = (
 			f"<mfrac><mrow><mi>d</mi>{self.INVISIBLE_TIMES}<mi>y</mi></mrow>"
 			f"<mrow><mi>d</mi>{self.INVISIBLE_TIMES}<mi>x</mi></mrow></mfrac>"
 		)
-		self.assertEqual(spoken(math(mathml)), "παράγωγος του ψι ως προς χι")
+		self.assertEqual(spoken(math(mathml)), 'παράγωγος του γουάι ως προς χι')
 
 	def test_invisible_operator_is_not_counted_as_a_variable(self):
 		"""Ο αόρατος τελεστής μετριόταν ως μεταβλητή: «ως προς ⁢ και χι»."""
@@ -1295,7 +1303,7 @@ class TestLeibnizDerivativeOperands(unittest.TestCase):
 				"<mfrac><mrow><mi>d</mi><mi>y</mi></mrow>"
 				"<mrow><mi>d</mi><mi>x</mi></mrow></mfrac>"
 			)),
-			"παράγωγος του ψι ως προς χι",
+			'παράγωγος του γουάι ως προς χι',
 		)
 
 	def test_partial_second_derivative(self):

@@ -550,7 +550,8 @@ def _simplify(node):
 	node.children = []
 	for child in new_children:
 		node.append(child)
-	if node.tag == "mrow" and len(node.children) == 1 and node.parent is not None:
+	if (node.tag == "mrow" and len(node.children) == 1 and node.parent is not None
+		and not node.attrib.get("intent") and not node.attrib.get("arg")):
 		only = node.children[0]
 		return only
 	return node

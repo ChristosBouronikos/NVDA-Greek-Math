@@ -75,9 +75,9 @@ def _applyPronunciation(text):
 	return _PRONUNCIATION_RE.sub(lambda match: SPEECH_PRONUNCIATION[match.group(1)], text)
 
 
-def getReadingConfig():
+def getReadingConfig(section=None):
 	"""Build an engine ReadingConfig from the current NVDA configuration."""
-	section = config.conf["greekMathReader"]
+	section = config.conf["greekMathReader"] if section is None else section
 	overrides = section.get("terminologyOverrides", "{}")
 	if isinstance(overrides, str):
 		try:
@@ -87,9 +87,23 @@ def getReadingConfig():
 	if not isinstance(overrides, dict):
 		overrides = {}
 	overrides, _rejected = validate_overrides(overrides)
+	profiles = section.get("symbolPronunciations", "{}")
+	try:
+		profiles = json.loads(profiles) if isinstance(profiles, str) else profiles
+	except (TypeError, ValueError):
+		profiles = {}
+	pronunciations = profiles.get(section.get("pronunciationCourse", "Default"), {}) if isinstance(profiles, dict) else {}
 	return ReadingConfig(
+		announce_capitals=bool(section.get("announceCapitals", False)),
+		symbol_pronunciations=pronunciations,
+		gradient_name=section.get("gradientName", "ανάδελτα"),
+		explain_composition=bool(section.get("explainComposition", False)),
+		matrix_reading=section.get("matrixReading", "whole"),
+		matrix_positions=bool(section.get("matrixPositions", False)),
+		boundary_sound=int(section.get("boundarySound", 100)),
 		verbosity=int(section["verbosity"]),
 		decimal_comma=bool(section["decimalComma"]),
+		decimal_digits=bool(section.get("decimalDigits", False)),
 		terminology_profile=section.get("terminologyProfile", "standard"),
 		domain_hint=section.get("domainHint", "auto"),
 		relative_rate=int(section.get("relativeRate", 100)),
@@ -133,7 +147,7 @@ def getGreekVoiceSupport():
 		return None
 
 
-def tokensToSpeechSequence(tokens):
+def tokensToSpeechSequence(tokens, readingConfig=None):
 	"""Convert engine tokens (str | Pause) to an NVDA speech sequence."""
 	global _hasWarnedLanguageSwitchingOff, _hasWarnedGreekVoiceUnavailable
 	sequence = []
@@ -155,7 +169,7 @@ def tokensToSpeechSequence(tokens):
 		_hasWarnedGreekVoiceUnavailable = True
 	richTokens = list(tokens)
 	if not any(isinstance(token, Language) for token in richTokens):
-		richTokens = enrich_speech(richTokens, getReadingConfig())
+		richTokens = enrich_speech(richTokens, readingConfig or getReadingConfig())
 	for token in richTokens:
 		if isinstance(token, Pause):
 			sequence.append(BreakCommand(time=token.ms))
@@ -173,6 +187,41 @@ def tokensToSpeechSequence(tokens):
 		else:
 			sequence.append(token)
 	return sequence
+
+
+# Only the most recently read expression is retained, in memory, for Settings.
+# Previews never overwrite this record or trigger provider repair.
+lastReading = None
+
+
+def rememberReading(source, inputFormat, sequence, backend="local", section=None):
+	global lastReading
+	try:
+		import synthDriverHandler
+		synth = synthDriverHandler.getSynth()
+	except (ImportError, AttributeError):
+		synth = None
+	section = dict(config.conf["greekMathReader"] if section is None else section)
+	lastReading = {
+		"expression": source, "format": inputFormat,
+		"actualSpeech": " ".join(item for item in sequence if isinstance(item, str)), "backend": backend,
+		"preset": section.get("terminologyProfile", "standard"),
+		"context": section.get("domainHint", "auto"),
+		"voice": str(getattr(synth, "voice", "unavailable")),
+		"synthesizer": str(getattr(synth, "name", "unavailable")),
+		"settings": section,
+	}
+
+
+def _localPreferencesRequired(mathMl=""):
+	settings = getReadingConfig()
+	# MathCAT's delegate has no contract for these local pronunciation/navigation options.
+	return (re.search(r"∇|&#(?:8711|x2207);|&(?:nabla|Del);|grad|quotient[-_]group", mathMl, re.I) is not None
+		or settings.announce_capitals or settings.symbol_pronunciations
+		or settings.explain_composition or settings.matrix_reading != "whole"
+		or settings.matrix_positions or settings.boundary_sound != 100
+		or settings.gradient_name != "ανάδελτα" or settings.decimal_digits
+		or settings.latin_literal or settings.relative_rate != 100 or settings.pause_factor != 50)
 
 
 class GreekMathProvider(mathPres.MathPresentationProvider):
@@ -196,11 +245,12 @@ class GreekMathProvider(mathPres.MathPresentationProvider):
 
 	def getSpeechForMathMl(self, mathMl):
 		self.speechRequestCount += 1
-		if automaticBackend.usingMathCat:
+		if automaticBackend.usingMathCat and not _localPreferencesRequired(mathMl):
 			try:
 				sequence = automaticBackend.getSpeechForMathMl(mathMl)
 				if sequence is not None:
 					self.lastBackend = "mathcat-el"
+					rememberReading(mathMl, "mathml", sequence, "mathcat-el")
 					return sequence
 			except Exception:
 				log.exception("Greek Math Reader: MathCAT Greek backend failed; using local engine")
@@ -227,18 +277,24 @@ class GreekMathProvider(mathPres.MathPresentationProvider):
 			tokens = speak_mathml(mathMl, getReadingConfig())
 			self.lastBackend = "local"
 			self.lastEngineDiagnostic = repr(get_last_engine_diagnostics())
-			return tokensToSpeechSequence(tokens)
+			sequence = tokensToSpeechSequence(tokens)
+			rememberReading(mathMl, "mathml", sequence)
+			return sequence
 		except MathMLParseError as error:
 			log.error(f"Greek Math Reader: invalid MathML: {error}\n{mathMl}")
 			# Translators: Spoken when the MathML markup of an equation cannot be parsed.
-			return [_("Invalid mathematical content")]
+			sequence = [_("Invalid mathematical content")]
+			rememberReading(mathMl, "mathml", sequence)
+			return sequence
 		except Exception:
 			log.exception(f"Greek Math Reader: error speaking MathML:\n{mathMl}")
 			# Translators: Spoken when an unexpected error occurs while reading an equation.
-			return [_("Error reading mathematical content")]
+			sequence = [_("Error reading mathematical content")]
+			rememberReading(mathMl, "mathml", sequence)
+			return sequence
 
 	def interactWithMathMl(self, mathMl):
-		if automaticBackend.usingMathCat:
+		if automaticBackend.usingMathCat and not _localPreferencesRequired(mathMl):
 			interaction = getattr(automaticBackend.delegate, "interactWithMathMl", None)
 			if callable(interaction):
 				try:

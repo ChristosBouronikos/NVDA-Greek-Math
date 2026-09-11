@@ -44,7 +44,7 @@ class TestGeneratedLosslessProperties(unittest.TestCase):
 
 	def test_short_unknown_identifier_is_spoken_and_diagnostic(self):
 		reading = tokens_to_text(speak_mathml("<math><mi>qfoo</mi></math>"))
-		self.assertEqual(reading, "κου εφ ο ο")
+		self.assertEqual(reading, 'κιού εφ ο ο')
 		diagnostics = get_last_engine_diagnostics()
 		self.assertIn("identifier:qfoo", diagnostics["unknown"])
 		self.assertIn("multi-letter-identifier-spelled:qfoo", diagnostics["fallbacks"])

@@ -46,7 +46,7 @@ class TestUnicodeMath(unittest.TestCase):
 		)
 
 	def test_adjoint_and_compound_si_units(self):
-		self.assertEqual(self.spoken("A†"), "συζυγής ανάστροφος του άλφα")
+		self.assertEqual(self.spoken("A†"), 'συζυγής ανάστροφος του έι')
 		self.assertEqual(self.spoken("1 m/s"), "1 μέτρο ανά δευτερόλεπτο")
 		self.assertEqual(self.spoken("2 m/s"), "2 μέτρα ανά δευτερόλεπτο")
 		self.assertEqual(
@@ -120,7 +120,7 @@ class TestFunctionNamesInLinearInput(unittest.TestCase):
 
 	def test_name_that_is_also_a_unit(self):
 		"""Το «min» είναι και συνάρτηση και μονάδα χρόνου."""
-		self.assertEqual(self.spoken("min(a,b)"), "ελάχιστο του α κόμμα μπε")
+		self.assertEqual(self.spoken("min(a,b)"), 'ελάχιστο του έι κόμμα μπί')
 		self.assertEqual(self.spoken("5 min"), "5 λεπτά")
 
 
@@ -132,10 +132,10 @@ class TestUnitsAreNotGuessedAfterDivision(unittest.TestCase):
 
 	def test_variables_keep_their_letter_reading(self):
 		# «λίτρα», «βολτ», «νιούτον», «κέλβιν» θα άλλαζαν το νόημα.
-		self.assertEqual(self.spoken("x/L"), "χι διά λάμδα")
-		self.assertEqual(self.spoken("P/V"), "πι διά βε")
+		self.assertEqual(self.spoken("x/L"), 'χι διά έλ')
+		self.assertEqual(self.spoken("P/V"), "πι διά βί")
 		self.assertEqual(self.spoken("n/N"), "νι διά νι")
-		self.assertEqual(self.spoken("y/K"), "ψι διά κάπα")
+		self.assertEqual(self.spoken("y/K"), "γουάι διά κάπα")
 
 	def test_genuine_compound_units_still_read_as_units(self):
 		self.assertEqual(self.spoken("5 m/s"), "5 μέτρα ανά δευτερόλεπτο")

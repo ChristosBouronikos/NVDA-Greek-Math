@@ -100,6 +100,13 @@ class ReadingConfig(object):
 		pause_factor=50,
 		terminology_overrides=None,
 		latin_literal=False,
+		decimal_digits=False,
+		symbol_pronunciations=None,
+		gradient_name="ανάδελτα",
+		explain_composition=False,
+		matrix_reading="whole",
+		matrix_positions=False,
+		boundary_sound=100,
 	):
 		self.verbosity = verbosity
 		self.decimal_comma = decimal_comma
@@ -110,6 +117,14 @@ class ReadingConfig(object):
 		self.pause_factor = max(0, min(100, int(pause_factor)))
 		self.terminology_overrides = dict(terminology_overrides or {})
 		self.latin_literal = bool(latin_literal)
+		self.decimal_digits = bool(decimal_digits)
+		from .symbols_el import validate_pronunciations
+		self.symbol_pronunciations = validate_pronunciations(symbol_pronunciations or {})
+		self.gradient_name = gradient_name if gradient_name in ("ανάδελτα", "κλίση") else "ανάδελτα"
+		self.explain_composition = bool(explain_composition)
+		self.matrix_reading = matrix_reading if matrix_reading in ("whole", "explore", "rows", "columns") else "whole"
+		self.matrix_positions = bool(matrix_positions)
+		self.boundary_sound = max(0, min(100, int(boundary_sound)))
 
 
 _PRIMES = {"′": 1, "″": 2, "‴": 3, "⁗": 4, "'": 1, "’": 1}
@@ -392,10 +407,55 @@ class MathSpeaker(object):
 	def _speak_semantic(self, semantic):
 		concept = semantic.concept
 		arguments = list(semantic.arguments)
+		if concept == "gradient":
+			name = self.config.symbol_pronunciations.get("∇", self.config.gradient_name)
+			return [self.config.terminology_overrides.get("gradient", name + " του")] + self._node(arguments[0])
+		if concept == "quotient_group":
+			return ["ομάδα πηλίκο της"] + self._node(arguments[0]) + ["ως προς την"] + self._node(arguments[1])
+		if concept == "function_composition":
+			first, second = self._node(arguments[0]), self._node(arguments[1])
+			return (["σύνθεση της"] + first + ["με τη"] + second[:-1] + [second[-1] + ":", "πρώτα εφαρμόζεται η"]
+				+ second + ["και μετά η"] + first)
+		if concept == "point_definition":
+			return (["το σημείο"] + self._node(arguments[0]) + [self._semantic_term(concept)]
+				+ self._node(arguments[1]) + ["και"] + self._node(arguments[2]))
+		if concept == "modular_congruence":
+			return (self._node(arguments[0]) + [self._semantic_term(concept)]
+				+ self._node(arguments[1]) + ["μόντουλο"] + self._node(arguments[2]))
+		if concept == "normal_distribution":
+			return (self._capital_identifier(arguments[0]) + [self._semantic_term(concept), "με μέση τιμή"]
+				+ self._node(arguments[1]) + ["και διακύμανση"] + self._node(arguments[2]))
+		if concept == "newton_symbolic":
+			return self._capital_identifier(arguments[0]) + ["ίσον"] + self._node(arguments[1]) + ["επί"] + self._node(arguments[2])
+		if concept in ("gamma_function", "dirac_delta"):
+			return [self._semantic_term(concept)] + self._node(arguments[0])
+		if concept == "classical_hamiltonian":
+			out = [self._semantic_term(concept)]
+			for index, argument in enumerate(arguments):
+				if index:
+					out.append("και")
+				if (argument.tag == "mi" and argument.text in ("q", "p") and not self.config.latin_literal
+					and argument.text not in self.config.symbol_pronunciations):
+					out.append({"q": "κιού", "p": "πί"}[argument.text])
+				else:
+					out.extend(self._node(argument))
+			return out
+		if concept == "fourier_transform":
+			# Explicitly identified transforms may safely treat f(t) as an application.
+			return [self._semantic_term(concept)] + self._identified_function(arguments[0])
+		if concept == "initial_condition":
+			condition = arguments[0]
+			kids = condition.children
+			if (len(kids) == 4 and kids[0].tag == "mi" and self._is_paren_group(kids[1])
+				and kids[2].tag == "mo" and kids[2].text == "="):
+				tokens = self._node(kids[0]) + ["του"] + self._arguments(kids[1].children[1:-1]) + self._sequence(kids[2:])
+			else:
+				tokens = self._node(condition)
+			return [self._semantic_term(concept) + ":", self._small_number_words(tokens)]
 
 		if concept in (
-			"adjoint", "quantum_adjoint", "gradient", "divergence", "curl", "laplacian",
-			"material_derivative", "jacobian", "hessian", "fourier_transform", "laplace_transform",
+			"adjoint", "quantum_adjoint", "divergence", "curl", "laplacian",
+			"material_derivative", "jacobian", "hessian", "laplace_transform",
 		):
 			out = [self._semantic_term(concept)]
 			if arguments:
@@ -404,6 +464,8 @@ class MathSpeaker(object):
 		if concept == "transpose":
 			out = [self._semantic_term("transpose")]
 			if arguments:
+				if arguments[0].tag == "mtable" or arguments[0].attrib.get("intent") == ":matrix":
+					out.append("πίνακα")
 				out.extend(self._node(arguments[0]))
 			return out
 		if concept == "power" and len(arguments) >= 2:
@@ -505,16 +567,8 @@ class MathSpeaker(object):
 				out.extend(self._node(arguments[0]))
 			return out
 		if concept == "evaluation":
-			out = [self._semantic_term(concept)]
-			if arguments:
-				out.extend(self._node(arguments[0]))
-			if len(arguments) > 1:
-				out.append("από")
-				out.extend(self._node(arguments[1]))
-			if len(arguments) > 2:
-				out.append("έως")
-				out.extend(self._node(arguments[2]))
-			return out
+			return (self._node(arguments[0]) + [Pause(MEDIUM), self._semantic_term(concept), "από"]
+				+ self._node(arguments[1]) + ["έως"] + self._node(arguments[2]))
 		if concept in ("hamiltonian", "lagrangian", "four_vector", "metric_tensor"):
 			out = [self._semantic_term(concept)]
 			if arguments:
@@ -546,6 +600,136 @@ class MathSpeaker(object):
 		record_fallback(f"semantic-speaker:{concept}")
 		return self._sequence(semantic.source.children) if semantic.source is not None else [concept]
 
+	def _letter(self, char, force_capital=False):
+		capital = force_capital or self.config.announce_capitals or self.config.verbosity == VERBOSE
+		custom = self.config.symbol_pronunciations.get(char)
+		if custom is not None:
+			return ("κεφαλαίο " if capital and char.isupper() else "") + custom
+		return symbols.letter_reading(char, verbose=capital, latin_literal=self.config.latin_literal)
+
+	def _capital_identifier(self, node):
+		if node.tag == "mi" and len(node.text) == 1:
+			reading = self._letter(node.text, force_capital=True)
+			if reading:
+				return [reading]
+		return self._node(node)
+
+	def _identified_function(self, node):
+		kids = node.children
+		if len(kids) == 2 and kids[0].tag == "mi" and self._is_paren_group(kids[1]):
+			return self._node(kids[0]) + ["του"] + self._arguments(kids[1].children[1:-1])
+		return self._node(node)
+
+	def _small_number_words(self, tokens):
+		text = tokens_to_text(tokens)
+		text = re.sub(r"\bτου 0\b(?![.,]\d)", "του μηδενός", text)
+		text = re.sub(r"(?<![\d.,])\b0\b(?![.,]\d)", "μηδέν", text)
+		return re.sub(r"(?<![\d.,])\b1\b(?![.,]\d)", "ένα", text)
+
+	def _fraction_has_following_factor(self, node):
+		if len(node.children) != 2 or self._derivative(node.child(0), node.child(1)) is not None:
+			return False
+		following = node.next_sibling()
+		if following is not None and following.tag == "mo" and following.text == symbols.INVISIBLE_TIMES:
+			following = following.next_sibling()
+		return following is not None and following.tag in ("mi", "mn", "msub", "msup", "msubsup", "msqrt", "mroot", "mfrac")
+
+	def _tensor_scripts(self, base, sub, sup):
+		# Only the approved conventional tensor shapes; numerical superscripts
+		# and ordinary algebraic scripts retain the established power reading.
+		if base.tag != "mi" or base.text not in ("T", "G", "Γ", "R", "g"):
+			return None
+		def indices(node):
+			if node is None or node.tag == "none":
+				return []
+			leaves = node.children if node.tag == "mrow" else [node]
+			if not leaves or not all(n.tag == "mi" and n.text and all(c in symbols.GREEK_LETTERS for c in n.text) for n in leaves):
+				return []
+			return [MathNode("mi", text=c) for n in leaves for c in n.text]
+		lower, upper = indices(sub), indices(sup)
+		if not lower or (sup is not None and not upper):
+			return None
+		if sup is None and (base.text not in ("G", "R", "g") or len(lower) < 2):
+			return None
+		out = self._capital_identifier(base)
+		groups = [("κάτω", lower), ("άνω", upper)]
+		if base.text == "Γ":
+			groups.reverse()
+		first = True
+		for position, group in groups:
+			if not group:
+				continue
+			out.append("με" if first else "και")
+			out.append(position + (" δείκτη" if len(group) == 1 else " δείκτες"))
+			for index in group:
+				out.extend(self._node(index))
+			first = False
+		return out
+
+	def _selected_identity(self, children):
+		"""Approved exact readings for the imaginary-unit and Euler identities."""
+		if len(children) == 4:
+			power, equals, minus, one = children
+			if (power.tag == "msup" and power.child(0) is not None and power.child(0).text == "i"
+				and power.child(1) is not None and power.child(1).token_text() == "2"
+				and equals.tag == "mo" and equals.text == "="
+				and minus.tag == "mo" and minus.text in ("-", "−")
+				and one.tag == "mn" and one.text == "1"):
+				return [self._letter("i"), "στο τετράγωνο", "ίσον", "μείον", "ένα"]
+		if len(children) == 5:
+			power, plus, one, equals, zero = children
+			base = power.child(0) if power.tag == "msup" else None
+			exponent = power.child(1) if power.tag == "msup" else None
+			if (base is not None and base.tag == "mi" and base.text == "e"
+				and exponent is not None and exponent.tag == "mrow" and len(exponent.children) == 2
+				and [(child.tag, child.text) for child in exponent.children] == [("mi", "i"), ("mi", "π")]
+				and plus.tag == "mo" and plus.text == "+" and one.tag == "mn" and one.text == "1"
+				and equals.tag == "mo" and equals.text == "=" and zero.tag == "mn" and zero.text == "0"):
+				return (self._node(base) + ["υψωμένο σε"] + self._node(exponent.child(0))
+					+ ["επί"] + self._node(exponent.child(1)) + ["συν", "ένα", "ίσον", "μηδέν"])
+		return None
+
+	def _integral_differentials(self, children):
+		"""Return trailing d-variable pairs belonging to an integral."""
+		integrals = ("∫", "∬", "∭", "∮", "∯", "∰")
+		def is_integral(node):
+			if node.tag == "mo":
+				return node.text in integrals
+			base = node.child(0) if node.tag in ("msub", "msup", "msubsup", "munder", "mover", "munderover") else None
+			return base is not None and base.tag == "mo" and base.text in integrals
+		if not any(is_integral(child) for child in children):
+			return None
+		meaningful = [
+			(index, child) for index, child in enumerate(children)
+			if not (child.tag == "mo" and child.text in symbols.INVISIBLE_CHARS)
+			and not (child.tag == "mrow" and not child.children and not child.text)
+		]
+		pairs = []
+		cursor = len(meaningful)
+		while cursor >= 2:
+			(d_index, differential), (variable_index, variable) = meaningful[cursor - 2:cursor]
+			if differential.tag != "mi" or differential.text not in ("d", "ⅆ") or variable.tag != "mi":
+				break
+			pairs.append((d_index, variable_index, variable))
+			cursor -= 2
+		if not pairs:
+			return None
+		pairs.reverse()
+		return pairs[0][0], pairs[-1][1], [pair[2] for pair in pairs]
+
+	def _integral_operand_article(self, children, operator_index):
+		"""Use the feminine article for an f(...) integrand."""
+		meaningful = [
+			child for child in children[operator_index + 1:]
+			if not (child.tag == "mo" and child.text in symbols.INVISIBLE_CHARS)
+			and not (child.tag == "mrow" and not child.children and not child.text)
+		]
+		if len(meaningful) >= 2 and meaningful[0].tag == "mi" and meaningful[0].text == "f":
+			fence = self._fence_info(meaningful[1])
+			if fence is not None and fence[0] == "(":
+				return "της"
+		return "του"
+
 	def _sequence(self, children):
 		"""Εκφώνηση ακολουθίας αδελφών κόμβων (περιεχόμενο mrow)."""
 		out = []
@@ -554,8 +738,29 @@ class MathSpeaker(object):
 		fn_def = self._function_definition(children)
 		if fn_def is not None:
 			return fn_def
+		identity = self._selected_identity(children)
+		if identity is not None:
+			return identity
+		integral_differentials = self._integral_differentials(children)
 		while i < len(children):
 			child = children[i]
+			if integral_differentials is not None and i == integral_differentials[0]:
+				out.append("ως προς")
+				for variable_index, variable in enumerate(integral_differentials[2]):
+					if variable_index:
+						out.append("και")
+					if variable.tag == "mi" and variable.text == "x":
+						out.append("χ")
+					else:
+						out.extend(self._node(variable))
+				i = integral_differentials[1] + 1
+				continue
+			previous = child.previous_sibling()
+			if previous is not None and previous.tag == "mo" and previous.text == symbols.INVISIBLE_TIMES:
+				previous = previous.previous_sibling()
+			if (previous is not None and previous.tag == "mfrac" and self._fraction_has_following_factor(previous)
+				and not (child.tag == "mo" and child.text == symbols.INVISIBLE_TIMES)):
+				out.append("επί")
 			# Φυσική: Δx → «μεταβολή του χι». Η μεμονωμένη Δ (π.χ.
 			# διακρίνουσα) παραμένει «δέλτα».
 			if (
@@ -578,7 +783,10 @@ class MathSpeaker(object):
 			if big is not None:
 				out.extend(big)
 				if self._has_operand_after(children, i):
-					out.append("του")
+					if any("ολοκλήρωμα" in word for word in big):
+						out.append(self._integral_operand_article(children, i))
+					else:
+						out.append("του")
 				i += 1
 				continue
 			# Όριο: lim με κάτω δείκτη
@@ -599,6 +807,20 @@ class MathSpeaker(object):
 				continue
 			# Συνάρτηση με παρενθέσεις: f(x), ημ(χ) — προσθέτουμε "του".
 			# Ο αόρατος τελεστής εφαρμογής (U+2061) μπορεί να μεσολαβεί.
+			if child.tag == "mi" and child.text in ("E", "ℰ", "𝔼", "Γ"):
+				j = i + 1
+				if j < len(children) and children[j].tag == "mo" and children[j].text == symbols.INVISIBLE_APPLY:
+					j += 1
+				info = self._fence_info(children[j]) if j < len(children) else None
+				is_gamma = child.text == "Γ"
+				if (info is not None and info[0] in ("(", "[")
+					and (not is_gamma or (info[0] == "(" and info[2] and len(self._split_top_level(info[2])) == 1))):
+					application = MathNode("mrow")
+					application.append(_clone(child))
+					application.append(_clone(children[j]))
+					out.extend(self._node(application))
+					i = j + 1
+					continue
 			if self._is_function_atom(child):
 				j = i + 1
 				# Οι τόνοι της παραγώγου μεσολαβούν ανάμεσα στο όνομα και το
@@ -768,17 +990,15 @@ class MathSpeaker(object):
 			if self.config.verbosity == TERSE:
 				return [symbols.NUMBER_SETS_TERSE[text]]
 			return [self._number_set_phrase(node, symbols.NUMBER_SETS[text])]
+		if text == "grad":
+			return [self.config.symbol_pronunciations.get("∇", self.config.gradient_name)]
 		if text in symbols.FUNCTION_NAMES and len(text) > 1:
 			return [symbols.FUNCTION_NAMES[text]]
 		if len(text) == 1:
-			reading = symbols.letter_reading(
-				text,
-				verbose=(self.config.verbosity == VERBOSE or self.config.announce_capitals),
-				latin_literal=self.config.latin_literal,
-			)
+			reading = self._letter(text)
 			if reading:
 				return [reading]
-			symbol = symbols.symbol_reading(text)
+			symbol = self.config.symbol_pronunciations.get(text) or (self.config.gradient_name if text == "∇" else symbols.symbol_reading(text))
 			if symbol:
 				return [symbol]
 			record_unknown(text, "identifier")
@@ -786,13 +1006,15 @@ class MathSpeaker(object):
 		# Πολυγράμματο mi: όνομα συνάρτησης, ελληνική λέξη, ή γράμμα-γράμμα
 		if text in symbols.FUNCTION_NAMES:
 			return [symbols.FUNCTION_NAMES[text]]
-		if re.fullmatch(r"[A-Za-zΑ-ΩΆ-Ώ]{2,4}", text):
+		if (re.fullmatch(r"[A-Za-zΑ-ΩΆ-Ώ]{2,4}", text)
+			or ((self.config.announce_capitals or self.config.symbol_pronunciations or self.config.verbosity == VERBOSE)
+				and re.fullmatch(r"[A-Za-zΑ-Ωα-ωΆ-Ώά-ώ]+", text))):
 			# Πιθανό ευθύγραμμο τμήμα/σχήμα (ΑΒ, ΑΒΓ): γράμμα-γράμμα.
 			record_fallback(f"multi-letter-identifier-spelled:{text}")
 			if not text.isupper():
 				record_unknown(text, "identifier")
 			readings = [
-				symbols.letter_reading(c, latin_literal=self.config.latin_literal) or c for c in text
+				self._letter(c) or c for c in text
 			]
 			return [" ".join(readings)]
 		if re.search(r"[A-Za-z]", text):
@@ -816,26 +1038,39 @@ class MathSpeaker(object):
 				return [base_text, power]
 		if self.config.decimal_comma:
 			text = grammar.normalize_number(text)
+		if self.config.decimal_digits and re.fullmatch(r"[0-9]+[.,][0-9]+", text):
+			whole, fractional = re.split(r"[.,]", text)
+			digits = ("μηδέν", "ένα", "δύο", "τρία", "τέσσερα", "πέντε", "έξι", "επτά", "οκτώ", "εννέα")
+			whole = digits[int(whole)] if len(whole) == 1 else whole
+			separator = "κόμμα" if "," in text else "τελεία"
+			return [whole, separator] + [digits[int(digit)] for digit in fractional]
 		return [text] if text else []
 
 	def _speak_mo(self, node):
 		text = node.text
 		if not text or text in symbols.INVISIBLE_CHARS:
 			return []
+		if text in self.config.symbol_pronunciations:
+			return [self._letter(text) or self.config.symbol_pronunciations[text]]
+		if text == "*" and node.parent is not None and all(
+			sibling is node or (sibling.tag == "mo" and sibling.text in symbols.INVISIBLE_CHARS)
+			for sibling in node.parent.children
+		):
+			return ["αστερίσκος"]
 		if text in ("−", "-"):
 			return ["πλην"]
 		if text in symbols.FENCES_OPEN and node.parent and node.index == 0:
 			return [symbols.FENCES_OPEN[text]]
 		if text in symbols.FENCES_CLOSE and node.parent and node.index == len(node.parent.children) - 1:
 			return [symbols.FENCES_CLOSE[text]]
-		reading = symbols.symbol_reading(text)
+		reading = self.config.symbol_pronunciations.get(text) or (self.config.gradient_name if text == "∇" else symbols.symbol_reading(text))
 		if reading:
 			return [reading]
 		if text in symbols.FENCES_OPEN:
 			return [symbols.FENCES_OPEN[text]]
 		if text in symbols.FENCES_CLOSE:
 			return [symbols.FENCES_CLOSE[text]]
-		letter = symbols.letter_reading(text, latin_literal=self.config.latin_literal)
+		letter = self._letter(text)
 		if letter:
 			return [letter]
 		record_unknown(text, "operator")
@@ -881,7 +1116,10 @@ class MathSpeaker(object):
 		κλειστό διάστημα, και μια τέτοια ανάγνωση θα άλλαζε το νόημα.
 		"""
 		info = self._fence_info(node)
-		if info is not None and info[0] == info[1]:
+		if info is not None and (
+			info[0] == info[1]
+			or (info[0] == "⟨" and self.config.domain_hint == "linear_algebra")
+		):
 			return self._speak_fenced(node, *info)
 		return self._sequence(node.children)
 
@@ -935,6 +1173,9 @@ class MathSpeaker(object):
 		if info is None:
 			return self._node(group)
 		_, _, inner = info
+		if (function.tag == "mi" and function.text in ("det", "tr", "Tr")
+			and len(inner) == 1 and inner[0].tag == "mi" and inner[0].text.isupper()):
+			return ["πίνακα"] + self._node(inner[0])
 		if function.tag == "mi" and function.text in ("P", "Pr"):
 			parts = self._split_top_level(inner, separators=("|", "∣"))
 			if len(parts) == 2 and parts[0] and parts[1]:
@@ -992,8 +1233,8 @@ class MathSpeaker(object):
 			out.append(Pause(SHORT))
 			out.append("τέλος άνω ακέραιου μέρους")
 			return out
-		# Εσωτερικό γινόμενο: ⟨x, y⟩
-		if open_char == "⟨":
+		# Εσωτερικό γινόμενο: ⟨x, y⟩, μόνο με ρητό πλαίσιο γραμμικής άλγεβρας.
+		if open_char == "⟨" and self.config.domain_hint == "linear_algebra":
 			parts = self._split_top_level(inner)
 			if len(parts) == 2 and parts[0] and parts[1]:
 				out = ["εσωτερικό γινόμενο"]
@@ -1103,7 +1344,7 @@ class MathSpeaker(object):
 		simple = is_simple(numerator) and is_simple(denominator)
 		# Μέσα σε τριγωνομετρικό όρισμα η σύντομη μορφή «... διά ...» δεν δηλώνει
 		# πού κλείνει το κλάσμα, οπότε κρατάμε τη ρητή δομική εκφώνηση.
-		if simple and verbosity != VERBOSE and not _is_trig_function_argument(node):
+		if simple and verbosity != VERBOSE and not _is_trig_function_argument(node) and not self._fraction_has_following_factor(node):
 			out = []
 			out.extend(self._operand(numerator))
 			out.append("διά")
@@ -1206,13 +1447,13 @@ class MathSpeaker(object):
 				out.extend(nodes)
 			else:
 				readings = [
-					symbols.letter_reading(c, latin_literal=self.config.latin_literal) or c
+					self._letter(c) or c
 					for c in function_part
 				]
 				out.append(" ".join(readings))
 		out.append("ως προς")
 		var_readings = [
-			symbols.letter_reading(c, latin_literal=self.config.latin_literal) or c for c in den_vars
+			self._letter(c) or c for c in den_vars
 		]
 		out.append(" και ".join(var_readings) if len(var_readings) > 1 else var_readings[0])
 		return out
@@ -1298,6 +1539,8 @@ class MathSpeaker(object):
 				adjective = symbols.NUMBER_SET_SIGNS[exp_text]
 				phrase = symbols.NUMBER_SETS[base.text].replace("των ", f"των {adjective} ", 1)
 				return [self._number_set_phrase(node, phrase)]
+			if base.text == "ℝ" and exp_text in ("n", "N", "ν", "Ν"):
+				return ["πραγματικός χώρος", self._letter(exp_text) or exp_text, "διαστάσεων"]
 			power = grammar.power_reading(exp_text) if is_simple(exponent) else None
 			if power is not None:
 				# ℝ² "ρο στο τετράγωνο", ℝⁿ "ρο στη νιοστή" — με το όνομα του γράμματος.
@@ -1314,12 +1557,14 @@ class MathSpeaker(object):
 			return out
 		# Ανάστροφος πίνακας: A^T
 		if exp_text in ("T", "t", "⊤") and base.tag == "mi" and base.text.isupper():
-			out = ["ανάστροφος του"]
+			out = ["ανάστροφος του πίνακα"]
 			out.extend(self._node(base))
 			return out
-		# Συζυγής μιγαδικός: z*
-		if exp_text in ("*", "∗") :
-			out = ["συζυγής του"]
+		# Συζυγής μιγαδικός: z*. Η ρητή σήμανση :matrix
+		# ξεχωρίζει τον συζυγή ανάστροφο χωρίς να μαντεύει από το A.
+		if exp_text in ("*", "∗"):
+			is_matrix = base.attrib.get("intent") == ":matrix"
+			out = ["συζυγής ανάστροφος του πίνακα" if is_matrix else "συζυγής του"]
 			out.extend(self._node(base))
 			return out
 		# Αντίστροφη συνάρτηση: f⁻¹, sin⁻¹ (τόξο ημιτόνου)
@@ -1379,6 +1624,9 @@ class MathSpeaker(object):
 		base, subscript = node.child(0), node.child(1)
 		if base is None or subscript is None:
 			return self._sequence(node.children)
+		tensor = self._tensor_scripts(base, subscript, None)
+		if tensor is not None:
+			return tensor
 		# Λογάριθμος με βάση: log₂
 		if base.tag == "mi" and base.text in ("log", "lg"):
 			out = ["λογάριθμος με βάση"]
@@ -1405,6 +1653,13 @@ class MathSpeaker(object):
 		base, sub, sup = node.child(0), node.child(1), node.child(2)
 		if base is None or sub is None or sup is None:
 			return self._sequence(node.children)
+		if (base.tag == "mrow" and len(base.children) > 1
+			and base.children[-1].tag == "mo" and base.children[-1].text == "|"
+			and not any(k.tag == "mo" and k.text == "|" for k in base.children[:-1])):
+			return self._sequence(base.children[:-1]) + [Pause(MEDIUM), self._semantic_term("evaluation"), "από"] + self._node(sub) + ["έως"] + self._node(sup)
+		tensor = self._tensor_scripts(base, sub, sup)
+		if tensor is not None:
+			return tensor
 		if base.tag == "mo" and base.text in _INTEGRAL_CHARS:
 			out = [symbols.BIG_OPERATORS[base.text], "από"]
 			out.extend(self._node(sub))
@@ -1604,6 +1859,8 @@ class MathSpeaker(object):
 				return self._vector(rows, columns)
 			kind, end = "πίνακας", "τέλος πίνακα"
 		out = [kind, f"{row_count} επί {columns}", Pause(MEDIUM)]
+		if self.config.matrix_reading == "explore" and kind == "πίνακας":
+			return out + ["χρησιμοποιήστε την αλληλεπίδραση μαθηματικών για εξερεύνηση των στοιχείων"]
 		out.extend(self._table_rows(rows))
 		out.append(Pause(SHORT))
 		out.append(end)
@@ -1629,6 +1886,17 @@ class MathSpeaker(object):
 	def _table_rows(self, rows):
 		out = []
 		verbosity = self.config.verbosity
+		if self.config.matrix_reading == "columns":
+			cells = [[c for c in row.children if c.tag == "mtd"] for row in rows]
+			for column in range(max((len(row) for row in cells), default=0)):
+				out.extend([Pause(LONG), f"στήλη {column + 1}:"])
+				for row, values in enumerate(cells):
+					if column < len(values):
+						if self.config.matrix_positions:
+							out.append(f"γραμμή {row + 1}:")
+						out.extend(self._sequence(values[column].children))
+						out.append(Pause(MEDIUM))
+			return out
 		for r, row in enumerate(rows, start=1):
 			if r > 1:
 				out.append(Pause(LONG))
@@ -1637,13 +1905,25 @@ class MathSpeaker(object):
 			for c, cell in enumerate(cells, start=1):
 				if c > 1:
 					out.append(Pause(MEDIUM))
-				if verbosity == VERBOSE:
+				if verbosity == VERBOSE or self.config.matrix_positions:
 					out.append(f"στήλη {c}:")
 				out.extend(self._sequence(cell.children))
 		return out
 
 	def _cases(self, table):
 		rows, _ = self._table_dimensions(table)
+		cells_by_row = [[c for c in row.children if c.tag == "mtd"] for row in rows]
+		def is_condition(cell):
+			return any(n.tag == "mo" and n.text in ("=", "<", ">", "≤", "≥")
+				and n.previous_sibling() is not None and n.next_sibling() is not None for n in cell.iter())
+		if cells_by_row and all(len(cells) == 2 and is_condition(cells[1]) for cells in cells_by_row):
+			out = [("δύο" if len(rows) == 2 else str(len(rows))) + " περιπτώσεις:"]
+			for index, (value, condition) in enumerate(cells_by_row):
+				if index:
+					out.append(Pause(MEDIUM))
+				out.extend([self._small_number_words(self._sequence(value.children)), "όταν",
+					self._small_number_words(self._sequence(condition.children))])
+			return out
 		is_system = any(
 			any(char in row.token_text() for char in "=<>≤≥")
 			for row in rows
@@ -1713,6 +1993,21 @@ class MathSpeaker(object):
 			pair = (child, children[i + 1] if i + 1 < len(children) else None)
 			target.append(pair)
 			i += 2
+		if not pre and post:
+			lower, upper = MathNode("mrow"), MathNode("mrow")
+			for sub, sup in post:
+				if sub is not None and sub.tag != "none":
+					lower.append(_clone(sub))
+				if sup is not None and sup.tag != "none":
+					upper.append(_clone(sup))
+			# A single slot can itself contain a group of indices.
+			if len(lower.children) == 1:
+				lower = lower.child(0)
+			if len(upper.children) == 1:
+				upper = upper.child(0)
+			tensor = self._tensor_scripts(base, lower, upper if upper.children or upper.text else None)
+			if tensor is not None:
+				return tensor
 		out = []
 		for sub, sup in pre:
 			if sup is not None and sup.tag != "none":

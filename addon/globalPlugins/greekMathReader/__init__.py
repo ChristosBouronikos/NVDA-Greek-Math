@@ -43,6 +43,15 @@ CONFIG_SPEC = {
 	"enabled": "boolean(default=True)",
 	"verbosity": "integer(default=1, min=0, max=2)",
 	"decimalComma": "boolean(default=True)",
+	"decimalDigits": "boolean(default=False)",
+	"announceCapitals": "boolean(default=False)",
+	"symbolPronunciations": "string(default='{}')",
+	"pronunciationCourse": "string(default='Default')",
+	"gradientName": "option('ανάδελτα', 'κλίση', default='ανάδελτα')",
+	"explainComposition": "boolean(default=False)",
+	"matrixReading": "option('whole', 'explore', 'rows', 'columns', default='whole')",
+	"matrixPositions": "boolean(default=False)",
+	"boundarySound": "integer(default=100, min=0, max=100)",
 	"forceGreekLanguage": "boolean(default=True)",
 	"terminologyProfile": "option('standard', 'school', 'university', default='standard')",
 	# 'greek_school': λατινικά γράμματα με την ελληνική σχολική απόδοσή τους
@@ -1282,6 +1291,13 @@ def resetRecommendedDefaults():
 	section = config.conf["greekMathReader"]
 	section["verbosity"] = 1
 	section["decimalComma"] = True
+	section["decimalDigits"] = False
+	section["announceCapitals"] = False
+	section["gradientName"] = "ανάδελτα"
+	section["explainComposition"] = False
+	section["matrixReading"] = "whole"
+	section["matrixPositions"] = False
+	section["boundarySound"] = 100
 	section["latinLetterMode"] = "greek_school"
 	section["translateUnconfirmedWordMath"] = True
 	section["terminologyProfile"] = "standard"
@@ -2314,7 +2330,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# Translators: Announced when linear mathematical input cannot be read.
 			ui.message(_("Could not read the LaTeX or UnicodeMath expression"))
 			return
-		speech.speak(tokensToSpeechSequence(tokens))
+		sequence = tokensToSpeechSequence(tokens)
+		from .provider import rememberReading
+		rememberReading(source, inputFormat, sequence)
+		speech.speak(sequence)
 
 	def _getLatexSource(self):
 		"""Return the current selection, or the clipboard text as a fallback."""

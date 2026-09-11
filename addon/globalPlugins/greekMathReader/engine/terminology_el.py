@@ -41,6 +41,30 @@ def _entry(standard, school=None, university=None, **metadata):
 # ``source`` is deliberately a short source family rather than a URL.  The
 # terminology review document records the exact edition/page used at sign-off.
 TERMS = {
+	"classical_hamiltonian": _entry(
+		"χαμιλτονιανή συνάρτηση των", domain="classical_mechanics",
+		source="Maintainer wording approval 2026-09-08; expert review pending",
+	),
+	"dirac_delta": _entry(
+		"δέλτα του Ντιράκ στο", domain="distribution_theory",
+		source="Maintainer wording approval 2026-09-08; expert review pending",
+	),
+	"gamma_function": _entry(
+		"συνάρτηση γάμα του", domain="special_functions",
+		source="Maintainer wording approval 2026-09-08; expert review pending",
+	),
+	"normal_distribution": _entry(
+		"ακολουθεί κανονική κατανομή", domain="probability_statistics",
+		source="Maintainer wording approval 2026-09-08; expert review pending",
+	),
+	"point_definition": _entry(
+		"έχει συντεταγμένες", domain="geometry",
+		source="Maintainer wording approval 2026-09-08; expert review pending",
+	),
+	"modular_congruence": _entry(
+		"ισότιμο με", domain="number_theory",
+		source="Maintainer wording approval 2026-09-08; expert review pending",
+	),
 	"power": _entry(
 		"δύναμη",
 		domain="arithmetic_algebra",
@@ -66,9 +90,13 @@ TERMS = {
 		source="Kallipos",
 		reviewed=False,
 	),
+	"quotient_group": _entry(
+		"ομάδα πηλίκο της", domain="algebra",
+		source="Maintainer wording approval; explicit quotient-group intent only", reviewed=False,
+	),
 	"gradient": _entry(
-		"βαθμίδα του",
-		school="κλίση του",
+		"ανάδελτα του",
+		school="ανάδελτα του",
 		domain="vector_calculus",
 		source="Kallipos",
 		reviewed=False,
@@ -192,7 +220,7 @@ TERMS = {
 		reviewed=True,
 	),
 	"evaluation": _entry(
-		"αποτίμηση του",
+		"υπολογισμένο",
 		domain="calculus",
 		source="Kallipos",
 		reviewed=False,
@@ -303,7 +331,7 @@ TERMS = {
 		source="Kallipos",
 	),
 	"fourier_transform": _entry(
-		"μετασχηματισμός Φουριέ του",
+		"μετασχηματισμός Φουριέ της",
 		domain="analysis_physics",
 		source="Kallipos",
 	),
@@ -691,7 +719,7 @@ def mathcat_intent_record(concept):
 	if record is None:
 		return None
 	head = record.get("mathcatHead") or record["forms"][STANDARD]
-	for connector in (" του", " των"):
+	for connector in (" του", " των", " της"):
 		if head.endswith(connector):
 			head = head[:-len(connector)]
 			break

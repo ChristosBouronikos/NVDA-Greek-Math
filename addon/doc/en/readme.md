@@ -8,7 +8,7 @@ Upstream MathCAT now has an early, in-development Greek rule pack. It may not ye
 
 * **Greek speech for MathML** anywhere NVDA finds it: web pages, EPUB books, Word equations, and accessible PDF formulas exposed as MathML.
 * **Broad structural coverage**: fractions, powers, roots, integrals, sums/products, limits, derivatives, matrices/determinants, systems, absolute values, intervals, sets, logic, vectors, trigonometric functions, logarithms, and more.
-* **Greek school conventions**: capital letters are read with their Greek names ("τρίγωνο άλφα βήτα γάμα"), decimals are read with the Greek decimal comma, and both Latin (sin, cos) and Greek (ημ, συν, λογ) notation are recognized.
+* **Distinct Greek and Latin letters**: Greek `α` is «άλφα», while Latin `a` and `A` are «έι». Latin lowercase `e` and `i` are «ί» and «άι»; Greek `ε` and `ι` remain «έψιλον» and «γιώτα». Decimals use the Greek decimal comma, and both Latin (sin, cos) and Greek (ημ, συν, λογ) notation are recognized.
 * **Deep symbol coverage**: signed number sets (ℝ⁺ "το σύνολο των θετικών πραγματικών αριθμών", ℝ² "ρο στο τετράγωνο"), angle minutes and seconds (30° 15′ "30 μοίρες 15 πρώτα λεπτά"), repeating decimals (0,3̄ "0 κόμμα 3 περιοδικό"), powers and roots with full Greek ordinals up to 99 ("στην εικοστή πρώτη"), order relations, logic, currency, ready-made fraction characters (½ ¾), and the Unicode mathematical alphabets that Word and MathJax produce (𝑥, 𝐀, 𝛼 are read as regular letters).
 * **Interactive navigation**: press NVDA+Alt+M to explore known semantic operands and otherwise-safe structural parts.
 * **Three verbosity levels**: terse, smart (default), and verbose.
@@ -37,7 +37,7 @@ This version (2.2.0) ships on the stable channel by explicit maintainer decision
 	* **Left/right arrows**: previous/next part at the same level.
 	* **Home**: return to the whole expression.
 	* **End**: last inner part; **Backspace**: previous navigation position.
-	* **Control+arrows**: move by table cell; **P**: report position.
+	* **Control+arrows**: move by table cell; **P**: report position; **R/C**: read the current row/column.
 	* **Space**: repeat the current part.
 	* **Control+C**: copy the Greek reading to the clipboard.
 	* **Control+Shift+C**: copy the current part as MathML.
@@ -84,9 +84,23 @@ In NVDA 2026.1.1, **Math → Language** has no Automatic choice and normally def
 * **Rate and pauses**, automatic MathCAT Greek use when the installed backend advertises it, and validated personal terminology imported/exported as JSON.
 * **Decimal comma**: read "3.14" as "3,14" (τρία κόμμα δεκατέσσερα).
 * **Health check / Repair**: checking is read-only; repair changes the required NVDA settings explicitly.
-* **Test Greek math speech**: speaks a sample expression directly, independently of the current application or webpage.
+* **Listen to example / current expression**: previews unsaved settings with a transcript. Choose examples for capitals, fractions, tensors, matrices and unknown symbols. This does not run Repair. “Current expression” means the most recently read equation or interaction part; read it before opening Settings.
 * **Reset settings and repair Greek math**: restores smart verbosity, decimal comma, automatic language switching, disabled native Word math, Word UI Automation set to Always, and every exclusive provider hook.
 * **Copy diagnostics**: copies the exact add-on build, module path, active provider, Word TextInfo/notification route, UIA or OMath fallback result, Windows/Office details, focused object, last MathML exposure, and installed Greek OneCore voices.
+
+### Personal reading preferences
+
+* **Announce capital letters independently** enables capital announcements in Terse and Smart modes, including multi-letter identifiers and literal Latin letters. Verbose keeps its existing capital announcements.
+* **Symbol pronunciations and ambiguous symbols** lets you search a symbol or name, edit its pronunciation, listen and reset it. A one-character search distinguishes `G`, `g`, `Γ` and `γ` exactly. Create named courses to keep different choices. Changes stay pending until Settings is saved; cancelling either dialog does not save its pending edits. These names apply to symbol tokens, including in literal mode, and never replace words in Greek prose. Recognized concepts such as absolute value and conditional probability keep their mathematical meanings.
+* **∇ / grad** uses «ανάδελτα» by default, with «κλίση» available. A course-specific ∇ pronunciation takes precedence. Existing personal gradient terminology overrides still apply to semantic gradients. Divergence and curl remain distinct.
+* **Explain function composition** is off by default. For `f∘g`, it adds «σύνθεση της εφ με τη τζί: πρώτα εφαρμόζεται η τζί και μετά η εφ». Nested `f(g(x))` is unchanged.
+* **Matrix reading** defaults to the current whole-matrix reading. Row order includes every row, column order includes every column, and dimensions mode announces that cells are available for exploration. In dimensions mode, enter math interaction and press Down to reach the first cell. R/C read the current row/column; Control+arrows move between cells. Optional cell positions and boundary sound volume apply to navigation. Whole/current and row-order modes both read all rows; zero entries are retained. Boundary volume defaults to its previous level, with 0 disabling the sound.
+* **Rate** is 1–100% of normal NVDA speech. Rates above 100% remain unavailable pending synthesizer testing. **Pauses** are 0–200% of the standard breaks: 0 means no breaks, 100 the existing default, and 200 double. Existing saved pause values retain their timing. Use sample playback to hear pending changes.
+* **Report a reading problem**, at the end of Settings, prepares a local report of the most recently read expression, actual speech, format, preset, context, backend, settings and voice. Add expected speech and your message, then inspect, copy or save it. **Open email draft** opens your mail app addressed to **cbouronikos@uth.gr**. For a long report, the complete log is copied to the clipboard and you are asked to paste it into the draft with Control+V. Nothing is sent automatically.
+
+Preview always uses the local Greek engine. Saved custom reading options also use the local engine when the MathCAT delegate cannot apply them. Standard provider repair and the separate keyboard self-test are unchanged.
+
+`G/H` remains division, including in Abstract Algebra context: context alone cannot establish that H is normal. An author can identify the quotient group explicitly with MathML `intent="quotient-group($g,$h)"` and `arg="g"` / `arg="h"` on its two operands.
 
 ### Recommended NVDA configuration
 

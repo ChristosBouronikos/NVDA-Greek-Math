@@ -22,7 +22,7 @@
       },
       "id": "mathjax_semantics",
       "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <semantics>\n    <mrow>\n      <mi>x</mi><mo>=</mo>\n      <mfrac>\n        <mrow><mo>−</mo><mi>b</mi><mo>±</mo><msqrt><msup><mi>b</mi><mn>2</mn></msup><mo>−</mo><mn>4</mn><mi>a</mi><mi>c</mi></msqrt></mrow>\n        <mrow><mn>2</mn><mi>a</mi></mrow>\n      </mfrac>\n    </mrow>\n    <annotation encoding=\"application/x-tex\">x=\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}</annotation>\n  </semantics>\n</math>",
-      "standardSpeech": "χι ίσον κλάσμα με αριθμητή μείον μπε συν πλην τετραγωνική ρίζα του μπε στο τετράγωνο πλην 4 α σε, και παρονομαστή 2 α, τέλος κλάσματος"
+      "standardSpeech": "χι ίσον κλάσμα με αριθμητή μείον μπί συν πλην τετραγωνική ρίζα του μπί στο τετράγωνο πλην 4 έι σί, και παρονομαστή 2 έι, τέλος κλάσματος"
     },
     {
       "diagnostics": {
@@ -33,7 +33,7 @@
       },
       "id": "mathtype_annotation_xml",
       "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <semantics>\n    <annotation encoding=\"application/x-tex\">\\int_0^1 x^2\\,dx</annotation>\n    <annotation-xml encoding=\"MathML-Presentation\">\n      <mrow>\n        <msubsup><mo>∫</mo><mn>0</mn><mn>1</mn></msubsup>\n        <msup><mi>x</mi><mn>2</mn></msup><mi>d</mi><mi>x</mi>\n      </mrow>\n    </annotation-xml>\n  </semantics>\n</math>",
-      "standardSpeech": "ολοκλήρωμα από 0 έως 1 του χι στο τετράγωνο ντε χι"
+      "standardSpeech": "ολοκλήρωμα από 0 έως 1 του χι στο τετράγωνο ως προς χ"
     },
     {
       "diagnostics": {
@@ -46,7 +46,7 @@
       },
       "id": "quantum_matrix_element",
       "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <mo>⟨</mo><mi>ψ</mi><mo>|</mo><mi>H</mi><mo>|</mo><mi>φ</mi><mo>⟩</mo>\n</math>",
-      "standardSpeech": "στοιχείο πίνακα με μπρα ψι ήτα κετ φι"
+      "standardSpeech": "στοιχείο πίνακα με μπρα ψι έιτς κετ φι"
     },
     {
       "diagnostics": {
@@ -59,7 +59,7 @@
       },
       "id": "statistics_expectation",
       "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <mi>E</mi><mrow><mo>[</mo><mi>X</mi><mo>|</mo><mi>Y</mi><mo>]</mo></mrow>\n</math>",
-      "standardSpeech": "αναμενόμενη τιμή του χι δεδομένου του ψι"
+      "standardSpeech": "αναμενόμενη τιμή του χι δεδομένου του γουάι"
     },
     {
       "diagnostics": {
@@ -70,7 +70,7 @@
       },
       "id": "tagged_pdf_formula",
       "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <mrow>\n    <mi>E</mi><mo>=</mo><mi>m</mi><msup><mi>c</mi><mn>2</mn></msup>\n  </mrow>\n</math>",
-      "standardSpeech": "έψιλον ίσον μι σε στο τετράγωνο"
+      "standardSpeech": "έψιλον ίσον μι σί στο τετράγωνο"
     },
     {
       "diagnostics": {
@@ -81,7 +81,7 @@
       },
       "id": "tensor_indices",
       "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n  <mmultiscripts><mi>T</mi><mi>j</mi><none/><mprescripts/><none/><mi>i</mi></mmultiscripts>\n</math>",
-      "standardSpeech": "προεκθέτης ι ταυ δείκτης ζι"
+      "standardSpeech": "προεκθέτης άι ταυ δείκτης τζέι"
     },
     {
       "diagnostics": {

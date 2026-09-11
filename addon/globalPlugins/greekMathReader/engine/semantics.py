@@ -116,6 +116,13 @@ def _intent_semantic(node):
 		arguments.append(target)
 	if not arguments:
 		arguments = list(node.children)
+	# These approved meanings need complete operands before semantic speech.
+	arities = {"quotient_group": 2, "classical_hamiltonian": 2, "dirac_delta": 1, "gamma_function": 1,
+		"normal_distribution": 3, "point_definition": 3, "modular_congruence": 3,
+		"initial_condition": 1, "fourier_transform": 1, "evaluation": 3}
+	if concept in arities and len(arguments) != arities[concept]:
+		record_fallback(f"invalid-intent-arity:{name}")
+		return None
 	if concept in ("braket", "matrix_element") and len(arguments) == 1:
 		target = arguments[0]
 		parts = _split(target.children, ("|", "∣")) if target.tag == "mrow" else []
@@ -181,6 +188,53 @@ def _domain(config):
 	return getattr(config, "domain_hint", "auto") if config is not None else "auto"
 
 
+def _approved_sequence(node, config):
+	"""Narrow recognizers for the examples approved on 2026-09-08."""
+	if node.tag not in ("math", "mrow"):
+		return None
+	kids = node.children
+	if (len(kids) == 3 and getattr(config, "explain_composition", False)
+		and kids[1].tag == "mo" and kids[1].text == "∘"
+		and all(k.tag == "mi" and len(k.text) == 1 for k in (kids[0], kids[2]))):
+		return SemanticNode("function_composition", [kids[0], kids[2]], source=node, confidence="context")
+	if len(kids) == 3 and _domain(config) == "geometry":
+		point, equals, pair = kids
+		fence = _fence_parts(pair)
+		if (point.tag == "mi" and len(point.text) == 1 and point.text.isupper()
+			and equals.tag == "mo" and equals.text == "=" and fence and fence[0] == "("):
+			parts = _split(fence[2], (",",))
+			if len(parts) == 2 and all(parts):
+				return SemanticNode("point_definition", [point] + [_wrap(p) for p in parts], source=node, confidence="context")
+	if len(kids) == 4:
+		left, relation, right, group = kids
+		fence = _fence_parts(group)
+		if fence and fence[0] == "(":
+			inner = fence[2]
+			if (relation.tag == "mo" and relation.text == "≡" and len(inner) == 2
+				and inner[0].text == "mod"):
+				return SemanticNode("modular_congruence", [left, right, inner[1]], source=node)
+			if (_domain(config) == "probability_statistics" and relation.tag == "mo"
+				and relation.text == "∼" and right.tag == "mi" and right.text in ("N", "𝒩")):
+				parts = _split(inner, (",",))
+				if len(parts) == 2 and all(parts):
+					variance = _wrap(parts[1])
+					if variance.tag == "msup" and len(variance.children) == 2 and variance.child(1).token_text() == "2":
+						return SemanticNode("normal_distribution", [left, _wrap(parts[0]), variance], source=node, confidence="context")
+		if [(k.tag, k.text) for k in kids] == [("mi", "F"), ("mo", "="), ("mi", "m"), ("mi", "a")]:
+			return SemanticNode("newton_symbolic", [left, right, group], source=node)
+	if len(kids) == 2 and kids[0].tag == "mi" and kids[0].text == "Γ":
+		fence = _fence_parts(kids[1])
+		if fence and fence[0] == "(" and fence[2] and len(_split(fence[2], (",",))) == 1:
+			return SemanticNode("gamma_function", [_wrap(fence[2])], source=node)
+	# MathML exporters can attach bounds to a trailing bar instead of the expression.
+	if len(kids) >= 2 and kids[-1].tag == "msubsup":
+		bar = kids[-1]
+		if (bar.child(0) is not None and bar.child(0).tag == "mo" and bar.child(0).text == "|"
+			and len(bar.children) == 3 and not any(k.tag == "mo" and k.text == "|" for k in kids[:-1])):
+			return SemanticNode("evaluation", [_wrap(kids[:-1]), bar.child(1), bar.child(2)], source=node)
+	return None
+
+
 def _operator_sequence(node, config):
 	if node.tag not in ("math", "mrow"):
 		return None
@@ -205,10 +259,7 @@ def _operator_sequence(node, config):
 	# the same function semantics so connectors and multiple arguments agree.
 	if len(kids) == 2 and first.tag == "mi":
 		fence = _fence_parts(kids[1])
-		if fence is not None and (
-			fence[0] == "["
-			or (fence[0] == "(" and first.text not in ("E", "ℰ", "𝔼"))
-		):
+		if fence is not None and fence[0] in ("[", "("):
 			inner = fence[2]
 			function_concepts = {
 				"E": "expectation", "ℰ": "expectation", "𝔼": "expectation",
@@ -231,6 +282,8 @@ def _operator_sequence(node, config):
 		vector_context = _is_vector(kids[0]) or _is_vector(kids[2]) or _domain(config) in (
 			"physics", "quantum_physics", "vector_calculus",
 		)
+		if kids[0].tag == "mn" or kids[2].tag == "mn":
+			vector_context = False
 		if vector_context and operator in ("·", "⋅", "∙"):
 			return SemanticNode("dot_product", [kids[0], kids[2]], source=node)
 		if vector_context and operator in ("×", "⨯"):
@@ -275,7 +328,7 @@ def recognize_semantic(node, config=None):
 			_last_diagnostics.recognized.append(f"{concept}:structure")
 			return semantic
 
-	semantic = _operator_sequence(node, config) or _fenced_semantic(node, config)
+	semantic = _approved_sequence(node, config) or _operator_sequence(node, config) or _fenced_semantic(node, config)
 	if semantic is not None:
 		_last_diagnostics.recognized.append(f"{semantic.concept}:{semantic.confidence}")
 	return semantic

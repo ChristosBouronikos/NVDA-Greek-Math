@@ -68,17 +68,27 @@ class GreekMathInteraction(mathPres.MathInteractionNVDAObject):
 		self._speakPointer(includeRole=False)
 
 	def _speakPointer(self, includeRole=True):
+		readingConfig = getReadingConfig()
 		tokens = []
+		position = self._tablePosition()
+		if readingConfig.matrix_positions and position is not None:
+			_table, row, column = position
+			tokens.append(f"γραμμή {row + 1}, στήλη {column + 1}:")
 		if includeRole:
 			role = role_description(self.pointer)
 			if role:
 				tokens.append(role + ":")
-		tokens.extend(speak_node(self.pointer, getReadingConfig()))
-		speech.speak(tokensToSpeechSequence(tokens))
+		tokens.extend(speak_node(self.pointer, readingConfig))
+		sequence = tokensToSpeechSequence(tokens, readingConfig)
+		from .provider import rememberReading
+		rememberReading(mathnode_to_mathml(self.pointer), "mathml", sequence)
+		speech.speak(sequence)
 
 	def _move(self, target, edgeMessage, remember=True):
 		if target is None:
-			tones.beep(200, 60)
+			volume = round(getReadingConfig().boundary_sound / 2)
+			if volume:
+				tones.beep(200, 60, left=volume, right=volume)
 			ui.message(edgeMessage)
 			return
 		if remember and target is not self.pointer:
@@ -139,6 +149,12 @@ class GreekMathInteraction(mathPres.MathInteractionNVDAObject):
 		gesture="kb:downArrow",
 	)
 	def script_moveIn(self, gesture):
+		if getReadingConfig().matrix_reading == "explore":
+			table = next((n for n in self.pointer.iter() if n.tag == "mtable"), None)
+			if table is not None:
+				cell = next((n for n in table.iter() if n.tag == "mtd"), None)
+				self._move(cell, _("No inner parts"))
+				return
 		children = self._navigationChildren(self.pointer)
 		# Translators: Announced when the current math part has no inner parts.
 		self._move(children[0] if children else None, _("No inner parts"))
@@ -272,3 +288,35 @@ class GreekMathInteraction(mathPres.MathInteractionNVDAObject):
 	def script_copySource(self, gesture):
 		if api.copyToClip(mathnode_to_mathml(self.pointer)):
 			ui.message(_("MathML source copied"))
+
+
+	def _readTableLine(self, column=False):
+		position = self._tablePosition()
+		if position is None:
+			ui.message(_("Not in a table cell"))
+			return
+		table, rowIndex, columnIndex = position
+		if column:
+			cells = [row.child(columnIndex) for row in table.children if row.tag == "mtr"]
+			label = f"στήλη {columnIndex + 1}:"
+		else:
+			cells = table.child(rowIndex).children
+			label = f"γραμμή {rowIndex + 1}:"
+		from .engine import Pause, MEDIUM
+		readingConfig = getReadingConfig()
+		tokens = [label]
+		for index, cell in enumerate(cells):
+			if cell is not None and cell.tag == "mtd":
+				if readingConfig.matrix_positions:
+					tokens.append(("γραμμή" if column else "στήλη") + f" {index + 1}:")
+				tokens.extend(speak_node(cell, readingConfig))
+				tokens.append(Pause(round(MEDIUM * readingConfig.pause_factor / 50)))
+		speech.speak(tokensToSpeechSequence(tokens, readingConfig))
+
+	@script(description=_("Read the current matrix row"), gesture="kb:r")
+	def script_readRow(self, gesture):
+		self._readTableLine()
+
+	@script(description=_("Read the current matrix column"), gesture="kb:c")
+	def script_readColumn(self, gesture):
+		self._readTableLine(column=True)

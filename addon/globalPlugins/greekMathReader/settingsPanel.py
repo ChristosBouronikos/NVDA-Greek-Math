@@ -91,6 +91,9 @@ class GreekMathSettingsPanel(SettingsPanel):
 			],
 		)
 		self.verbosityChoice.SetSelection(int(section["verbosity"]))
+		self.announceCapitalsCheckbox = helper.addItem(
+			wx.CheckBox(self, label=_("Announce capital letters independently of verbosity")))
+		self.announceCapitalsCheckbox.SetValue(bool(section.get("announceCapitals", False)))
 
 		self.terminologyProfileChoice = helper.addLabeledControl(
 			_("Greek &terminology profile:"),
@@ -127,18 +130,18 @@ class GreekMathSettingsPanel(SettingsPanel):
 		self.domainHintChoice.SetSelection(domainIndex)
 
 		self.relativeRateControl = helper.addLabeledControl(
-			_("Relative math speech &rate (percent):"),
+			_("Math speech rate (% of normal NVDA speech, 100 = normal):"),
 			wx.SpinCtrl,
 			min=1,
 			max=100,
 			initial=int(section.get("relativeRate", 100)),
 		)
 		self.pauseFactorControl = helper.addLabeledControl(
-			_("Math &pause factor:"),
+			_("Math pauses (% of standard breaks: 0 = none, 100 = normal, 200 = double):"),
 			wx.SpinCtrl,
 			min=0,
-			max=100,
-			initial=int(section.get("pauseFactor", 50)),
+			max=200,
+			initial=2 * int(section.get("pauseFactor", 50)),
 		)
 
 		self.decimalCommaCheckbox = helper.addItem(
@@ -146,6 +149,10 @@ class GreekMathSettingsPanel(SettingsPanel):
 			wx.CheckBox(self, label=_("Read the decimal &point as a Greek decimal comma (3.14 as 3,14)"))
 		)
 		self.decimalCommaCheckbox.SetValue(bool(section["decimalComma"]))
+		self.decimalDigitsCheckbox = helper.addItem(
+			wx.CheckBox(self, label=_("Read decimal digits &individually"))
+		)
+		self.decimalDigitsCheckbox.SetValue(bool(section.get("decimalDigits", False)))
 
 		self.latinLiteralCheckbox = helper.addItem(
 			# Translators: Label of a checkbox in the settings panel. When off,
@@ -158,6 +165,34 @@ class GreekMathSettingsPanel(SettingsPanel):
 			)
 		)
 		self.latinLiteralCheckbox.SetValue(section.get("latinLetterMode", "greek_school") == "literal")
+		from .engine.symbols_el import validate_pronunciations
+		try:
+			profiles = json.loads(section.get("symbolPronunciations", "{}"))
+		except (TypeError, ValueError):
+			profiles = {}
+		self._pronunciationProfiles = {name: validate_pronunciations(values)
+			for name, values in profiles.items() if isinstance(name, str) and name.strip()} if isinstance(profiles, dict) else {}
+		self._pronunciationCourse = section.get("pronunciationCourse", "Default")
+		self._pronunciationProfiles.setdefault(self._pronunciationCourse, {})
+		self.symbolEditorButton = helper.addItem(wx.Button(self, label=_("Symbol pronunciations and ambiguous symbols...")))
+		self.symbolEditorButton.Bind(wx.EVT_BUTTON, self.onSymbolEditor)
+		self.gradientChoice = helper.addLabeledControl(_("Name for ∇ and grad (gradient):"), wx.Choice, choices=["ανάδελτα", "κλίση"])
+		self.gradientChoice.SetSelection(1 if section.get("gradientName") == "κλίση" else 0)
+		helper.addItem(wx.StaticText(self, label=_("A course-specific custom name for ∇ takes precedence over this choice.")))
+		self.compositionCheckbox = helper.addItem(wx.CheckBox(self, label=_("Explain function composition (apply the right function first)")))
+		self.compositionCheckbox.SetValue(bool(section.get("explainComposition", False)))
+		self.matrixChoice = helper.addLabeledControl(_("Matrix reading:"), wx.Choice, choices=[
+			_("Whole matrix (current reading — default)"), _("Dimensions, then explore cells"),
+			_("Read by rows"), _("Read by columns")])
+		self._matrixValues = ("whole", "explore", "rows", "columns")
+		self.matrixChoice.SetSelection(self._matrixValues.index(section.get("matrixReading", "whole")))
+		self.matrixPositionsCheckbox = helper.addItem(wx.CheckBox(self, label=_("Announce matrix cell positions")))
+		self.matrixPositionsCheckbox.SetValue(bool(section.get("matrixPositions", False)))
+		helper.addItem(wx.StaticText(self, label=_("In matrix interaction: R reads the current row, C reads the current column, Control+arrows move between cells. Zero entries are read.")))
+		self.boundarySoundControl = helper.addLabeledControl(_("Navigation boundary sound (% of current volume, 0 = off):"),
+			wx.SpinCtrl, min=0, max=100, initial=int(section.get("boundarySound", 100)))
+		self.boundarySampleButton = helper.addItem(wx.Button(self, label=_("Listen to boundary sound")))
+		self.boundarySampleButton.Bind(wx.EVT_BUTTON, self.onBoundarySample)
 
 		self.unconfirmedBackupCheckbox = helper.addItem(
 			# Translators: Label of a checkbox enabling the backup translation of
@@ -210,11 +245,21 @@ class GreekMathSettingsPanel(SettingsPanel):
 		self.resetSelectedTerminologyButton.Bind(wx.EVT_BUTTON, self.onResetSelectedTerminology)
 		self._refreshTerminologyChoices()
 
+		from .settingsSupport import PREVIEW_EXAMPLES
+		helper.addItem(wx.StaticText(self, label=_("Preview uses unsaved choices in the local Greek engine and does not run Repair. Read an expression before opening Settings to preview it here.")))
+		self.exampleChoice = helper.addLabeledControl(_("Preview example:"), wx.Choice,
+			choices=[_(label) for label, source in PREVIEW_EXAMPLES])
+		self.exampleChoice.SetSelection(0)
+		self.previewTranscript = helper.addLabeledControl(_("Preview transcript:"), wx.TextCtrl,
+			style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 90))
+		self.previewStatus = helper.addItem(wx.StaticText(self, label=""))
 		self.testSpeechButton = helper.addItem(
 			# Translators: Button that directly speaks a sample equation using the add-on's Greek engine.
-			wx.Button(self, label=_("&Test Greek math speech"))
+			wx.Button(self, label=_("Listen to example (including rate and pauses)"))
 		)
 		self.testSpeechButton.Bind(wx.EVT_BUTTON, self.onTestSpeech)
+		self.currentSpeechButton = helper.addItem(wx.Button(self, label=_("Listen to current expression")))
+		self.currentSpeechButton.Bind(wx.EVT_BUTTON, self.onCurrentSpeech)
 
 		self.resetButton = helper.addItem(
 			# Translators: Resets add-on settings and repairs all exclusive provider hooks.
@@ -256,6 +301,9 @@ class GreekMathSettingsPanel(SettingsPanel):
 			wx.Button(self, label=_("&Copy diagnostics"))
 		)
 		self.copyDiagnosticsButton.Bind(wx.EVT_BUTTON, self.onCopyDiagnostics)
+		# Keep reporting at the end of Settings, after all preferences and tools.
+		self.reportProblemButton = helper.addItem(wx.Button(self, label=_("Report a reading problem / email the maintainer...")))
+		self.reportProblemButton.Bind(wx.EVT_BUTTON, self.onReportProblem)
 
 	def onManageVoices(self, event):
 		"""Open the voice manager, enabling the feature first if needed.
@@ -275,10 +323,85 @@ class GreekMathSettingsPanel(SettingsPanel):
 		with NeuralVoicesDialog(self) as dialog:
 			dialog.ShowModal()
 
-	def onTestSpeech(self, event):
-		from . import speakSelfTest
+	def _pendingSection(self):
+		section = dict(config.conf["greekMathReader"])
+		section.update({
+			"verbosity": self.verbosityChoice.GetSelection(),
+			"announceCapitals": self.announceCapitalsCheckbox.GetValue(),
+			"decimalComma": self.decimalCommaCheckbox.GetValue(),
+			"decimalDigits": self.decimalDigitsCheckbox.GetValue(),
+			"latinLetterMode": "literal" if self.latinLiteralCheckbox.GetValue() else "greek_school",
+			"terminologyProfile": ("standard", "school", "university")[self.terminologyProfileChoice.GetSelection()],
+			"domainHint": self._domainValues[self.domainHintChoice.GetSelection()],
+			"relativeRate": self.relativeRateControl.GetValue(),
+			"pauseFactor": round(self.pauseFactorControl.GetValue() / 2),
+			"gradientName": ("ανάδελτα", "κλίση")[self.gradientChoice.GetSelection()],
+			"explainComposition": self.compositionCheckbox.GetValue(),
+			"matrixReading": self._matrixValues[self.matrixChoice.GetSelection()],
+			"matrixPositions": self.matrixPositionsCheckbox.GetValue(),
+			"boundarySound": self.boundarySoundControl.GetValue(),
+			"symbolPronunciations": json.dumps(self._pronunciationProfiles, ensure_ascii=False),
+			"pronunciationCourse": self._pronunciationCourse,
+			"terminologyOverrides": json.dumps(self._terminologyOverrides, ensure_ascii=False),
+		})
+		return section
 
-		speakSelfTest()
+	def onSymbolEditor(self, event):
+		from .provider import getReadingConfig
+		from .readingSettingsDialogs import PronunciationDialog
+		with PronunciationDialog(self, self._pronunciationProfiles, self._pronunciationCourse,
+			getReadingConfig(self._pendingSection())) as dialog:
+			if dialog.ShowModal() == wx.ID_OK:
+				self._pronunciationProfiles = dialog.profiles
+				self._pronunciationCourse = dialog.course
+
+	def _preview(self, source, inputFormat):
+		import speech
+		from .provider import getReadingConfig, tokensToSpeechSequence
+		from .settingsSupport import preview_tokens
+		from .engine import MathMLParseError, LatexParseError, UnicodeMathParseError, get_last_engine_diagnostics
+		try:
+			readingConfig = getReadingConfig(self._pendingSection())
+			tokens = preview_tokens(source, inputFormat, readingConfig)
+			sequence = tokensToSpeechSequence(tokens, readingConfig)
+		except (MathMLParseError, LatexParseError, UnicodeMathParseError, KeyError):
+			self.previewTranscript.ChangeValue(_("Could not preview this expression"))
+			self.previewStatus.SetLabel("")
+			ui.message(_("Could not preview this expression"))
+			return
+		self.previewTranscript.ChangeValue(" ".join(item for item in sequence if isinstance(item, str)))
+		unknown = get_last_engine_diagnostics()["unknown"]
+		self.previewStatus.SetLabel(_("Unknown symbols or identifiers: {symbols}").format(
+			symbols=", ".join(item.split(":", 1)[-1] for item in unknown)) if unknown else "")
+		speech.speak(sequence)
+
+	def onTestSpeech(self, event):
+		from .settingsSupport import PREVIEW_EXAMPLES
+		self._preview(PREVIEW_EXAMPLES[self.exampleChoice.GetSelection()][1], "mathml")
+
+	def onCurrentSpeech(self, event):
+		from .provider import lastReading
+		if lastReading is None:
+			ui.message(_("Read an expression first, then reopen Settings."))
+			return
+		self._preview(lastReading["expression"], lastReading["format"])
+
+	def onBoundarySample(self, event):
+		import tones
+		volume = round(self.boundarySoundControl.GetValue() / 2)
+		if volume:
+			tones.beep(200, 60, left=volume, right=volume)
+		else:
+			ui.message(_("Boundary sound is off"))
+
+	def onReportProblem(self, event):
+		from .provider import lastReading
+		from .readingSettingsDialogs import ReadingReportDialog
+		if lastReading is None:
+			ui.message(_("Read the problem expression first, then reopen Settings."))
+			return
+		with ReadingReportDialog(self, lastReading) as dialog:
+			dialog.ShowModal()
 
 	def _refreshTerminologyChoices(self):
 		concepts = sorted(self._terminologyOverrides)
@@ -356,12 +479,19 @@ class GreekMathSettingsPanel(SettingsPanel):
 		resetRecommendedDefaults()
 		self.verbosityChoice.SetSelection(1)
 		self.decimalCommaCheckbox.SetValue(True)
+		self.decimalDigitsCheckbox.SetValue(False)
 		self.latinLiteralCheckbox.SetValue(False)
 		self.unconfirmedBackupCheckbox.SetValue(True)
 		self.terminologyProfileChoice.SetSelection(0)
 		self.domainHintChoice.SetSelection(0)
 		self.relativeRateControl.SetValue(100)
-		self.pauseFactorControl.SetValue(50)
+		self.pauseFactorControl.SetValue(100)
+		self.announceCapitalsCheckbox.SetValue(False)
+		self.gradientChoice.SetSelection(0)
+		self.compositionCheckbox.SetValue(False)
+		self.matrixChoice.SetSelection(0)
+		self.matrixPositionsCheckbox.SetValue(False)
+		self.boundarySoundControl.SetValue(100)
 		self.autoMathCatCheckbox.SetValue(True)
 		# Translators: Announced after reset; Word must recreate its accessibility objects.
 		ui.message(
@@ -390,24 +520,13 @@ class GreekMathSettingsPanel(SettingsPanel):
 
 	def onSave(self):
 		section = config.conf["greekMathReader"]
+		# Save the same reading preferences used by pending previews.
+		for key, value in self._pendingSection().items():
+			section[key] = value
 		section["enabled"] = True
-		section["verbosity"] = self.verbosityChoice.GetSelection()
-		section["decimalComma"] = self.decimalCommaCheckbox.GetValue()
-		section["latinLetterMode"] = "literal" if self.latinLiteralCheckbox.GetValue() else "greek_school"
 		section["translateUnconfirmedWordMath"] = self.unconfirmedBackupCheckbox.GetValue()
-		section["terminologyProfile"] = ("standard", "school", "university")[
-			self.terminologyProfileChoice.GetSelection()
-		]
-		section["domainHint"] = self._domainValues[self.domainHintChoice.GetSelection()]
-		section["relativeRate"] = self.relativeRateControl.GetValue()
-		section["pauseFactor"] = self.pauseFactorControl.GetValue()
 		section["autoMathCatBackend"] = self.autoMathCatCheckbox.GetValue()
 		section["neuralVoicesEnabled"] = self.neuralVoicesCheckbox.GetValue()
-		section["terminologyOverrides"] = json.dumps(
-			self._terminologyOverrides,
-			ensure_ascii=False,
-			sort_keys=True,
-		)
 		section["forceGreekLanguage"] = True
 		# Reassert ownership whenever this panel is saved. This also repairs a
 		# provider slot that changed while the dialog was open.

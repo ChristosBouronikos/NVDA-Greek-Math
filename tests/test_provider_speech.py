@@ -131,6 +131,16 @@ class TestProviderSpeechSequence(unittest.TestCase):
 		else:
 			builtins._ = self.savedTranslation
 
+	def test_decimal_digit_preference_reaches_speech(self):
+		self.config["greekMathReader"]["decimalDigits"] = True
+		sequence = self.provider.GreekMathProvider().getSpeechForMathMl(
+			'<math><mn>1.025</mn><mo>+</mo><mi>G</mi></math>'
+		)
+		self.assertEqual(
+			" ".join(item for item in sequence if isinstance(item, str)),
+			"ένα κόμμα μηδέν δύο πέντε συν τζί",
+		)
+
 	def test_sequence_uses_explicit_greek_locale(self):
 		# The speech sequence accents short letter names so the synthesizer reads
 		# them as one word: "χι" is spoken (and asserted) as "χί". The engine's

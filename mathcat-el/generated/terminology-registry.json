@@ -236,6 +236,24 @@
     },
     {
       "caseForms": {},
+      "conceptId": "classical_hamiltonian",
+      "domain": "classical_mechanics",
+      "forms": {
+        "school": "χαμιλτονιανή συνάρτηση των",
+        "standard": "χαμιλτονιανή συνάρτηση των",
+        "university": "χαμιλτονιανή συνάρτηση των"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Maintainer wording approval 2026-09-08; expert review pending"
+    },
+    {
+      "caseForms": {},
       "conceptId": "closed_interval",
       "domain": "analysis",
       "forms": {
@@ -470,6 +488,24 @@
     },
     {
       "caseForms": {},
+      "conceptId": "dirac_delta",
+      "domain": "distribution_theory",
+      "forms": {
+        "school": "δέλτα του Ντιράκ στο",
+        "standard": "δέλτα του Ντιράκ στο",
+        "university": "δέλτα του Ντιράκ στο"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Maintainer wording approval 2026-09-08; expert review pending"
+    },
+    {
+      "caseForms": {},
       "conceptId": "directional_derivative",
       "domain": "calculus",
       "forms": {
@@ -617,9 +653,9 @@
       "conceptId": "evaluation",
       "domain": "calculus",
       "forms": {
-        "school": "αποτίμηση του",
-        "standard": "αποτίμηση του",
-        "university": "αποτίμηση του"
+        "school": "υπολογισμένο",
+        "standard": "υπολογισμένο",
+        "university": "υπολογισμένο"
       },
       "grammaticalGender": "not-applicable",
       "localFixity": "function",
@@ -725,9 +761,9 @@
       "conceptId": "fourier_transform",
       "domain": "analysis_physics",
       "forms": {
-        "school": "μετασχηματισμός Φουριέ του",
-        "standard": "μετασχηματισμός Φουριέ του",
-        "university": "μετασχηματισμός Φουριέ του"
+        "school": "μετασχηματισμός Φουριέ της",
+        "standard": "μετασχηματισμός Φουριέ της",
+        "university": "μετασχηματισμός Φουριέ της"
       },
       "grammaticalGender": "not-applicable",
       "localFixity": "function",
@@ -737,6 +773,24 @@
       "reviewStatus": "source-checked-pending-expert-review",
       "reviewed": false,
       "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "gamma_function",
+      "domain": "special_functions",
+      "forms": {
+        "school": "συνάρτηση γάμα του",
+        "standard": "συνάρτηση γάμα του",
+        "university": "συνάρτηση γάμα του"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Maintainer wording approval 2026-09-08; expert review pending"
     },
     {
       "caseForms": {},
@@ -761,9 +815,9 @@
       "conceptId": "gradient",
       "domain": "vector_calculus",
       "forms": {
-        "school": "κλίση του",
-        "standard": "βαθμίδα του",
-        "university": "βαθμίδα του"
+        "school": "ανάδελτα του",
+        "standard": "ανάδελτα του",
+        "university": "ανάδελτα του"
       },
       "grammaticalGender": "not-applicable",
       "localFixity": "function",
@@ -1154,6 +1208,24 @@
     },
     {
       "caseForms": {},
+      "conceptId": "modular_congruence",
+      "domain": "number_theory",
+      "forms": {
+        "school": "ισότιμο με",
+        "standard": "ισότιμο με",
+        "university": "ισότιμο με"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Maintainer wording approval 2026-09-08; expert review pending"
+    },
+    {
+      "caseForms": {},
       "conceptId": "momentum",
       "domain": "classical_mechanics",
       "forms": {
@@ -1223,6 +1295,24 @@
       "reviewStatus": "reviewed",
       "reviewed": true,
       "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "normal_distribution",
+      "domain": "probability_statistics",
+      "forms": {
+        "school": "ακολουθεί κανονική κατανομή",
+        "standard": "ακολουθεί κανονική κατανομή",
+        "university": "ακολουθεί κανονική κατανομή"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Maintainer wording approval 2026-09-08; expert review pending"
     },
     {
       "caseForms": {},
@@ -1331,6 +1421,24 @@
       "reviewStatus": "source-checked-pending-expert-review",
       "reviewed": false,
       "source": "Greek academic usage; citation pending"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "point_definition",
+      "domain": "geometry",
+      "forms": {
+        "school": "έχει συντεταγμένες",
+        "standard": "έχει συντεταγμένες",
+        "university": "έχει συντεταγμένες"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Maintainer wording approval 2026-09-08; expert review pending"
     },
     {
       "caseForms": {},
@@ -1457,6 +1565,24 @@
       "reviewStatus": "source-checked-pending-expert-review",
       "reviewed": false,
       "source": "Kallipos"
+    },
+    {
+      "caseForms": {},
+      "conceptId": "quotient_group",
+      "domain": "algebra",
+      "forms": {
+        "school": "ομάδα πηλίκο της",
+        "standard": "ομάδα πηλίκο της",
+        "university": "ομάδα πηλίκο της"
+      },
+      "grammaticalGender": "not-applicable",
+      "localFixity": "function",
+      "mathcatHead": null,
+      "numberForms": {},
+      "pronunciationOverride": null,
+      "reviewStatus": "source-checked-pending-expert-review",
+      "reviewed": false,
+      "source": "Maintainer wording approval; explicit quotient-group intent only"
     },
     {
       "caseForms": {},

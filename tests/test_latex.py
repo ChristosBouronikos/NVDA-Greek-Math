@@ -42,7 +42,7 @@ class TestLatexBasics(unittest.TestCase):
 		self.assertEqual(spoken("2 + 3 = 5"), "2 συν 3 ίσον 5")
 
 	def test_latin_letters(self):
-		self.assertEqual(spoken("x + y"), "χι συν ψι")
+		self.assertEqual(spoken("x + y"), 'χι συν γουάι')
 
 	def test_greek_letters(self):
 		self.assertEqual(spoken(r"\alpha + \beta"), "άλφα συν βήτα")
@@ -62,7 +62,7 @@ class TestLatexPowersAndScripts(unittest.TestCase):
 		self.assertEqual(spoken("x^2"), "χι στο τετράγωνο")
 
 	def test_pythagorean(self):
-		self.assertEqual(spoken("a^2 + b^2"), "α στο τετράγωνο συν μπε στο τετράγωνο")
+		self.assertEqual(spoken("a^2 + b^2"), 'έι στο τετράγωνο συν μπί στο τετράγωνο')
 
 	def test_braced_exponent(self):
 		self.assertEqual(spoken("x^{n+1}"), "χι υψωμένο σε νι συν 1")
@@ -115,7 +115,7 @@ class TestLatexBigOperators(unittest.TestCase):
 	def test_definite_integral(self):
 		self.assertEqual(
 			spoken(r"\int_0^1 x^2 dx"),
-			"ολοκλήρωμα από 0 έως 1 του χι στο τετράγωνο ντε χι",
+			'ολοκλήρωμα από 0 έως 1 του χι στο τετράγωνο ως προς χ',
 		)
 
 	def test_sum_with_bounds(self):
@@ -150,13 +150,13 @@ class TestLatexDelimitersAndMatrices(unittest.TestCase):
 	def test_determinant(self):
 		self.assertEqual(
 			spoken(r"\begin{vmatrix} a & b \\ c & d \end{vmatrix}"),
-			"ορίζουσα 2 επί 2, γραμμή 1: α, μπε, γραμμή 2: σε, ντε τέλος ορίζουσας",
+			'ορίζουσα 2 επί 2, γραμμή 1: έι, μπί, γραμμή 2: σί, ντί τέλος ορίζουσας',
 		)
 
 
 class TestLatexAccentsAndSymbols(unittest.TestCase):
 	def test_vector(self):
-		self.assertEqual(spoken(r"\vec{v}"), "διάνυσμα βε")
+		self.assertEqual(spoken(r"\vec{v}"), 'διάνυσμα βί')
 
 	def test_bar(self):
 		self.assertEqual(spoken(r"\bar{x}"), "μέσος όρος του χι")
@@ -182,13 +182,13 @@ class TestLatexExpandedVocabulary(unittest.TestCase):
 	def test_conditional_probability(self):
 		self.assertEqual(
 			spoken(r"P(A\mid B)"),
-			"πιθανότητα του άλφα δεδομένου του βήτα",
+			'πιθανότητα του έι δεδομένου του μπί',
 		)
 
 	def test_expected_value_and_variance(self):
 		self.assertEqual(
 			spoken(r"E(X)+\operatorname{Var}(X)"),
-			"μέση τιμή του χι συν διακύμανση του χι",
+			'αναμενόμενη τιμή του χι συν διακύμανση του χι',
 		)
 
 	def test_real_and_imaginary_parts(self):
@@ -200,7 +200,7 @@ class TestLatexExpandedVocabulary(unittest.TestCase):
 	def test_trace_and_rank(self):
 		self.assertEqual(
 			spoken(r"\tr(A)+\rank(A)"),
-			"ίχνος του άλφα συν βαθμός του άλφα",
+			'ίχνος του πίνακα έι συν βαθμός του έι',
 		)
 
 	def test_complex_modulus(self):

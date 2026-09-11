@@ -345,6 +345,13 @@ class _Parser:
 		if name == "operatorname":
 			arg = self._parse_group_or_atom()
 			return MathNode("mi", text=arg.token_text())
+		if name == "pmod":
+			row = MathNode("mrow")
+			row.append(MathNode("mo", text="("))
+			row.append(MathNode("mi", text="mod"))
+			row.append(self._parse_group_or_atom())
+			row.append(MathNode("mo", text=")"))
+			return row
 		if name in ("bra", "ket", "braket"):
 			return self._parse_quantum_group(name)
 		if name in ("mathbb", "mathbf", "mathrm", "mathcal", "mathit", "text", "mathsf", "boldsymbol"):
@@ -547,7 +554,7 @@ class _Parser:
 			self._parse_group_or_atom()  # discard environment name
 
 
-_CHAR_OPERATORS = {"*": "⋅"}
+_CHAR_OPERATORS = {"*": "*"}
 
 
 def _wrap(children):

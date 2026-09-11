@@ -298,6 +298,9 @@ msgstr ""
 "και Outlook ακόμη κι όταν η εξίσωση δεν μπορεί να επιβεβαιωθεί"
 
 #. Semantic terminology and domain controls.
+msgid "Read decimal digits &individually"
+msgstr "Ανάγνωση των δεκαδικών ψηφίων &ένα προς ένα"
+
 msgid "Greek &terminology profile:"
 msgstr "Προφίλ ελληνικής &ορολογίας:"
 
@@ -503,3 +506,198 @@ msgstr ""
 #. Translators: Development-preview changelog shown in add-on information.
 msgid "Version 2.1.0 development preview: shared semantic MathML/LaTeX/UnicodeMath reading, versioned Greek terminology profiles and overrides, vector-calculus/probability/quantum concepts, SI agreement, automatic MathCAT Greek delegation, richer diagnostics, and expanded navigation."
 msgstr "Έκδοση 2.1.0, προεπισκόπηση ανάπτυξης: κοινή σημασιολογική ανάγνωση MathML/LaTeX/UnicodeMath, εκδόσιμο μητρώο ελληνικής ορολογίας με προφίλ και προσωπικές αποδόσεις, έννοιες διανυσματικού λογισμού/πιθανοτήτων/κβαντικής, γραμματική συμφωνία μονάδων SI, αυτόματη ανάθεση σε ελληνικό MathCAT, πλουσιότερα διαγνωστικά και εκτεταμένη πλοήγηση."
+
+msgid "Math speech rate (% of normal NVDA speech, 100 = normal):"
+msgstr "Ταχύτητα μαθηματικής εκφώνησης (% της συνήθους ομιλίας NVDA, 100 = κανονική):"
+
+msgid "Math pauses (% of standard breaks: 0 = none, 100 = normal, 200 = double):"
+msgstr "Παύσεις μαθηματικών (% των κανονικών παύσεων: 0 = χωρίς παύσεις, 100 = κανονικές, 200 = διπλάσιες):"
+
+msgid "Name for ∇ and grad (gradient):"
+msgstr "Ονομασία των ∇ και grad:"
+
+msgid "Matrix reading:"
+msgstr "Ανάγνωση πινάκων:"
+
+msgid "Navigation boundary sound (% of current volume, 0 = off):"
+msgstr "Ήχος ορίου πλοήγησης (% της τρέχουσας έντασης, 0 = ανενεργός):"
+
+msgid "Preview example:"
+msgstr "Παράδειγμα προεπισκόπησης:"
+
+msgid "Preview transcript:"
+msgstr "Κείμενο εκφώνησης προεπισκόπησης:"
+
+msgid "Read an expression first, then reopen Settings."
+msgstr "Διαβάστε πρώτα μια παράσταση και ανοίξτε ξανά τις Ρυθμίσεις."
+
+msgid "Boundary sound is off"
+msgstr "Ο ήχος ορίου είναι ανενεργός"
+
+msgid "Read the problem expression first, then reopen Settings."
+msgstr "Διαβάστε πρώτα την προβληματική παράσταση και ανοίξτε ξανά τις Ρυθμίσεις."
+
+msgid "Announce capital letters independently of verbosity"
+msgstr "Αναγγελία κεφαλαίων γραμμάτων ανεξάρτητα από τη λεπτομέρεια εκφώνησης"
+
+msgid "Symbol pronunciations and ambiguous symbols..."
+msgstr "Προφορές συμβόλων και αμφίσημα σύμβολα..."
+
+msgid "A course-specific custom name for ∇ takes precedence over this choice."
+msgstr "Η προσωπική ονομασία του ∇ για το επιλεγμένο μάθημα υπερισχύει αυτής της επιλογής."
+
+msgid "Explain function composition (apply the right function first)"
+msgstr "Επεξήγηση σύνθεσης συναρτήσεων (πρώτα εφαρμόζεται η δεξιά συνάρτηση)"
+
+msgid "Whole matrix (current reading — default)"
+msgstr "Ολόκληρος ο πίνακας (τρέχουσα ανάγνωση — προεπιλογή)"
+
+msgid "Dimensions, then explore cells"
+msgstr "Διαστάσεις και στη συνέχεια εξερεύνηση κελιών"
+
+msgid "Read by rows"
+msgstr "Ανάγνωση ανά γραμμή"
+
+msgid "Read by columns"
+msgstr "Ανάγνωση ανά στήλη"
+
+msgid "Announce matrix cell positions"
+msgstr "Αναγγελία θέσεων κελιών πίνακα"
+
+msgid "In matrix interaction: R reads the current row, C reads the current column, Control+arrows move between cells. Zero entries are read."
+msgstr "Στην αλληλεπίδραση με πίνακα: R για την τρέχουσα γραμμή, C για την τρέχουσα στήλη, Control+βέλη για μετακίνηση ανά κελί. Τα μηδενικά στοιχεία εκφωνούνται."
+
+msgid "Listen to boundary sound"
+msgstr "Ακρόαση ήχου ορίου"
+
+msgid "Preview uses unsaved choices in the local Greek engine and does not run Repair. Read an expression before opening Settings to preview it here."
+msgstr "Η προεπισκόπηση χρησιμοποιεί τις μη αποθηκευμένες επιλογές στην τοπική ελληνική μηχανή, χωρίς Επιδιόρθωση. Διαβάστε μια παράσταση πριν ανοίξετε τις Ρυθμίσεις για να την ακούσετε εδώ."
+
+msgid "Listen to example (including rate and pauses)"
+msgstr "Ακρόαση παραδείγματος (με την επιλεγμένη ταχύτητα και τις παύσεις)"
+
+msgid "Listen to current expression"
+msgstr "Ακρόαση τρέχουσας παράστασης"
+
+msgid "Report a reading problem / email the maintainer..."
+msgstr "Αναφορά προβλήματος ανάγνωσης / email στον δημιουργό..."
+
+msgid "Could not preview this expression"
+msgstr "Δεν ήταν δυνατή η προεπισκόπηση αυτής της παράστασης"
+
+msgid "Unknown symbols or identifiers: {symbols}"
+msgstr "Άγνωστα σύμβολα ή αναγνωριστικά: {symbols}"
+
+msgid "Course:"
+msgstr "Μάθημα:"
+
+msgid "Search symbol or name:"
+msgstr "Αναζήτηση συμβόλου ή ονομασίας:"
+
+msgid "Symbol (Latin and Greek letters are distinct):"
+msgstr "Σύμβολο (διάκριση λατινικών και ελληνικών γραμμάτων):"
+
+msgid "Spoken name (editable suggestions):"
+msgstr "Προφορική ονομασία (επεξεργάσιμες προτάσεις):"
+
+msgid "Expected speech:"
+msgstr "Αναμενόμενη εκφώνηση:"
+
+msgid "Your message:"
+msgstr "Το μήνυμά σας:"
+
+msgid "Local report:"
+msgstr "Τοπική αναφορά:"
+
+msgid "Symbol pronunciations by course"
+msgstr "Προφορές συμβόλων ανά μάθημα"
+
+msgid "Listen to symbol"
+msgstr "Ακρόαση συμβόλου"
+
+msgid "Reset selected symbol"
+msgstr "Επαναφορά επιλεγμένου συμβόλου"
+
+msgid "Enter a spoken name of 1 to 100 characters without line breaks."
+msgstr "Γράψτε μια προφορική ονομασία από 1 έως 100 χαρακτήρες χωρίς αλλαγές γραμμής."
+
+msgid "Course name:"
+msgstr "Όνομα μαθήματος:"
+
+msgid "New course"
+msgstr "Νέο μάθημα"
+
+msgid "Enter a course name of 1 to 80 characters."
+msgstr "Γράψτε ένα όνομα μαθήματος από 1 έως 80 χαρακτήρες."
+
+msgid "Report a reading problem"
+msgstr "Αναφορά προβλήματος ανάγνωσης"
+
+msgid "Copy report"
+msgstr "Αντιγραφή αναφοράς"
+
+msgid "Save report..."
+msgstr "Αποθήκευση αναφοράς..."
+
+msgid "Open email draft"
+msgstr "Άνοιγμα προσχεδίου email"
+
+msgid "Could not copy the report"
+msgstr "Δεν ήταν δυνατή η αντιγραφή της αναφοράς"
+
+msgid "Save reading report"
+msgstr "Αποθήκευση αναφοράς ανάγνωσης"
+
+msgid "Please paste the copied reading report here. You can add your own message before sending."
+msgstr "Επικολλήστε εδώ την αντιγραμμένη αναφορά ανάγνωσης. Μπορείτε να προσθέσετε το μήνυμά σας πριν από την αποστολή."
+
+msgid "The full report is copied. Paste it into the email draft with Control+V; you can add your own message."
+msgstr "Η πλήρης αναφορά αντιγράφηκε. Επικολλήστε την στο προσχέδιο email με Control+V και προσθέστε το μήνυμά σας."
+
+msgid "Pronunciations change symbol names only. Mathematical meanings and Greek prose stay separate. Custom names also apply in literal-letter mode."
+msgstr "Οι προφορές αλλάζουν μόνο τις ονομασίες συμβόλων. Δεν αλλάζουν τη μαθηματική έννοια ούτε το ελληνικό κείμενο. Οι προσωπικές ονομασίες εφαρμόζονται και στη λειτουργία κυριολεκτικών λατινικών γραμμάτων."
+
+msgid "New course..."
+msgstr "Νέο μάθημα..."
+
+msgid "Show ambiguous symbols only"
+msgstr "Εμφάνιση μόνο αμφίσημων συμβόλων"
+
+msgid "Review the expression and log below. Email opens a draft to cbouronikos@uth.gr in your mail app; you decide when to send it."
+msgstr "Ελέγξτε την παράσταση και την αναφορά παρακάτω. Το email ανοίγει ως προσχέδιο προς cbouronikos@uth.gr στην εφαρμογή αλληλογραφίας σας. Εσείς επιλέγετε πότε θα σταλεί."
+
+msgid "Text files (*.txt)|*.txt"
+msgstr "Αρχεία κειμένου (*.txt)|*.txt"
+
+msgid "Could not copy the report. Save it and attach it to your email."
+msgstr "Δεν ήταν δυνατή η αντιγραφή της αναφοράς. Αποθηκεύστε την και επισυνάψτε την στο email σας."
+
+msgid "Could not open a mail app. Copy or save the report and email it to cbouronikos@uth.gr."
+msgstr "Δεν ήταν δυνατό το άνοιγμα εφαρμογής αλληλογραφίας. Αντιγράψτε ή αποθηκεύστε την αναφορά και στείλτε την στο cbouronikos@uth.gr."
+
+msgid "Could not save the report"
+msgstr "Δεν ήταν δυνατή η αποθήκευση της αναφοράς"
+
+msgid "Read the current matrix row"
+msgstr "Ανάγνωση τρέχουσας γραμμής πίνακα"
+
+msgid "Read the current matrix column"
+msgstr "Ανάγνωση τρέχουσας στήλης πίνακα"
+
+msgid "Capitals and letters"
+msgstr "Κεφαλαία και γράμματα"
+
+msgid "Fractions and pauses"
+msgstr "Κλάσματα και παύσεις"
+
+msgid "Tensor indices"
+msgstr "Δείκτες τανυστών"
+
+msgid "Matrix including zeros"
+msgstr "Πίνακας με μηδενικά στοιχεία"
+
+msgid "Unknown symbol"
+msgstr "Άγνωστο σύμβολο"
+
+msgid "Composition and gradient"
+msgstr "Σύνθεση και ανάδελτα"

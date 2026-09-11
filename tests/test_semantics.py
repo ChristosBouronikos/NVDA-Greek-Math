@@ -40,7 +40,7 @@ def spoken(mathml, **config):
 class TestSemanticPrecedence(unittest.TestCase):
 	def test_author_intent_overrides_ambiguous_presentation(self):
 		mathml = '<math intent="transpose($a)"><mi arg="a">A</mi><mo>†</mo></math>'
-		self.assertEqual(spoken(mathml), "ανάστροφος του άλφα")
+		self.assertEqual(spoken(mathml), "ανάστροφος του έι")
 		self.assertEqual(interpret_mathml(mathml).confidence, "author")
 
 	def test_invalid_intent_falls_back_without_losing_content(self):
@@ -64,25 +64,25 @@ class TestLinearAlgebraAndVectorCalculus(unittest.TestCase):
 	def test_adjoint_is_not_read_as_a_religious_symbol(self):
 		self.assertEqual(
 			spoken("<math><msup><mi>A</mi><mo>†</mo></msup></math>"),
-			"συζυγής ανάστροφος του άλφα",
+			'συζυγής ανάστροφος του έι',
 		)
 		self.assertEqual(
 			spoken(
 				"<math><msup><mi>A</mi><mo>†</mo></msup></math>",
 				terminology_profile="university",
 			),
-			"προσαρτημένος τελεστής του άλφα",
+			"προσαρτημένος τελεστής του έι",
 		)
 
 	def test_quantum_profile_uses_hermitian_adjoint(self):
 		self.assertEqual(
 			spoken("<math><msup><mi>A</mi><mo>†</mo></msup></math>", domain_hint="quantum_physics"),
-			"ερμιτιανός συζυγής του άλφα",
+			'ερμιτιανός συζυγής του έι',
 		)
 
 	def test_gradient_divergence_curl_and_laplacian(self):
 		cases = {
-			"<math><mo>∇</mo><mi>f</mi></math>": "βαθμίδα του εφ",
+			"<math><mo>∇</mo><mi>f</mi></math>": 'ανάδελτα του εφ',
 			"<math><mo>∇</mo><mo>·</mo><mi>F</mi></math>": "απόκλιση του εφ",
 			"<math><mo>∇</mo><mo>×</mo><mi>F</mi></math>": "στροβιλισμός του εφ",
 			"<math><msup><mo>∇</mo><mn>2</mn></msup><mi>f</mi></math>": "λαπλασιανή του εφ",
@@ -92,21 +92,21 @@ class TestLinearAlgebraAndVectorCalculus(unittest.TestCase):
 				self.assertEqual(spoken(mathml), expected)
 		self.assertEqual(
 			spoken("<math><mo>∇</mo><mi>f</mi></math>", terminology_profile="school"),
-			"κλίση του εφ",
+			'ανάδελτα του εφ',
 		)
 
 	def test_scalar_multiplication_is_not_guessed_as_dot_product(self):
-		self.assertEqual(spoken("<math><mi>a</mi><mo>·</mo><mi>b</mi></math>"), "α επί μπε")
+		self.assertEqual(spoken("<math><mi>a</mi><mo>·</mo><mi>b</mi></math>"), 'έι επί μπί')
 
 	def test_vector_styling_enables_dot_product(self):
 		mathml = '<math><mi mathvariant="bold">a</mi><mo>·</mo><mi mathvariant="bold">b</mi></math>'
-		self.assertEqual(spoken(mathml), "εσωτερικό γινόμενο α με μπε")
+		self.assertEqual(spoken(mathml), 'εσωτερικό γινόμενο έι με μπί')
 
 	def test_cross_and_exterior_products_are_not_conflated(self):
 		cross = '<math intent="cross-product($a,$b)"><mi arg="a">a</mi><mi arg="b">b</mi></math>'
 		exterior = '<math intent="exterior-product($a,$b)"><mi arg="a">a</mi><mi arg="b">b</mi></math>'
-		self.assertEqual(spoken(cross), "διανυσματικό γινόμενο α με μπε")
-		self.assertEqual(spoken(exterior), "εξωτερικό γινόμενο α με μπε")
+		self.assertEqual(spoken(cross), 'διανυσματικό γινόμενο έι με μπί')
+		self.assertEqual(spoken(exterior), "εξωτερικό γινόμενο έι με μπί")
 
 
 class TestProbabilityAndQuantum(unittest.TestCase):
@@ -120,17 +120,17 @@ class TestProbabilityAndQuantum(unittest.TestCase):
 			"<math><mi>Cov</mi><mrow><mo>(</mo><mi>X</mi><mo>,</mo>"
 			"<mi>Y</mi><mo>)</mo></mrow></math>"
 		)
-		self.assertEqual(spoken(mathml), "συνδιακύμανση των χι και ψι")
+		self.assertEqual(spoken(mathml), 'συνδιακύμανση των χι και γουάι')
 
 	def test_conditional_expectation_intent(self):
 		mathml = (
 			'<math intent="conditional-expectation($x,$y)">'
 			'<mi arg="x">X</mi><mo>|</mo><mi arg="y">Y</mi></math>'
 		)
-		self.assertEqual(spoken(mathml), "δεσμευμένη αναμενόμενη τιμή του χι δεδομένου του ψι")
+		self.assertEqual(spoken(mathml), 'δεσμευμένη αναμενόμενη τιμή του χι δεδομένου του γουάι')
 
 	def test_independence_symbol(self):
-		self.assertEqual(spoken("<math><mi>X</mi><mo>⫫</mo><mi>Y</mi></math>"), "χι ανεξάρτητο από ψι")
+		self.assertEqual(spoken("<math><mi>X</mi><mo>⫫</mo><mi>Y</mi></math>"), 'χι ανεξάρτητο από γουάι')
 
 	def test_bra_ket_and_matrix_element(self):
 		self.assertEqual(
@@ -139,22 +139,22 @@ class TestProbabilityAndQuantum(unittest.TestCase):
 		)
 		self.assertEqual(
 			spoken("<math><mo>⟨</mo><mi>ψ</mi><mo>|</mo><mi>A</mi><mo>|</mo><mi>φ</mi><mo>⟩</mo></math>"),
-			"στοιχείο πίνακα με μπρα ψι άλφα κετ φι",
+			'στοιχείο πίνακα με μπρα ψι έι κετ φι',
 		)
 		self.assertEqual(
 			spoken(
 				"<math><mo>⟨</mo><mi>ψ</mi><mo>|</mo><mi>A</mi><mo>|</mo><mi>φ</mi><mo>⟩</mo></math>",
 				terminology_profile="university",
 			),
-			"στοιχείο μήτρας με μπρα ψι άλφα κετ φι",
+			"στοιχείο μήτρας με μπρα ψι έι κετ φι",
 		)
 
 	def test_commutator_requires_domain_context(self):
 		mathml = "<math><mo>[</mo><mi>A</mi><mo>,</mo><mi>B</mi><mo>]</mo></math>"
-		self.assertEqual(spoken(mathml), "αγκύλη άλφα κόμμα βήτα κλείνει η αγκύλη")
+		self.assertEqual(spoken(mathml), 'αγκύλη έι κόμμα μπί κλείνει η αγκύλη')
 		self.assertEqual(
 			spoken(mathml, domain_hint="quantum_physics"),
-			"μεταθέτης των άλφα και βήτα",
+			"μεταθέτης των έι και μπί",
 		)
 
 
@@ -163,11 +163,11 @@ class TestAdvancedAuthorIntent(unittest.TestCase):
 		cases = {
 			"jacobian": "ιακωβιανός πίνακας του εφ",
 			"hessian": "εσσιανός πίνακας του εφ",
-			"fourier-transform": "μετασχηματισμός Φουριέ του εφ",
+			"fourier-transform": 'μετασχηματισμός Φουριέ της εφ',
 			"laplace-transform": "μετασχηματισμός Λαπλάς του εφ",
 			"material-derivative": "υλική παράγωγος του εφ",
-			"hamiltonian": "χαμιλτονιανός τελεστής ήτα",
-			"metric-tensor": "μετρικός τανυστής ζε",
+			"hamiltonian": 'χαμιλτονιανός τελεστής έιτς',
+			"metric-tensor": 'μετρικός τανυστής τζί',
 		}
 		for intent, expected in cases.items():
 			mathml = f'<math intent="{intent}($x)"><mi arg="x">{"H" if intent == "hamiltonian" else "g" if intent == "metric-tensor" else "f"}</mi></math>'
@@ -179,21 +179,21 @@ class TestAdvancedAuthorIntent(unittest.TestCase):
 			'<math intent="directional-derivative($f,$v)">'
 			'<mi arg="f">f</mi><mi arg="v">v</mi></math>'
 		)
-		self.assertEqual(spoken(mathml), "παράγωγος κατά την κατεύθυνση βε του εφ")
+		self.assertEqual(spoken(mathml), 'παράγωγος κατά την κατεύθυνση βί του εφ')
 
 	def test_evaluated_antiderivative_keeps_expression_and_bounds(self):
 		mathml = (
 			'<math intent="evaluation($f,$a,$b)">'
 			'<mi arg="f">F</mi><mn arg="a">0</mn><mn arg="b">1</mn></math>'
 		)
-		self.assertEqual(spoken(mathml), "αποτίμηση του εφ από 0 έως 1")
+		self.assertEqual(spoken(mathml), 'εφ, υπολογισμένο από 0 έως 1')
 
 	def test_university_core_intent_vocabulary(self):
 		cases = {
-			"eigenvalue": "ιδιοτιμή του άλφα",
-			"boundary-condition": "συνοριακή συνθήκη άλφα",
-			"confidence-interval": "διάστημα εμπιστοσύνης άλφα",
-			"stochastic-process": "στοχαστική διαδικασία άλφα",
+			"eigenvalue": 'ιδιοτιμή του έι',
+			"boundary-condition": 'συνοριακή συνθήκη έι',
+			"confidence-interval": 'διάστημα εμπιστοσύνης έι',
+			"stochastic-process": 'στοχαστική διαδικασία έι',
 		}
 		for intent, expected in cases.items():
 			with self.subTest(intent=intent):
@@ -203,15 +203,15 @@ class TestAdvancedAuthorIntent(unittest.TestCase):
 				'<math intent="stochastic-process($x)"><mi arg="x">A</mi></math>',
 				terminology_profile="university",
 			),
-			"στοχαστική ανέλιξη άλφα",
+			'στοχαστική ανέλιξη έι',
 		)
 
 	def test_physics_intent_vocabulary(self):
 		cases = {
-			"angular-momentum": "στροφορμή άλφα",
-			"electric-field": "ηλεκτρικό πεδίο άλφα",
-			"wavefunction": "κυματοσυνάρτηση άλφα",
-			"proper-time": "ιδιοχρόνος άλφα",
+			"angular-momentum": 'στροφορμή έι',
+			"electric-field": 'ηλεκτρικό πεδίο έι',
+			"wavefunction": 'κυματοσυνάρτηση έι',
+			"proper-time": 'ιδιοχρόνος έι',
 		}
 		for intent, expected in cases.items():
 			with self.subTest(intent=intent):
@@ -219,10 +219,10 @@ class TestAdvancedAuthorIntent(unittest.TestCase):
 
 	def test_specialist_intents_are_explicit_and_lossless(self):
 		cases = {
-			"topological-space": "τοπολογικός χώρος άλφα",
-			"bounded-operator": "φραγμένος τελεστής άλφα",
-			"differential-form": "διαφορική μορφή άλφα",
-			"stochastic-integral": "στοχαστικό ολοκλήρωμα του άλφα",
+			"topological-space": 'τοπολογικός χώρος έι',
+			"bounded-operator": 'φραγμένος τελεστής έι',
+			"differential-form": 'διαφορική μορφή έι',
+			"stochastic-integral": 'στοχαστικό ολοκλήρωμα του έι',
 		}
 		for intent, expected in cases.items():
 			with self.subTest(intent=intent):
@@ -233,7 +233,7 @@ class TestAdvancedAuthorIntent(unittest.TestCase):
 			'<math intent="asymptotic-equivalence($f,$g)">'
 			'<mi arg="f">f</mi><mi arg="g">g</mi></math>'
 		)
-		self.assertEqual(spoken(mathml), "εφ είναι ασυμπτωτικά ισοδύναμο με ζε")
+		self.assertEqual(spoken(mathml), 'εφ είναι ασυμπτωτικά ισοδύναμο με τζί')
 
 	def test_preview_modules_cannot_be_mistaken_for_stable(self):
 		self.assertEqual(SEMANTIC_MODULES["foundation"]["status"], "stable-existing")
