@@ -41,11 +41,11 @@ three verbosity levels, configurable pronunciations and matrix reading, unsaved 
 and optional downloadable offline neural voices."""
 	),
 	# version
-	addon_version="2.5.0",
+	addon_version="2.5.1",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.5.0: adds optional downloadable offline neural voices, independent capital announcements, course-specific symbol pronunciations, unsaved speech previews, configurable matrix reading and navigation cues, clearer rate and pause controls, and a local reading-problem report with an inspectable email draft. It also adds the maintainer-approved Greek readings for tensor indices, distributions, transforms, initial conditions, piecewise definitions, integrals, selected physics notation, and ambiguous symbols while retaining conservative context checks."""
+		"""Version 2.5.1: fixes the Neural voices dialog so both its Close button and window close button properly end the dialog and allow settings to be saved, and clarifies the voice activation sequence after downloading a voice."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",

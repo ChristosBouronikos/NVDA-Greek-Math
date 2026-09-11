@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 2.5.1 — 2026-09-11
+
+Maintenance release on the stable channel.
+
+* Fixes the Neural voices dialog so both its Close button and window X end the modal dialog, allowing the parent settings page to be accepted and the neural synthesizer option to be saved.
+* Clarifies the activation sequence after a voice download: close the voice manager, press OK in Greek Math Reader settings, then select the neural synthesizer in NVDA's Speech settings.
 
 ## 2.5.0 — 2026-09-11
 

@@ -3,6 +3,10 @@
 These gates record the evidence still required for reviewed semantic and voice
 quality. A blank approval is not an implicit pass.
 
+## Status of 2.5.1 stable (2026-09-11)
+
+**Version 2.5.1 is being released on the stable channel to fix modal lifecycle in the Neural voices dialog.** Automated engine, packaging and lifecycle checks pass. Manual review gates for semantic terminology and optional neural voices remain pending as documented below.
+
 ## Status of 2.5.0 stable (2026-09-11)
 
 **Version 2.5.0 is being released on the stable channel by the maintainer's
