@@ -2114,6 +2114,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			f"module={__file__}"
 		)
 		applyProviderRegistration()
+		# If a neural voice has already been downloaded and is ready on disk, ensure
+		# neuralVoicesEnabled is True so the synthesizer is immediately offered.
+		try:
+			from .neural.manager import VoiceManager
+
+			if VoiceManager().isReady() and not config.conf["greekMathReader"].get("neuralVoicesEnabled", False):
+				config.conf["greekMathReader"]["neuralVoicesEnabled"] = True
+		except Exception:
+			pass
 		self._terminating = False
 		self._providerWatchdog = None
 		self._profileSwitchRegistered = False

@@ -232,6 +232,29 @@ class TestNeuralVoiceDialogLifecycle(unittest.TestCase):
 		self.assertIn("self.Bind(wx.EVT_CLOSE, self.onClose)", source)
 		self.assertIn("self.EndModal(wx.ID_CLOSE)", source)
 
+	def test_successful_download_sets_neural_voices_enabled(self):
+		source = (PLUGIN / "neuralVoicesDialog.py").read_text(encoding="utf-8")
+		self.assertIn('config.conf["greekMathReader"]["neuralVoicesEnabled"] = True', source)
+
+
+class TestConfigPathResolution(unittest.TestCase):
+	def test_default_config_path_normalizes_relative_paths(self):
+		import os
+		from neural.manager import defaultConfigPath
+		stubGlobalVars = types.ModuleType("globalVars")
+		stubGlobalVars.appArgs = types.SimpleNamespace(configPath="relative/userConfig")
+		saved = sys.modules.get("globalVars")
+		sys.modules["globalVars"] = stubGlobalVars
+		try:
+			resolved = defaultConfigPath()
+			self.assertTrue(os.path.isabs(resolved))
+			self.assertTrue(resolved.endswith(os.path.join("relative", "userConfig")))
+		finally:
+			if saved is None:
+				sys.modules.pop("globalVars", None)
+			else:
+				sys.modules["globalVars"] = saved
+
 
 if __name__ == "__main__":
 	unittest.main()

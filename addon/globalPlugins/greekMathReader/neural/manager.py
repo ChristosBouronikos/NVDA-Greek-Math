@@ -37,7 +37,8 @@ def defaultConfigPath():
 	try:
 		import globalVars
 
-		return globalVars.appArgs.configPath or ""
+		raw = getattr(globalVars.appArgs, "configPath", None) or getattr(globalVars, "configPath", None) or ""
+		return os.path.abspath(raw) if raw else ""
 	except Exception:
 		return ""
 

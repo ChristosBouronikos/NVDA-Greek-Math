@@ -50,18 +50,28 @@ def _importManager():
 		return VoiceManager
 	except ImportError:
 		pass
-	# NVDA merges add-on package directories into its own packages; if that has
-	# not happened yet, reach the plugin directory relative to this file.
-	pluginPath = os.path.join(
-		os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-		"globalPlugins",
-		"greekMathReader",
-	)
-	if pluginPath not in sys.path:
-		sys.path.insert(0, pluginPath)
-	from neural.manager import VoiceManager
+	try:
+		from greekMathReader.neural.manager import VoiceManager
 
-	return VoiceManager
+		return VoiceManager
+	except ImportError:
+		pass
+	addonRoot = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+	for candidate in (
+		os.path.join(addonRoot, "globalPlugins", "greekMathReader"),
+		os.path.join(addonRoot, "globalPlugins"),
+		addonRoot,
+	):
+		if candidate not in sys.path:
+			sys.path.insert(0, candidate)
+	try:
+		from neural.manager import VoiceManager
+
+		return VoiceManager
+	except ImportError:
+		from greekMathReader.neural.manager import VoiceManager
+
+		return VoiceManager
 
 
 #: Break commands shorter than this are not worth a separate silence buffer.

@@ -58,11 +58,14 @@ def importSherpaOnnx(runtimeDirectory):
 	# searches PATH for extension dependencies, so name the directory explicitly.
 	libraryPath = os.path.join(runtimeDirectory, "sherpa_onnx", "lib")
 	addDllDirectory = getattr(os, "add_dll_directory", None)
-	if addDllDirectory is not None and os.path.isdir(libraryPath):
-		try:
-			addDllDirectory(libraryPath)
-		except OSError:
-			pass
+	for candidate in (libraryPath, os.path.join(runtimeDirectory, "sherpa_onnx"), runtimeDirectory):
+		if addDllDirectory is not None and os.path.isdir(candidate):
+			try:
+				addDllDirectory(candidate)
+			except OSError:
+				pass
+	if os.path.isdir(libraryPath):
+		os.environ["PATH"] = libraryPath + os.pathsep + os.environ.get("PATH", "")
 	if runtimeDirectory not in sys.path:
 		sys.path.insert(0, runtimeDirectory)
 	try:

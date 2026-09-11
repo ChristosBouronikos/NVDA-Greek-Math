@@ -161,8 +161,19 @@ class TestSettingsWorkflows(unittest.TestCase):
 		self.config['neuralVoicesEnabled'] = False
 		self.panel.neuralVoicesCheckbox.SetValue(False)
 		self.panel.onManageVoices(None)
+		# Immediately enabled so user doesn't have to save before seeing synthesizer
+		self.assertTrue(self.config['neuralVoicesEnabled'])
 		self.panel.onSave()
 		self.assertTrue(self.config['neuralVoicesEnabled'])
+
+	def test_neural_voices_checkbox_toggle_immediately_updates_config(self):
+		self.config['neuralVoicesEnabled'] = False
+		self.panel.neuralVoicesCheckbox.SetValue(True)
+		self.panel.onNeuralVoicesToggle(None)
+		self.assertTrue(self.config['neuralVoicesEnabled'])
+		self.panel.neuralVoicesCheckbox.SetValue(False)
+		self.panel.onNeuralVoicesToggle(None)
+		self.assertFalse(self.config['neuralVoicesEnabled'])
 
 	def test_preview_examples_and_missing_current(self):
 		for index in range(len(self.support.PREVIEW_EXAMPLES)):

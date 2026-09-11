@@ -273,13 +273,23 @@ class NeuralVoicesDialog(wx.Dialog):
 				self,
 			)
 		else:
+			try:
+				import config
+
+				config.conf["greekMathReader"]["neuralVoicesEnabled"] = True
+			except Exception:
+				pass
+			parent = getattr(self, "Parent", None) or getattr(self, "parent", None)
+			if parent is not None and hasattr(parent, "neuralVoicesCheckbox"):
+				parent.neuralVoicesCheckbox.SetValue(True)
 			gui.messageBox(
 				# Translators: Shown after a voice downloads successfully.
 				_(
 					"{label} is ready.\n\n"
-					"Close this voice manager, then press OK in Greek Math Reader settings. "
-					"After that, choose \"Greek Math Reader neural voices\" as your "
-					"synthesizer in NVDA's Speech settings."
+					"Close this voice manager. \"Greek Math Reader neural voices\" is now "
+					"available in NVDA's synthesizer list.\n\n"
+					"To select it, go to NVDA's Speech settings (or press NVDA+Control+S) "
+					"and choose \"Greek Math Reader neural voices\" as your synthesizer."
 				).format(label=voice.label),
 				# Translators: Title of the download success message.
 				_("Voice installed"),

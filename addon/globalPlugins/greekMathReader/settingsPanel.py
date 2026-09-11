@@ -290,6 +290,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 			)
 		)
 		self.neuralVoicesCheckbox.SetValue(bool(section.get("neuralVoicesEnabled", False)))
+		self.neuralVoicesCheckbox.Bind(wx.EVT_CHECKBOX, self.onNeuralVoicesToggle)
 		self.manageVoicesButton = helper.addItem(
 			# Translators: Opens the dialog that downloads and removes neural voices.
 			wx.Button(self, label=_("&Manage neural voices..."))
@@ -305,15 +306,19 @@ class GreekMathSettingsPanel(SettingsPanel):
 		self.reportProblemButton = helper.addItem(wx.Button(self, label=_("Report a reading problem / email the maintainer...")))
 		self.reportProblemButton.Bind(wx.EVT_BUTTON, self.onReportProblem)
 
+	def onNeuralVoicesToggle(self, event):
+		config.conf["greekMathReader"]["neuralVoicesEnabled"] = self.neuralVoicesCheckbox.GetValue()
+
 	def onManageVoices(self, event):
 		"""Open the voice manager, enabling the feature first if needed.
 
 		Downloading a voice is pointless while the synthesizer stays hidden from
-		NVDA's list, so opening the manager ticks the option. It is only written
-		to the configuration by onSave, like every other control on this panel,
-		so cancelling the settings dialog still cancels it.
+		NVDA's list, so opening the manager ticks the option. It is saved
+		immediately so the newly downloaded voice is available in NVDA's Speech
+		settings without requiring an extra dialog save cycle.
 		"""
 		self.neuralVoicesCheckbox.SetValue(True)
+		config.conf["greekMathReader"]["neuralVoicesEnabled"] = True
 		try:
 			from .neuralVoicesDialog import NeuralVoicesDialog
 		except ImportError:
@@ -322,6 +327,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 			return
 		with NeuralVoicesDialog(self) as dialog:
 			dialog.ShowModal()
+		self.neuralVoicesCheckbox.SetValue(bool(config.conf["greekMathReader"].get("neuralVoicesEnabled", True)))
 
 	def _pendingSection(self):
 		section = dict(config.conf["greekMathReader"])
