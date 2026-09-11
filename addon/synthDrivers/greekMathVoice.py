@@ -150,10 +150,23 @@ class SynthDriver(synthDriverHandler.SynthDriver):
 			if not config.conf["greekMathReader"]["neuralVoicesEnabled"]:
 				return False
 		except Exception:
+			# The add-on section may not exist yet during early NVDA startup.
 			return False
 		try:
-			return _importManager()().isReady()
+			manager = _importManager()()
+			ready = manager.isReady()
+			if not ready:
+				log.debug(
+					"greekMathVoice: check() returned False — "
+					"runtimeInstalled=%s, installedVoices=%s, configPath=%r, platform=%r",
+					manager.isRuntimeInstalled(),
+					[v.id for v in manager.installedVoices()],
+					manager.configPath,
+					manager.platformKey,
+				)
+			return ready
 		except Exception:
+			log.debugWarning("greekMathVoice: check() failed", exc_info=True)
 			return False
 
 	def __init__(self):
