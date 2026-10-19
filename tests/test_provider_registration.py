@@ -519,11 +519,20 @@ class TestProviderRegistration(unittest.TestCase):
 
 		self.assertTrue(self.config["speech"]["autoLanguageSwitching"])
 		self.assertFalse(self.config["math"]["other"]["useWordNativeMath"])
-		self.assertEqual(self.config["UIA"]["allowInMSWord"], 3)
+		self.assertEqual(self.config["UIA"]["allowInMSWord"], 0)
 		self.assertEqual(
 			self.config["greekMathReader"]["settingsAppliedVersion"],
 			self.module.ADDON_VERSION,
 		)
+
+	def test_install_and_repair_preserve_each_word_accessibility_choice(self):
+		for choice in (0, 1, 2, 3):
+			with self.subTest(choice=choice):
+				self.config["UIA"]["allowInMSWord"] = choice
+				self.config["greekMathReader"]["settingsAppliedVersion"] = "2.5.7"
+				self.module._applyRequiredSettingsOnInstallOrUpdate()
+				self.module.repairRequiredNvdaSettings()
+				self.assertEqual(self.config["UIA"]["allowInMSWord"], choice)
 
 	def test_restart_on_same_version_keeps_user_changes(self):
 		self.config["greekMathReader"]["settingsAppliedVersion"] = self.module.ADDON_VERSION
@@ -544,7 +553,7 @@ class TestProviderRegistration(unittest.TestCase):
 
 		self.assertTrue(self.config["speech"]["autoLanguageSwitching"])
 		self.assertFalse(self.config["math"]["other"]["useWordNativeMath"])
-		self.assertEqual(self.config["UIA"]["allowInMSWord"], 3)
+		self.assertEqual(self.config["UIA"]["allowInMSWord"], 0)
 		self.assertEqual(self.config["greekMathReader"]["verbosity"], 2)
 
 	def test_delayed_startup_registration_recovers_from_later_addon(self):
@@ -635,7 +644,7 @@ class TestProviderRegistration(unittest.TestCase):
 		self.assertTrue(self.config["greekMathReader"]["forceGreekLanguage"])
 		self.assertTrue(self.config["speech"]["autoLanguageSwitching"])
 		self.assertFalse(self.config["math"]["other"]["useWordNativeMath"])
-		self.assertEqual(self.config["UIA"]["allowInMSWord"], 3)
+		self.assertEqual(self.config["UIA"]["allowInMSWord"], 0)
 		self.assertTrue(self.module.isProviderActive())
 		self.module._removeMathPresGuards()
 		self.module._removeMathCatSpeechFallback()
@@ -887,6 +896,83 @@ class TestProviderRegistration(unittest.TestCase):
 		self.assertEqual(self.speech.spokenSequences[-1], ["Use plus to add values"])
 		plugin.terminate()
 
+	def test_final_filter_handles_symbol_math_only_with_confirmed_equation(self):
+		plugin = self.module.GlobalPlugin()
+		obj = types.SimpleNamespace(
+			appModule=types.SimpleNamespace(appName="winword"), belowLockScreen=False,
+		)
+		api = sys.modules["api"]
+		originalFocus = api.getFocusObject
+		originalContext = self.module._getWordMathContextAtCaret
+		api.getFocusObject = lambda: obj
+		try:
+			for confirmed in (False, True):
+				self.module._getWordMathContextAtCaret = lambda *args, **kwargs: (None, confirmed)
+				for text in ("3+5=8", "5-3=2", "5−3=2"):
+					with self.subTest(confirmed=confirmed, text=text):
+						result = self.module._replaceFinalWordSpeechSequence([text])
+						if confirmed:
+							self.assertIsNotNone(result)
+							self.assertIn(text, self.module._provider.lastMathMl)
+						else:
+							self.assertIsNone(result)
+			for text in ("+", "-", "=", "Use + to add values", "vitamin k"):
+				self.assertIsNone(self.module._replaceFinalWordSpeechSequence([text]), text)
+		finally:
+			self.module._getWordMathContextAtCaret = originalContext
+			api.getFocusObject = originalFocus
+			plugin.terminate()
+
+	def test_symbol_math_notification_uses_provider(self):
+		plugin = self.module.GlobalPlugin()
+		obj = types.SimpleNamespace(appModule=types.SimpleNamespace(appName="winword"))
+		api = sys.modules["api"]
+		originalFocus = api.getFocusObject
+		originalContext = self.module._getWordMathContextAtCaret
+		api.getFocusObject = lambda: obj
+		self.module._getWordMathContextAtCaret = lambda *args, **kwargs: (None, True)
+		nextCalls = []
+		try:
+			plugin.event_UIA_notification(obj, lambda: nextCalls.append(True), displayString="3+5=8")
+			self.assertEqual(nextCalls, [])
+			self.assertIn("3+5=8", self.module._provider.lastMathMl)
+		finally:
+			self.module._getWordMathContextAtCaret = originalContext
+			api.getFocusObject = originalFocus
+			plugin.terminate()
+
+	def test_confirmed_native_fallback_expands_literal_operators(self):
+		self.assertEqual(self.module._normalizeWordNativeMathText("3+5=8"), "3 συν 5 ίσον 8")
+		self.assertEqual(self.module._normalizeWordNativeMathText("x squared + 1"), "χι στο τετράγωνο συν 1")
+
+	def test_math_object_without_mathml_or_fallback_explains_missing_content(self):
+		self.speechCore.getObjectSpeech = self.speech.getObjectSpeech = lambda *args, **kwargs: []
+		plugin = self.module.GlobalPlugin()
+		obj = types.SimpleNamespace(role=self.controlTypes.Role.MATH, mathMl=None, name="")
+		try:
+			sequence = self.speech.getObjectSpeech(obj)
+			self.assertTrue(any("δεν παρέχει" in item for item in sequence if isinstance(item, str)))
+			obj.belowLockScreen = True
+			self.assertEqual(self.speech.getObjectSpeech(obj), [])
+		finally:
+			plugin.terminate()
+
+	def test_math_text_field_without_mathml_leaves_separate_native_fallback_untouched(self):
+		self.speechCore._extendSpeechSequence_addMathForTextInfo = lambda *args: None
+		plugin = self.module.GlobalPlugin()
+		def noMathMl(field):
+			raise NotImplementedError
+		info = types.SimpleNamespace(getMathMl=noMathMl)
+		sequence = ["preceding prose"]
+		try:
+			self.speechCore._extendSpeechSequence_addMathForTextInfo(sequence, info, {})
+			self.assertEqual(sequence, ["preceding prose"])
+			# NVDA appends accessible text after the MathML-specific helper.
+			sequence.append("x squared plus 1")
+			self.assertEqual(sequence, ["preceding prose", "x squared plus 1"])
+		finally:
+			plugin.terminate()
+
 	def test_repeated_latex_command_enters_interaction(self):
 		plugin = object.__new__(self.module.GlobalPlugin)
 		calls = []
@@ -904,7 +990,7 @@ class TestProviderRegistration(unittest.TestCase):
 
 		self.assertEqual(normalize("k equals 3"), "κάπα ίσον 3")
 		self.assertEqual(normalize("K equals 3"), "κάπα ίσον 3")
-		self.assertEqual(normalize("sum from k equals 1 to n"), "άθροισμα from κάπα ίσον 1 to n")
+		self.assertEqual(normalize("sum from k equals 1 to n"), "άθροισμα από κάπα ίσον 1 έως νι")
 		# The spelled-out name keeps working and is not double-translated.
 		self.assertEqual(normalize("kappa equals 3"), "κάπα ίσον 3")
 

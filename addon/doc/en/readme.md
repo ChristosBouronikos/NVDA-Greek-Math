@@ -29,7 +29,7 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 3. Open **Available add-ons** and search for **Greek Math Reader**.
 4. Select the add-on, choose **Install**, and restart NVDA when prompted.
 
-This version (2.5.7) ships on the stable channel by explicit maintainer decision. Review gates for semantic terminology remain open, tracked in `RELEASE_GATES.md`, `TERMINOLOGY_REVIEW.md`, and `TTS_ENGINE_RESEARCH.md` in the source repository.
+Version 2.5.8 contains fixes for flat equation text. Windows/NVDA checks remain open. Review gates for semantic terminology remain open, tracked in `RELEASE_GATES.md`, `TERMINOLOGY_REVIEW.md`, and `TTS_ENGINE_RESEARCH.md` in the source repository.
 
 ## Usage
 
@@ -63,12 +63,28 @@ The add-on decides **what** is said in Greek; **which voice** says it is decided
 
 The same applies to eSpeak NG (which has a Greek voice, robotic but functional) and to any other synthesizer with Greek support: either select its Greek voice directly, or enable automatic language switching.
 
+### Synthesizer and architecture support
+
+Greek Math Reader supplies Greek text through NVDA's public speech API. It does not require OneCore or a separate add-on build for each architecture.
+
+* **eSpeak NG:** select its Greek voice, or enable Automatic language switching.
+* **Windows OneCore:** install a Greek voice such as Microsoft Stefanos. Select that voice, or enable Automatic language switching.
+* **Microsoft SAPI5:** install a Greek SAPI5 voice for the selected driver. OneCore and SAPI5 have separate voice inventories.
+* **NVDA 2026.1 and later:** select SAPI5 64-bit for a 64-bit voice, or SAPI5 32-bit for a 32-bit voice. NVDA supplies the 32-bit bridge.
+* **Earlier 32-bit NVDA:** its SAPI5 driver uses 32-bit voices. Before NVDA 2025.1, select the Greek SAPI5 voice directly because automatic language switching is unavailable in that driver.
+
+A voice must support Greek. The add-on cannot give Greek support to an English-only voice or replace a missing NVDA bridge.
+
+The provider retries empty backend results with the local engine. If accessible equation content is unavailable, it gives a spoken explanation. It cannot recover an equation that exists only as an image.
+
+If all speech is silent, check NVDA's speech mode, synthesizer volume, and output device. Copy diagnostics records these settings and the NVDA process architecture. Advertised Greek support does not prove successful audio. Windows audio checks remain open for each driver.
+
 ## Reading equations in Microsoft Word
 
 Word exposes two accessibility representations inside a modern equation: structural MathML on the enclosing equation and an English linear speech stream such as `χ squared plus 1`. NVDA 2026.1.1 can choose that English stream during character/word movement, current-line reading, typing, selection, or cached Say All speech and skip every math provider. Version 2.0.0 covers both the TextInfo route and NVDA's official final-speech filter.
 
 1. Keep NVDA's **"Use native math support in Word and Outlook" unchecked**. The health check reports a bad setting and **Repair** changes it explicitly.
-2. Set **Advanced → Use UI Automation to access Microsoft Word document controls** to **Always**, or use Repair. Restart NVDA and Word afterwards.
+2. Keep the Word UI Automation option in **Advanced** at **Default (Where suitable)** unless your system requires another choice. If 2.5.7 caused a regression with **Always**, select **Default (Where suitable)**. Restart NVDA and Word. Version 2.5.8 preserves this choice. Repair also preserves this choice.
 3. Greek speech and interaction are exclusive while the add-on is installed. **NVDA+Alt+G** repairs the routing instead of turning Greek reading off.
 4. Use a **normal .docx document** with modern (OMath) equations, in a recent Word 365. Documents in **compatibility mode (.doc)** contain old Equation 3.0 or MathType objects, which Word may not expose as MathML — convert the document (File → Info → Convert) and, if needed, re-create those equations with Insert → Equation.
 
@@ -88,7 +104,7 @@ In NVDA 2026.1.1, **Math → Language** has no Automatic choice and normally def
 * **Decimal comma**: read "3.14" as "3,14" (τρία κόμμα δεκατέσσερα).
 * **Health check / Repair**: checking is read-only; repair changes the required NVDA settings explicitly.
 * **Listen to example / current expression**: previews unsaved settings with a transcript. Choose examples for capitals, fractions, tensors, matrices and unknown symbols. This does not run Repair. “Current expression” means the most recently read equation or interaction part; read it before opening Settings.
-* **Reset settings and repair Greek math**: restores smart verbosity, decimal comma, automatic language switching, disabled native Word math, Word UI Automation set to Always, and every exclusive provider hook.
+* **Reset settings and repair Greek math** restores smart verbosity, decimal comma, automatic language switching, disabled native Word math, and exclusive provider hooks. It preserves the Word UI Automation setting.
 * **Copy diagnostics**: copies the exact add-on build, module path, active provider, Word TextInfo/notification route, UIA or OMath fallback result, Windows/Office details, focused object, last MathML exposure, and installed Greek OneCore voices.
 
 ### Personal reading preferences
@@ -107,7 +123,7 @@ Preview always uses the local Greek engine. Saved custom reading options also us
 
 ### Recommended NVDA configuration
 
-**Speech:** use **Windows OneCore voices** with the Greek **Microsoft Stefanos** voice installed in Windows. Select Stefanos directly for an all-Greek NVDA setup, or keep another OneCore voice and leave **Automatic language switching** checked. Keep **Trust voice's language when processing characters and symbols** and **Unicode normalization** checked. Rate, pitch, punctuation level, and volume are personal preferences.
+**Speech:** use a Greek voice with eSpeak NG, Windows OneCore, or Microsoft SAPI5. Select Greek directly for an all-Greek NVDA setup. For automatic language switching, use a driver and NVDA version that support it. Keep **Trust voice's language when processing characters and symbols** and **Unicode normalization** checked. Rate, pitch, punctuation level, and volume are personal preferences.
 
 **Audio:** select the output device you actually use, or **Default output device** if Windows manages it. For a clean baseline use **No ducking**, **Volume of NVDA sounds follows voice volume: off**, **NVDA sounds: 100**, **Sound split: Disabled**, and **Keep audio device awake: 30 seconds**. These settings do not determine whether math is Greek or English.
 

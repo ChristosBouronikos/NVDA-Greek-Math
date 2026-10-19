@@ -9,7 +9,6 @@ different Python layers.  Detection is deliberately defensive: delegation is
 enabled only when Greek is explicitly advertised and the language can be set.
 """
 
-import importlib
 import re
 
 
@@ -40,16 +39,16 @@ def _set_language(owner):
 		function = getattr(owner, name, None)
 		if callable(function):
 			try:
-				function("Language", "el")
-				return True
+				if function("Language", "el") is not False:
+					return True
 			except Exception:
 				continue
 	for name in ("setLanguage", "set_language"):
 		function = getattr(owner, name, None)
 		if callable(function):
 			try:
-				function("el")
-				return True
+				if function("el") is not False:
+					return True
 			except Exception:
 				continue
 	return False
@@ -67,27 +66,18 @@ class AutomaticMathBackend:
 		if not enabled:
 			self.detail = "Automatic MathCAT delegation is disabled."
 			return False
-		owners = []
-		if delegate is not None:
-			owners.extend((delegate, type(delegate)))
-		for module_name in ("mathPres.MathCAT.MathCAT", "libmathcat_py", "MathCAT"):
-			try:
-				owners.append(importlib.import_module(module_name))
-			except (ImportError, AttributeError):
-				continue
-		languages = set()
-		for owner in owners:
-			languages.update(_call_capability(owner))
+		if delegate is None or not callable(getattr(delegate, "getSpeechForMathMl", None)):
+			self.detail = "No NVDA speech delegate is active; using the local engine."
+			return False
+		# Capability and language selection must belong to the provider that will
+		# speak. An unrelated installed MathCAT module proves nothing about it.
+		languages = _call_capability(delegate)
 		greek = any(code == "el" or code.startswith("el-") for code in languages)
 		if not greek:
 			self.detail = "MathCAT does not advertise an el language pack; using the local engine."
 			return False
-		language_set = any(_set_language(owner) for owner in owners)
-		if not language_set:
+		if not _set_language(delegate):
 			self.detail = "MathCAT advertises Greek but its language could not be selected safely."
-			return False
-		if delegate is None or not callable(getattr(delegate, "getSpeechForMathMl", None)):
-			self.detail = "MathCAT Greek is available but no NVDA speech delegate is active."
 			return False
 		self.delegate = delegate
 		self.backendName = "mathcat-el"
@@ -100,6 +90,12 @@ class AutomaticMathBackend:
 
 	def getSpeechForMathMl(self, mathMl):
 		if not self.usingMathCat:
+			return None
+		# Another math reader or synthesizer change may have reset the language.
+		if not _set_language(self.delegate):
+			self.delegate = None
+			self.backendName = "local"
+			self.detail = "MathCAT Greek could not be reselected; using the local engine."
 			return None
 		return self.delegate.getSpeechForMathMl(mathMl)
 

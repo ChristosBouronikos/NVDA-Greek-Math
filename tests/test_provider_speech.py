@@ -119,6 +119,7 @@ class TestProviderSpeechSequence(unittest.TestCase):
 		sys.modules[spec.name] = self.provider
 		spec.loader.exec_module(self.provider)
 		self.commands = commands
+		self.provider.automaticBackend = type(self.provider.automaticBackend)()
 
 	def tearDown(self):
 		for name, previous in self.savedModules.items():
@@ -140,6 +141,53 @@ class TestProviderSpeechSequence(unittest.TestCase):
 			" ".join(item for item in sequence if isinstance(item, str)),
 			"ένα κόμμα μηδέν δύο πέντε συν τζί",
 		)
+
+	def test_flat_equation_output_contains_words_not_suppressible_punctuation(self):
+		self.provider.automaticBackend.configure(None, enabled=False)
+		for tag in ("mtext", "mi", "mn"):
+			with self.subTest(tag=tag):
+				sequence = self.provider.GreekMathProvider().getSpeechForMathMl(
+					f"<math><{tag}>3+5=8</{tag}></math>"
+				)
+				self.assertEqual(
+					" ".join(item for item in sequence if isinstance(item, str)),
+					"3 συν 5 ίσον 8",
+				)
+				self.assertEqual(sequence[0].lang, "el_GR")
+				self.assertIsNone(sequence[-1].lang)
+
+	def test_greek_voice_metadata_supports_driver_names_and_locale_variants(self):
+		# API contract checks, not execution of the Windows synthesizers.
+		for name, locale in (("espeak", "el"), ("oneCore", "el-GR"), ("sapi5", "el_GR"), ("sapi5_32", "el")):
+			with self.subTest(driver=name):
+				self.synth = types.SimpleNamespace(name=name, availableLanguages={"en_US", locale})
+				self.assertTrue(self.provider.getGreekVoiceSupport())
+
+	def test_older_driver_voice_metadata_fallback(self):
+		self.synth = types.SimpleNamespace(availableVoices={
+			"greek": types.SimpleNamespace(language="el-GR"),
+		})
+		self.assertTrue(self.provider.getGreekVoiceSupport())
+		self.synth.availableVoices = {"english": types.SimpleNamespace(language="en_US")}
+		self.assertFalse(self.provider.getGreekVoiceSupport())
+		self.synth = types.SimpleNamespace()
+		self.assertIsNone(self.provider.getGreekVoiceSupport())
+
+	def test_empty_local_math_has_spoken_explanation_not_silence(self):
+		self.provider.automaticBackend.configure(None, enabled=False)
+		sequence = self.provider.GreekMathProvider().getSpeechForMathMl("<math/>")
+		self.assertTrue(any(isinstance(item, str) and item.strip() for item in sequence))
+		self.assertIn("Δεν υπάρχει", " ".join(item for item in sequence if isinstance(item, str)))
+		self.assertEqual(sequence[0].lang, "el_GR")
+
+	def test_empty_delegate_falls_back_to_local_equation(self):
+		for empty in ([], ["  "], [self.commands.BreakCommand(time=100)]):
+			with self.subTest(empty=empty):
+				self._configureDelegate(empty)
+				provider = self.provider.GreekMathProvider()
+				sequence = provider.getSpeechForMathMl("<math><mn>3</mn><mo>+</mo><mn>5</mn></math>")
+				self.assertEqual(provider.lastBackend, "local")
+				self.assertEqual(" ".join(item for item in sequence if isinstance(item, str)), "3 συν 5")
 
 	def test_sequence_uses_explicit_greek_locale(self):
 		# The speech sequence accents short letter names so the synthesizer reads
@@ -177,6 +225,91 @@ class TestProviderSpeechSequence(unittest.TestCase):
 
 		matching = [message for message in self.log.warnings if "no installed Greek voice" in message]
 		self.assertEqual(len(matching), 1)
+
+	def test_missing_greek_voice_does_not_receive_unsupported_language_commands(self):
+		self.synth.languageIsSupported = lambda language: False
+		sequence = self.provider.tokensToSpeechSequence(["συν"])
+		self.assertEqual([item for item in sequence if isinstance(item, str)], ["συν"])
+		self.assertFalse(any(isinstance(item, self.commands.LangChangeCommand) for item in sequence))
+
+	def test_changing_synthesizer_allows_a_new_missing_voice_warning(self):
+		self.synth = types.SimpleNamespace(name="sapi5", voice="english64", languageIsSupported=lambda language: False)
+		self.provider.tokensToSpeechSequence(["συν"])
+		self.synth = types.SimpleNamespace(name="sapi5_32", voice="english32", languageIsSupported=lambda language: False)
+		self.provider.tokensToSpeechSequence(["συν"])
+		self.assertEqual(len([message for message in self.log.warnings if "no installed Greek voice" in message]), 2)
+
+	def _configureDelegate(self, sequence):
+		requests = []
+
+		def getSpeech(mathMl):
+			requests.append(mathMl)
+			return sequence
+
+		delegate = types.SimpleNamespace(
+			GetSupportedLanguages=lambda: ["el"],
+			SetPreference=lambda name, value: None,
+			getSpeechForMathMl=getSpeech,
+		)
+		self.assertTrue(self.provider.GreekMathProvider().configureMathCatDelegate(delegate))
+		return delegate, requests
+
+	def test_delegate_speech_gets_scoped_greek_and_pronunciation(self):
+		pause = self.commands.BreakCommand(time=100)
+		self._configureDelegate([
+			self.commands.LangChangeCommand("en_US"), "χι", pause,
+			self.commands.LangChangeCommand(None), "συν ψι",
+		])
+		provider = self.provider.GreekMathProvider()
+		sequence = provider.getSpeechForMathMl("<math><mi>x</mi></math>")
+		self.assertEqual(provider.lastBackend, "mathcat-el")
+		self.assertEqual([item for item in sequence if isinstance(item, str)], ["χί", "συν ψί"])
+		self.assertEqual(
+			[item.lang for item in sequence if isinstance(item, self.commands.LangChangeCommand)],
+			["el_GR", None],
+		)
+		self.assertIs(sequence[2], pause)
+		self.assertIsNone(sequence[-1].lang)
+		self.assertEqual(self.provider.lastReading["actualSpeech"], "χί συν ψί")
+
+	def test_delegate_preserves_language_commands_when_forcing_is_disabled(self):
+		self.config["greekMathReader"]["forceGreekLanguage"] = False
+		language = self.commands.LangChangeCommand("el_GR")
+		self._configureDelegate([language, "χι"])
+		sequence = self.provider.GreekMathProvider().getSpeechForMathMl("<math/>")
+		self.assertEqual(sequence, [language, "χί"])
+
+	def test_local_preferences_bypass_delegate(self):
+		preferences = (
+			("verbosity", 0), ("verbosity", 2), ("decimalComma", False),
+			("terminologyProfile", "school"), ("terminologyProfile", "university"),
+			("domainHint", "quantum_physics"),
+			("terminologyOverrides", '{"power": "δοκιμή"}'),
+		)
+		defaults = dict(self.config["greekMathReader"])
+		for setting, value in preferences:
+			with self.subTest(setting=setting, value=value):
+				self.config["greekMathReader"] = dict(defaults, **{setting: value})
+				_delegate, requests = self._configureDelegate(["English delegate speech"])
+				provider = self.provider.GreekMathProvider()
+				sequence = provider.getSpeechForMathMl('<math><mi>x</mi><mo>+</mo><mn>1</mn></math>')
+				self.assertEqual(requests, [])
+				self.assertEqual(provider.lastBackend, "local")
+				self.assertEqual([item for item in sequence if isinstance(item, str)], ["χί", "συν", "1"])
+
+	def test_language_reselection_failure_uses_local_greek_operators(self):
+		delegate, requests = self._configureDelegate(["English delegate speech"])
+		delegate.SetPreference = lambda name, value: False
+		provider = self.provider.GreekMathProvider()
+		sequence = provider.getSpeechForMathMl(
+			'<math><mi>x</mi><mo>+</mo><mn>1</mn><mo>−</mo><mi>ψ</mi></math>'
+		)
+		self.assertEqual(requests, [])
+		self.assertEqual(provider.lastBackend, "local")
+		self.assertEqual(
+			[item for item in sequence if isinstance(item, str)],
+			["χί", "συν", "1", "πλην", "ψί"],
+		)
 
 
 if __name__ == "__main__":

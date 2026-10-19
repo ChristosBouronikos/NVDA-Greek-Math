@@ -33,8 +33,8 @@ from .provider import GreekMathProvider, getGreekVoiceSupport, tokensToSpeechSeq
 
 addonHandler.initTranslation()
 
-ADDON_VERSION = "2.5.7"
-BUILD_ID = "20261019-force-settings-on-install"
+ADDON_VERSION = "2.5.8"
+BUILD_ID = "20261019-flat-math-multisynth-silence-fix"
 _WORD_UIA_ALWAYS = 3
 
 CONFIG_SPEC = {
@@ -272,6 +272,12 @@ def _installMathObjectSpeechHook():
 					"the application's accessible text; " + _lastMathObjectDiagnostic
 				)
 				_hasLoggedMathObjectWithoutMathMl = True
+			sequence = list(original(obj, *args, **kwargs))
+			if not any(isinstance(item, str) and item.strip() for item in sequence):
+				sequence.extend(tokensToSpeechSequence([
+					"Η εφαρμογή δεν παρέχει προσβάσιμο μαθηματικό περιεχόμενο για ανάγνωση."
+				]))
+			return sequence
 		return original(obj, *args, **kwargs)
 
 	getObjectSpeech._greekMathReaderMathObjectRoute = True
@@ -891,6 +897,8 @@ def _installMathTextInfoSpeechHooks():
 					_register()
 				speechSequence.extend(_provider.getSpeechForMathMl(mathMl))
 				return
+		# NVDA assembles the field's native text separately. An empty MathML
+		# appender does not prove that the completed utterance lacks content.
 		return originalAddMathForTextInfo(speechSequence, info, field)
 
 	getTextInfoSpeech._greekMathReaderWordTextInfoRoute = True
@@ -1251,30 +1259,17 @@ def _enforceRequiredNvdaSettings():
 		config.conf["math"]["other"]["useWordNativeMath"] = False
 	except (KeyError, TypeError, ValueError):
 		pass
-	try:
-		# Modern Word equations expose MathML through UI Automation. The legacy
-		# Word object model exposes only older MathType equations as MathML.
-		wordUiaChanged = int(config.conf["UIA"]["allowInMSWord"]) != _WORD_UIA_ALWAYS
-		config.conf["UIA"]["allowInMSWord"] = _WORD_UIA_ALWAYS
-		if wordUiaChanged:
-			try:
-				import UIAHandler
-
-				if UIAHandler.handler is not None:
-					UIAHandler.handler.UIAWindowHandleCache.clear()
-			except (ImportError, AttributeError):
-				pass
-	except (KeyError, TypeError, ValueError):
-		pass
+	# Do not force Word UIA. NVDA's compatibility checks deliberately choose
+	# the legacy object model on older systems; native OMath still works there.
 
 
 def _applyRequiredSettingsOnInstallOrUpdate():
 	"""Apply the required NVDA settings once per installed add-on version.
 
-	A new user never presses Repair, and NVDA's defaults (for example Word UIA
-	"where suitable", which does not use UIA on Windows 10 or older Office
-	builds) mean Word never exposes equation MathML at all. Add-on reading
-	preferences are left untouched so updates keep the user's choices.
+	Enable Greek language commands and provider-based Word math without
+	changing Word's accessibility implementation. NVDA deliberately avoids UIA
+	on some Windows/Office combinations; native OMath is our fallback there.
+	Add-on reading preferences and the user's Word UIA choice are preserved.
 	"""
 	section = config.conf["greekMathReader"]
 	if section.get("settingsAppliedVersion", "") == ADDON_VERSION:
@@ -1300,7 +1295,6 @@ def getHealthCheck():
 		"providerActive": isProviderActive(),
 		"automaticLanguageSwitching": _isAutoLanguageSwitchingEnabled(),
 		"wordNativeMathDisabled": not _isWordNativeMathEnabled(),
-		"wordUIAAlways": _isWordUIAAlwaysEnabled(),
 	}
 	checks["healthy"] = all(checks.values())
 	checks["issues"] = [
@@ -1399,16 +1393,23 @@ def _getSynthDiagnostics():
 		try:
 			for voice in synth.availableVoices.values():
 				language = getattr(voice, "language", None)
-				if isinstance(language, str) and language.lower().replace("-", "_").startswith("el"):
-					greekVoices.append(f"{getattr(voice, 'name', None)} ({language})")
+				if isinstance(language, str) and language.lower().replace("-", "_").split("_")[0] == "el":
+					greekVoices.append(f"{getattr(voice, 'displayName', getattr(voice, 'name', None))} ({language})")
 		except Exception:
 			greekVoices = ["unavailable"]
+		try:
+			from speech import getState
+			speechMode = str(getState().speechMode)
+		except Exception:
+			speechMode = "unavailable"
 		return (
 			f"synth={getattr(synth, 'name', None)!r}; "
 			f"voice={getattr(synth, 'voice', None)!r}; "
 			f"voiceLanguage={getattr(synth, 'language', None)!r}; "
-			f"greekSupported={getGreekVoiceSupport()!r}; "
-			f"greekVoices={greekVoices!r}"
+			f"greekVoiceAdvertised={getGreekVoiceSupport()!r}; "
+			f"greekVoices={greekVoices!r}; "
+			f"volume={getattr(synth, 'volume', None)!r}; speechMode={speechMode}; "
+			f"audioOutputDevice={config.conf.get('audio', {}).get('outputDevice', 'unavailable')!r}"
 		)
 	except Exception as error:
 		return f"synthDiagnosticsError={error!r}"
@@ -1427,13 +1428,21 @@ def _getNeuralVoiceDiagnostics():
 
 
 def _getPlatformDiagnostics():
-	"""Return Windows details relevant to Word's custom MathML extension."""
+	"""Return NVDA architecture and Windows details for speech diagnostics."""
+	import struct
+
+	details = [f"nvdaProcessBits={struct.calcsize('P') * 8}"]
+	try:
+		import versionInfo
+		details.append(f"nvdaVersion={versionInfo.version}")
+	except Exception:
+		details.append("nvdaVersion=unavailable")
 	try:
 		import winVersion
-
-		return f"windows={winVersion.getWinVer()!r}"
+		details.append(f"windows={winVersion.getWinVer()!r}")
 	except Exception as error:
-		return f"windows=unavailable ({error!r})"
+		details.append(f"windows=unavailable ({error!r})")
+	return "; ".join(details)
 
 
 _lastWordBuildDiagnostic = "Word has not been contacted since NVDA started."
@@ -1618,8 +1627,9 @@ def speakSelfTest():
 			# Translators: Spoken when the current synthesizer cannot switch to Greek.
 			_(
 				"Warning: the current synthesizer has no Greek voice installed. "
-				"Install a Greek voice such as Microsoft Stefanos in Windows, then "
-				"select Windows OneCore voices in NVDA."
+				"Select eSpeak NG with a Greek voice, or install and select a Greek "
+				"voice for Windows OneCore or Microsoft SAPI5 in NVDA. A SAPI5 voice "
+				"must be available to the selected 32-bit or 64-bit SAPI5 driver."
 			)
 		)
 
@@ -1718,26 +1728,20 @@ _WORD_NATIVE_LETTER_REPLACEMENTS = (
 
 
 def _normalizeWordNativeMathText(text):
-	"""Translate explicit English structure in Word's unstructured fallback."""
-	import re
+	"""Use the same flat-text renderer as the MathML provider.
 
-	# Ο χαρακτήρας του βαθμού ("90°") δεν είναι λέξη, οπότε δεν πιάνεται από
-	# τις αντικαταστάσεις λέξεων παρακάτω (που ήδη καλύπτουν "degree"/"degrees").
-	text = re.sub(r"[°∘]", " μοίρες ", text)
-	for source, replacement in _WORD_NATIVE_TEXT_REPLACEMENTS:
-		text = re.sub(
-			rf"(?<!\w){re.escape(source)}(?!\w)",
-			replacement,
-			text,
-			flags=re.IGNORECASE,
-		)
-	for source, replacement in _WORD_NATIVE_LETTER_REPLACEMENTS:
-		text = re.sub(
-			rf"(?<!\w){re.escape(source)}(?!\w)",
-			replacement,
-			text,
-		)
-	return re.sub(r"\s+", " ", text).strip()
+	This route already has independently confirmed equation context. Keeping
+	a second translator here caused different English/Greek mixtures depending
+	on whether Word used character navigation, notifications or line reading.
+	"""
+	from .engine import ReadingConfig, speak_mathml, tokens_to_text
+
+	section = config.conf["greekMathReader"]
+	settings = ReadingConfig(
+		decimal_comma=bool(section.get("decimalComma", True)),
+		latin_literal=section.get("latinLetterMode", "greek_school") == "literal",
+	)
+	return tokens_to_text(speak_mathml(_wordTextAsFallbackMathMl(text), settings))
 
 
 def _normalizeWordNativeSpeechSequence(sequence):
@@ -1843,6 +1847,12 @@ def _looksLikeWordNativeMathSpeech(text):
 	)
 
 
+def _looksLikeWordSymbolMathSpeech(text):
+	from .engine.speech import looks_like_flat_math
+
+	return looks_like_flat_math(text)
+
+
 def _notificationIsFromFocusedApp(obj):
 	"""Mirror NVDA's guard against speaking background UIA notifications."""
 	try:
@@ -1942,7 +1952,9 @@ def _confirmedUtteranceLooksMathematical(items, text):
 	"""
 	import re
 
-	if _isPlausibleWordLinearMathText(text):
+	from .engine.speech import looks_like_flat_math
+
+	if _isPlausibleWordLinearMathText(text) or looks_like_flat_math(text):
 		return True
 	for item in items:
 		if isinstance(item, str) and item != text and _isPlausibleWordLinearMathText(item):
@@ -1966,13 +1978,16 @@ def _replaceFinalWordSpeechSequence(speechSequence):
 		return None
 	items = list(speechSequence)
 	text = " ".join(item for item in items if isinstance(item, str)).strip()
-	# Single characters and keyboard echo must never be rewritten, and without
-	# at least one explicit English math word there is nothing to translate.
+	# Single characters and keyboard echo must never be rewritten. Compact
+	# symbolic equations require independent math confirmation below.
 	# The stricter prose classifier is applied later, but only for utterances
 	# that no native OMath or UIA math field could confirm: a confirmed
 	# equation (for example a mouse selection spanning prose plus equation)
 	# must not be discarded just because the prose outweighs the math words.
-	if len(text) < 3 or not _looksLikeWordNativeMathSpeech(text):
+	from .engine.speech import looks_like_flat_math
+
+	hasEnglishMath = _looksLikeWordNativeMathSpeech(text)
+	if len(text) < 3 or not (hasEnglishMath or looks_like_flat_math(text)):
 		return None
 	_finalWordSpeechCandidateCount += 1
 	try:
@@ -2003,6 +2018,10 @@ def _replaceFinalWordSpeechSequence(speechSequence):
 		f"structuredMathMlAvailable={mathMl is not None}; text={text[:240]!r}"
 	)
 	if not confirmedMath:
+		# Symbol-only text is ambiguous (dates, phone numbers, ordinary prose).
+		# Unlike explicit English math, it must never use unconfirmed backup.
+		if not hasEnglishMath:
+			return None
 		# Backup mode: when no OMath/UIA confirmation is possible (COM
 		# unreachable, protected view, Outlook reading pane), translate the
 		# English anyway — but only when the strict classifier accepts the
@@ -2238,7 +2257,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			and appName in ("winword", "outlook")
 			and activityId not in ("AccSN1", "AccSN2")
 			and _notificationIsFromFocusedApp(obj)
-			and _looksLikeWordNativeMathSpeech(displayString)
+			and (_looksLikeWordNativeMathSpeech(displayString) or _looksLikeWordSymbolMathSpeech(displayString))
 		):
 			mathMl, confirmedMath = _getWordMathContextAtCaret(
 				obj,

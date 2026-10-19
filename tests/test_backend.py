@@ -5,8 +5,10 @@
 """Capability-gated MathCAT Greek backend selection."""
 
 import sys
+import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "addon" / "globalPlugins" / "greekMathReader"))
 
@@ -50,6 +52,60 @@ class TestAutomaticMathBackend(unittest.TestCase):
 		self.assertFalse(backend.configure(FakeMathCat(["el"]), enabled=False))
 		self.assertIsNone(backend.getSpeechForMathMl("<math/>"))
 		self.assertIn("disabled", backend.diagnostics()["detail"].lower())
+
+	def test_unrelated_greek_module_cannot_enable_english_delegate(self):
+		delegate = FakeMathCat(["en"])
+		module = types.ModuleType("MathCAT")
+		module.GetSupportedLanguages = lambda: ["el"]
+		module.SetPreference = lambda name, value: None
+		backend = AutomaticMathBackend()
+		with patch.dict(sys.modules, {"MathCAT": module}):
+			self.assertFalse(backend.configure(delegate))
+		self.assertIsNone(backend.getSpeechForMathMl("<math/>"))
+		self.assertEqual(delegate.preferences, [])
+		self.assertEqual(delegate.requests, [])
+
+	def test_delegate_cannot_borrow_unrelated_language_setter(self):
+		delegate = FakeMathCat(["el"])
+		delegate.SetPreference = None
+		module = types.ModuleType("MathCAT")
+		module.SetPreference = lambda name, value: None
+		with patch.dict(sys.modules, {"MathCAT": module}):
+			self.assertFalse(AutomaticMathBackend().configure(delegate))
+
+	def test_language_is_reselected_before_every_speech_request(self):
+		class ResettingMathCat(FakeMathCat):
+			language = "en"
+
+			def SetPreference(self, name, value):
+				self.language = value
+				super().SetPreference(name, value)
+
+			def getSpeechForMathMl(self, mathml):
+				language = self.language
+				self.language = "en"
+				return [language]
+
+		delegate = ResettingMathCat(["el"])
+		backend = AutomaticMathBackend()
+		self.assertTrue(backend.configure(delegate))
+		delegate.language = "en"
+		self.assertEqual(backend.getSpeechForMathMl("<math/>"), ["el"])
+		self.assertEqual(backend.getSpeechForMathMl("<math/>"), ["el"])
+
+	def test_language_selection_failure_stops_delegation(self):
+		delegate = FakeMathCat(["el"])
+		backend = AutomaticMathBackend()
+		self.assertTrue(backend.configure(delegate))
+		delegate.SetPreference = lambda name, value: False
+		self.assertIsNone(backend.getSpeechForMathMl("<math/>"))
+		self.assertFalse(backend.usingMathCat)
+		self.assertEqual(delegate.requests, [])
+
+	def test_rejected_language_selection_does_not_enable_delegate(self):
+		delegate = FakeMathCat(["el"])
+		delegate.SetPreference = lambda name, value: False
+		self.assertFalse(AutomaticMathBackend().configure(delegate))
 
 
 if __name__ == "__main__":

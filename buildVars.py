@@ -41,11 +41,11 @@ three verbosity levels, configurable pronunciations and matrix reading, unsaved 
 and voice download options for OneCore and Vocalizer Expressive."""
 	),
 	# version
-	addon_version="2.5.7",
+	addon_version="2.5.8",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.5.7: on first install and after every update, automatically applies the NVDA settings Greek math reading depends on (Word UI Automation, automatic language switching, Word native math off), so equations are read for new users without pressing Repair."""
+		"""Version 2.5.8 fixes missing operators and mixed-language output in flat equation text. It preserves the Word accessibility mode and restricts MathCAT delegation to a provider with explicit Greek support."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",

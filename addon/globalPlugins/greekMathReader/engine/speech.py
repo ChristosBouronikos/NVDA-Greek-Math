@@ -190,7 +190,14 @@ _ENGLISH_MATH_MTEXT_REPLACEMENTS = (
 	("over", "διά"),
 	("plus", "συν"),
 	("minus", "πλην"),
+	("negative", "μείον"), ("positive", "συν"),
 	("times", "επί"),
+	("open paren", "ανοίγει παρένθεση"),
+	("close paren", "κλείνει η παρένθεση"),
+	("degrees", "μοίρες"), ("degree", "μοίρες"),
+	("percent", "τοις εκατό"), ("infinity", "άπειρο"),
+	("prime", "τόνος"), ("vector", "διάνυσμα"),
+	("sum", "άθροισμα"), ("product", "γινόμενο"),
 	# Ονόματα παρονομαστών όπως τα εκφωνεί το Word για απλά κλάσματα
 	# ("two thirds"): χωρίς αυτά, μόνο ο αριθμητής μεταφράζεται (μέσω
 	# _ENGLISH_MATH_TOKEN_REPLACEMENTS) και το κλάσμα βγαίνει μισό ελληνικά
@@ -218,7 +225,8 @@ _ENGLISH_MATH_MTEXT_TRIGGER_RE = re.compile(
 _ENGLISH_MATH_TOKEN_REPLACEMENTS = {
 	"zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",
 	"five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9",
-	"ten": "10", "alpha": "άλφα", "beta": "βήτα", "gamma": "γάμα",
+	"ten": "10", "eleven": "11", "twelve": "12",
+	"alpha": "άλφα", "beta": "βήτα", "gamma": "γάμα",
 	"delta": "δέλτα", "epsilon": "έψιλον", "zeta": "ζήτα", "eta": "ήτα",
 	"theta": "θήτα", "iota": "γιώτα", "kappa": "κάπα", "lambda": "λάμδα",
 	"mu": "μι", "nu": "νι", "xi": "ξι", "omicron": "όμικρον", "pi": "πι",
@@ -228,18 +236,39 @@ _ENGLISH_MATH_TOKEN_REPLACEMENTS = {
 }
 
 
+_ENGLISH_MATH_TOKEN_TRIGGER_RE = re.compile(
+	"|".join(rf"(?<!\w){source}(?!\w)" for source, replacement in _ENGLISH_MATH_TOKEN_REPLACEMENTS.items()
+		if not replacement.isdigit()),
+	re.IGNORECASE,
+)
 _DEGREE_SIGN_MTEXT_RE = re.compile(r"[°∘]")
 
 
 def _normalize_english_math_mtext(text):
 	"""Translate only explicit English math vocabulary inside fallback mtext."""
+	if text.casefold() in _ENGLISH_MATH_TOKEN_REPLACEMENTS:
+		return _ENGLISH_MATH_TOKEN_REPLACEMENTS[text.casefold()]
+	knownWords = {
+		word.casefold()
+		for source, _replacement in _ENGLISH_MATH_MTEXT_REPLACEMENTS
+		for word in source.split()
+	} | set(_ENGLISH_MATH_TOKEN_REPLACEMENTS) | {
+		"from", "to", "of", "with", "respect", "end", "start",
+	}
+	# Ambiguous names such as prime, product and beta also occur in prose.
+	# Do not partly translate a sentence with unknown English words.
+	if any(len(word) > 1 and word.casefold() not in knownWords
+		and word not in symbols.FUNCTION_NAMES
+		for word in re.findall(r"[A-Za-z]+", text)):
+		return text
 	hasDegreeSign = _DEGREE_SIGN_MTEXT_RE.search(text) is not None
 	if hasDegreeSign:
 		# «90°» φτάνει εδώ ως ακατέργαστο κείμενο (όχι ξεχωριστό <mo>) όταν το
 		# Word δεν εκθέτει δομημένα MathML· χωρίς αυτό, ο χαρακτήρας περνάει
 		# αναλλοίωτος στη σύνθεση φωνής, που τον διαβάζει "βαθμοί".
 		text = _DEGREE_SIGN_MTEXT_RE.sub(" μοίρες ", text)
-	if not hasDegreeSign and not _ENGLISH_MATH_MTEXT_TRIGGER_RE.search(text):
+	if not (hasDegreeSign or _ENGLISH_MATH_MTEXT_TRIGGER_RE.search(text)
+		or _ENGLISH_MATH_TOKEN_TRIGGER_RE.search(text)):
 		return text
 	for source, replacement in _ENGLISH_MATH_MTEXT_REPLACEMENTS:
 		text = re.sub(
@@ -255,7 +284,47 @@ def _normalize_english_math_mtext(text):
 			text,
 			flags=re.IGNORECASE,
 		)
+	# These words are translated only after explicit math vocabulary has
+	# established the context, never as global replacements in ordinary prose.
+	for source, replacement in (("with respect to", "ως προς"),
+		("from", "από"), ("to", "έως"), ("of", "του"),
+		("end", "τέλος"), ("start", "αρχή")):
+		text = re.sub(rf"(?<!\w){source}(?!\w)", replacement, text, flags=re.IGNORECASE)
 	return re.sub(r"\s+", " ", text).strip()
+
+
+_FLAT_MATH_OPERATOR_RE = re.compile(r"[+\-−=×÷*/^≤≥≠±∓]")
+_FLAT_MATH_ALLOWED_RE = re.compile(r"[\w\s+\-−=×÷*/^.,()<>≤≥≠±∓]+", re.UNICODE)
+
+
+def looks_like_flat_math(text):
+	"""Recognize compact notation, not prose containing punctuation.
+
+	Callers outside MathML must additionally confirm an actual Word equation.
+	Single-character typing echo is deliberately excluded.
+	"""
+	if not isinstance(text, str) or not 3 <= len(text.strip()) <= 2000:
+		return False
+	if not _FLAT_MATH_OPERATOR_RE.search(text) or not _FLAT_MATH_ALLOWED_RE.fullmatch(text):
+		return False
+	# The linear parser treats braces as TeX grouping and bare functions as
+	# identifiers. Limit automatic conversion to unambiguous arithmetic.
+	if "_" in text or re.search(r"\d[eE][+\-−]?\d", text):
+		return False
+	depth = 0
+	for char in text:
+		if char == "(":
+			depth += 1
+			if depth > 16:
+				return False
+		elif char == ")":
+			depth -= 1
+			if depth < 0:
+				return False
+	if depth:
+		return False
+	words = re.findall(r"[^\W\d_]+", text, re.UNICODE)
+	return all(len(word) == 1 for word in words)
 
 
 # Πρόθεμα διαφορικού: «dx», «dt», «∂x».
@@ -970,8 +1039,22 @@ class MathSpeaker(object):
 		except ValueError:
 			return None
 
+	def _speak_flat_math(self, text):
+		if not looks_like_flat_math(text):
+			return None
+		# Import lazily: the linear front end shares this speaker. Reuse its
+		# structural parser instead of handing raw operators to NVDA punctuation.
+		from .unicodemath import UnicodeMathParseError, unicodemath_to_tree
+		try:
+			return self._node(unicodemath_to_tree(text))
+		except (UnicodeMathParseError, RecursionError):
+			return None
+
 	def _speak_mi(self, node):
 		text = node.text
+		flat = self._speak_flat_math(text)
+		if flat is not None:
+			return flat
 		if not text:
 			return []
 		# P(A), E(X): τα μονογράμματα είναι ονόματα συναρτήσεων μόνο όταν
@@ -1023,6 +1106,9 @@ class MathSpeaker(object):
 
 	def _speak_mn(self, node):
 		text = node.text
+		flat = self._speak_flat_math(text)
+		if flat is not None:
+			return flat
 		# Έτοιμοι χαρακτήρες κλασμάτων κ.λπ. μέσα σε mn: ½ → "ένα δεύτερο"
 		symbol = symbols.symbol_reading(text)
 		if symbol:
@@ -1082,8 +1168,29 @@ class MathSpeaker(object):
 			return []
 		if text in symbols.UNITS:
 			return [symbols.UNITS[text]]
+		if re.fullmatch(r"[A-Za-z]", text):
+			return [self._letter(text) or text]
+		flat = self._speak_flat_math(text)
+		if flat is not None:
+			return flat
 		normalized = _normalize_english_math_mtext(text)
-		if normalized == text and re.search(r"[A-Za-z]", text):
+		mathContext = normalized != text or bool(re.fullmatch(r"[+\-−=×÷*/≤≥≠±∓]+", text))
+		if mathContext:
+			# Word can mix spoken English with literal signs in one utterance.
+			# Expand signs into words before NVDA applies its punctuation level.
+			normalized = re.sub(
+				r"\b\d+(?:[.,]\d+)?[eE][+\-−]?\d+\b|[+\-−=×÷*/≤≥≠±∓]",
+				lambda match: match.group() if len(match.group()) > 1 else
+					" " + (symbols.symbol_reading(match.group()) or match.group()) + " ",
+				normalized,
+			)
+			normalized = re.sub(
+				r"(?<!\w)[A-Za-z](?!\w)",
+				lambda match: self._letter(match.group()) or match.group(),
+				normalized,
+			)
+			normalized = re.sub(r"\s+", " ", normalized).strip()
+		elif re.search(r"[A-Za-z]", text):
 			record_unknown(text, "text")
 		return [normalized]
 

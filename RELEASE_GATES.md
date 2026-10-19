@@ -3,6 +3,10 @@
 These gates record the evidence still required for reviewed semantic and voice
 quality. A blank approval is not an implicit pass.
 
+## Status of 2.5.8 stable (2026-10-19)
+
+The maintainer requested publication of version 2.5.8. This maintenance release fixes flat equation operators, silent backend output, and voice compatibility diagnostics. Automated tests and package checks pass. Windows audio checks, Word integration checks, and semantic terminology approvals remain pending. Publication does not establish successful audio with every synthesizer.
+
 ## Status of 2.5.7 stable (2026-10-19)
 
 **Version 2.5.7 is being released on the stable channel to apply the required NVDA settings automatically on first install and after every update, so new users hear equations without pressing Repair.** Automated engine, packaging and lifecycle checks pass. Manual review gates for semantic terminology remain pending as documented below.
@@ -88,9 +92,17 @@ the minimum supported NVDA release and the current stable release.
 | Neural voice download and selection | Pending | Pending | runtime/model verification, restart, speech and removal |
 | Neural voice daily use | Pending | Pending | latency, interruption, character echo and high-rate intelligibility |
 
-Manual listening is required with Microsoft Stefanos and eSpeak Greek. Include
-single Latin and Greek letters, pauses, rates, nested expressions, long
-expressions, singular/plural units and unknown-symbol fallback.
+Manual audio checks remain **Pending** for each voice route:
+
+* Windows OneCore with Microsoft Stefanos or another Greek OneCore voice.
+* eSpeak NG with its Greek voice.
+* Microsoft SAPI5 with an installed Greek 64-bit voice on NVDA 2026.1 or later.
+* Microsoft SAPI5 32-bit through NVDA's bridge with an installed Greek 32-bit voice.
+* The native 32-bit SAPI5 route on supported older NVDA releases. Before NVDA 2025.1, select Greek directly.
+
+For each route, check direct Greek selection and supported automatic language switching. Check absent Greek voices, empty backend output, speech-off mode, muted volume, and invalid output devices separately.
+
+Include single Latin and Greek letters, pauses, rates, nested expressions, long expressions, singular/plural units and unknown-symbol fallback. Record successful audio separately from advertised voice support or generated speech text.
 
 ## Human approval per stable domain
 

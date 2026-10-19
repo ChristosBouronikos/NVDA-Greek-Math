@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.5.8 — 2026-10-19
+
+* Fixes missing operators in flat equation text, including `3+5=8` inside `mtext`, `mi`, or `mn`. The engine converts operators to Greek words before NVDA applies punctuation preferences.
+* Uses the same text renderer for Word character navigation and MathML fallback text. Adds missing Greek translations for Word math vocabulary and Latin variable names.
+* Handles symbol-only Word lines and notifications when UIA or native OMath confirms an equation. Ordinary prose and single-character echo remain unchanged.
+* Removes the forced Word UI Automation setting from installation, update, Repair, and Reset. These actions preserve the current Word accessibility mode. NVDA avoids UIA on some older Windows/Office combinations.
+* Requires Greek capability and language selection on the actual MathCAT delegate. Reselects Greek before each request and uses the local engine for unsupported preferences.
+* Rejects silent backend output and retries with the local engine. Empty local output and math objects without accessible content produce a spoken explanation instead of silence.
+* Checks Greek voice metadata on older NVDA versions without `languageIsSupported`. Uses the same public speech API for eSpeak NG, OneCore, and SAPI5, including the NVDA 2026.1 32-bit SAPI5 bridge.
+* Records NVDA process architecture, synthesizer, Greek voice inventory, speech mode, volume, and output device in diagnostics. Voice inventory does not prove successful audio output.
+
+Windows/NVDA listening and Word integration checks remain open. The automated suite does not verify those environments.
+
+If 2.5.7 changed Word behavior, select **Default (Where suitable)** for Word UI Automation in NVDA's Advanced settings. Restart NVDA and Word. Version 2.5.8 does not restore an unknown previous setting automatically.
+
 ## 2.5.7 — 2026-10-19
 
 Maintenance release on the stable channel.

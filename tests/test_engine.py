@@ -46,6 +46,56 @@ class TestTokens(unittest.TestCase):
 	def test_simple_addition(self):
 		self.assertEqual(spoken(math("<mn>2</mn><mo>+</mo><mn>3</mn><mo>=</mo><mn>5</mn>")), "2 συν 3 ίσον 5")
 
+	def test_flat_arithmetic_preserves_operators_in_all_fallback_tokens(self):
+		for tag in ("mtext", "mi", "mn"):
+			for expression, expected in (
+				("3+5=8", "3 συν 5 ίσον 8"),
+				("5-3=2", "5 πλην 3 ίσον 2"),
+				("5−3=2", "5 πλην 3 ίσον 2"),
+				("-3+5=2", "μείον 3 συν 5 ίσον 2"),
+				("x+y=8", "χι συν γουάι ίσον 8"),
+			):
+				with self.subTest(tag=tag, expression=expression):
+					self.assertEqual(spoken(math(f"<{tag}>{expression}</{tag}>")), expected)
+
+	def test_flat_mtext_operator_only_chunks_are_spoken(self):
+		for symbol, expected in (("+", "συν"), ("-", "πλην"), ("−", "πλην"), ("=", "ίσον")):
+			with self.subTest(symbol=symbol):
+				self.assertEqual(spoken(math(f"<mtext>{symbol}</mtext>")), expected)
+
+	def test_split_word_fallback_tokens_use_greek_words(self):
+		self.assertEqual(
+			spoken(math("<mtext>k</mtext><mtext>plus</mtext><mtext>three</mtext>")),
+			"κάπα συν 3",
+		)
+
+	def test_flat_fallback_keeps_literal_latin_choice(self):
+		self.assertEqual(tokens_to_text(speak_mathml(
+			math("<mtext>x+3=y</mtext>"), ReadingConfig(latin_literal=True),
+		)), "x συν 3 ίσον y")
+
+	def test_mtext_prose_and_quoted_strings_are_not_parsed_as_arithmetic(self):
+		for inner, expected in (
+			("<mtext>Use + to add values</mtext>", "Use + to add values"),
+			("<mtext>well-known</mtext>", "well-known"),
+			("<ms>3+5=8</ms>", "3+5=8"),
+		):
+			self.assertEqual(spoken(math(inner)), expected)
+
+	def test_flat_fallback_does_not_reinterpret_unsupported_notation(self):
+		for tag, text in (("mtext", "A={1,2}"), ("mtext", "cos x = 0"), ("mn", "1e-3")):
+			with self.subTest(tag=tag, text=text):
+				self.assertEqual(spoken(math(f"<{tag}>{text}</{tag}>")), text)
+
+	def test_deep_flat_grouping_does_not_exhaust_recursion(self):
+		for opening, closing in (("{", "}"), ("(", ")")):
+			text = opening * 400 + "3+5" + closing * 400
+			self.assertEqual(spoken(math(f"<mtext>{text}</mtext>")), text)
+
+	def test_ambiguous_math_names_in_mtext_prose_remain_unchanged(self):
+		for text in ("prime minister", "beta version of product", "Use plus to add values"):
+			self.assertEqual(spoken(math(f"<mtext>{text}</mtext>")), text)
+
 	def test_latin_letters(self):
 		self.assertEqual(spoken(math("<mi>x</mi><mo>+</mo><mi>y</mi>")), 'χι συν γουάι')
 
@@ -129,8 +179,40 @@ class TestPowers(unittest.TestCase):
 	def test_english_word_fallback_has_no_untranslated_structure_terms(self):
 		self.assertEqual(
 			spoken(math("<mtext>limit x superscript 2 plus root gamma</mtext>")),
-			"όριο x άνω δείκτης 2 συν ρίζα γάμα",
+			"όριο χι άνω δείκτης 2 συν ρίζα γάμα",
 		)
+
+	def test_mixed_verbal_and_literal_math_operators_are_all_greek(self):
+		self.assertEqual(
+			spoken(math("<mtext>x squared + 5 minus 3 = 2</mtext>")),
+			"χι στο τετράγωνο συν 5 πλην 3 ίσον 2",
+		)
+
+	def test_mixed_word_fallback_preserves_scientific_notation_signs(self):
+		for number in ("1e-3", "1e+3", "1.2E−3"):
+			self.assertEqual(
+				spoken(math(f"<mtext>x plus {number}</mtext>")),
+				f"χι συν {number}",
+			)
+
+	def test_word_fallback_negative_numbers_and_eleven_twelve(self):
+		for source, expected in (
+			("negative three plus two", "μείον 3 συν 2"),
+			("eleven plus twelve", "11 συν 12"),
+			("x to the power of negative three", "χι στη δύναμη μείον 3"),
+		):
+			self.assertEqual(spoken(math(f"<mtext>{source}</mtext>")), expected)
+
+	def test_fallback_vocabulary_matches_word_routes(self):
+		for source, expected in (
+			("sum from k equals 1 to n", "άθροισμα από κάπα ίσον 1 έως νι"),
+			("90 degrees", "90 μοίρες"),
+			("alpha + beta", "άλφα συν βήτα"),
+			("vector x", "διάνυσμα χι"),
+			("product x times y", "γινόμενο χι επί γουάι"),
+		):
+			with self.subTest(source=source):
+				self.assertEqual(spoken(math(f"<mtext>{source}</mtext>")), expected)
 
 	def test_cube(self):
 		self.assertEqual(spoken(math("<msup><mi>x</mi><mn>3</mn></msup>")), "χι στον κύβο")

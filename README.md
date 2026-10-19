@@ -4,6 +4,10 @@
 
 [Ελληνικά](#ελληνικά) · [English](#english)
 
+> **2.5.8 — maintenance fix:** operators in flat equation text now become Greek words before NVDA processes punctuation. Installation and Repair preserve Word's UI Automation setting. Windows/NVDA checks remain open. See [CHANGELOG.md](CHANGELOG.md).
+>
+> **2.5.8 — διορθωτική έκδοση:** οι τελεστές σε γραμμικό κείμενο εξισώσεων μετατρέπονται σε ελληνικές λέξεις πριν από την επεξεργασία στίξης. Η εγκατάσταση και η Επιδιόρθωση διατηρούν τη ρύθμιση Αυτοματισμού UI του Word. Εκκρεμούν οι δοκιμές σε Windows/NVDA.
+
 ---
 
 ## Ελληνικά
@@ -21,9 +25,9 @@
 
 Μετά την εγκατάσταση, τα μαθηματικά στις ιστοσελίδες (Βικιπαίδεια, πλατφόρμες τηλεκπαίδευσης, περιεχόμενο MathJax), στα βιβλία EPUB, στις προσβάσιμες εξισώσεις PDF και στις εξισώσεις του Word διαβάζονται αυτόματα στα ελληνικά όταν η εφαρμογή εκθέτει MathML στο NVDA.
 
-> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση **2.5.7** δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word, που προστέθηκε στην 2.0.0, χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
+> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση **2.5.8** δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word, που προστέθηκε στην 2.0.0, χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
 
-> Η τρέχουσα έκδοση (**2.5.7**) κυκλοφορεί στο σταθερό κανάλι, ύστερα από ρητή απόφαση του συντηρητή. Οι πύλες ελέγχου της νέας σημασιολογικής ορολογίας παραμένουν ανοιχτές — δείτε [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md) και [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
+> Η τρέχουσα έκδοση (**2.5.8**) κυκλοφορεί στο σταθερό κανάλι, ύστερα από ρητή απόφαση του συντηρητή. Οι πύλες ελέγχου της νέας σημασιολογικής ορολογίας παραμένουν ανοιχτές — δείτε [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md) και [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
 
 ### Χρήση
 
@@ -55,7 +59,7 @@
 
 Το κουμπί **Δοκιμή ελληνικής εκφώνησης μαθηματικών** εκφωνεί απευθείας μια ενδεικτική παράσταση, χωρίς να εξαρτάται από την τρέχουσα εφαρμογή ή ιστοσελίδα.
 
-Το κουμπί **Επαναφορά ρυθμίσεων και επιδιόρθωση ελληνικών μαθηματικών** επαναφέρει έξυπνη λεπτομέρεια, δεκαδικό κόμμα, αυτόματη εναλλαγή γλώσσας, απενεργοποιημένη εγγενή ανάγνωση Word, Αυτοματισμό UI του Word σε «Πάντα» και όλα τα επίπεδα αποκλειστικής δρομολόγησης. Μετά την επαναφορά επανεκκινήστε NVDA και Word.
+Το κουμπί **Επαναφορά ρυθμίσεων και επιδιόρθωση ελληνικών μαθηματικών** επαναφέρει έξυπνη λεπτομέρεια, δεκαδικό κόμμα, αυτόματη εναλλαγή γλώσσας, απενεργοποιημένη εγγενή ανάγνωση Word και όλα τα επίπεδα αποκλειστικής δρομολόγησης. Διατηρεί τη ρύθμιση Αυτοματισμού UI του Word. Μετά την επαναφορά επανεκκινήστε NVDA και Word.
 
 ### Νέα στην έκδοση 2.5
 
@@ -75,7 +79,7 @@
 
 Τα αρθρώματα πανεπιστημιακών μαθηματικών, φυσικής και ειδικών πεδίων προσθέτουν ορολογία για παράγωγους και ολοκληρώματα πολλών μεταβλητών, ασυμπτωτική ανάλυση, ιδιοτιμές/ιδιοδιανύσματα και τύπους πινάκων, ΔΕ/ΜΔΕ, στατιστική συμπερασματολογία και στοχαστικές διαδικασίες· μηχανική, ηλεκτρομαγνητισμό, θερμοδυναμική, κβαντομηχανική και σχετικότητα· άλγεβρα, τοπολογία, θεωρία μέτρου, συναρτησιακή ανάλυση, διαφορική γεωμετρία, κατηγορίες, κατανομές, στοχαστικό λογισμό και μαθηματική λογική. Ως αρθρώματα προεπισκόπησης εκφωνούνται σημασιολογικά μόνο όταν ο συγγραφέας δηλώνει `intent`. Χωρίς αυτό διαβάζονται δομικά. Αυτό είναι σκόπιμο: ο ίδιος συμβολισμός μπορεί να σημαίνει διαφορετικά πράγματα σε διαφορετικά μαθήματα.
 
-Προτεινόμενα: **Ομιλία** με Windows OneCore και εγκατεστημένο Microsoft Στέφανο, Αυτόματη εναλλαγή γλώσσας ενεργή, αξιόπιστη γλώσσα φωνής ενεργή και κανονικοποίηση Unicode ενεργή. **Ήχος** στη σωστή ή προεπιλεγμένη συσκευή και διαχωρισμός ήχου απενεργοποιημένος για διάγνωση. Στα **Μαθηματικά**, αφήστε τις ρυθμίσεις MathCAT στις προεπιλογές και κρατήστε απενεργοποιημένο το «Use native math support in Word and Outlook».
+Προτεινόμενα: **Ομιλία** με εγκατεστημένη ελληνική φωνή σε eSpeak NG, Windows OneCore ή Microsoft SAPI5. Το NVDA 2026.1 παρέχει ξεχωριστούς οδηγούς SAPI5 32-bit και 64-bit. Εγκαταστήστε τη φωνή για τον επιλεγμένο οδηγό. Πριν από το NVDA 2025.1, επιλέξτε απευθείας την ελληνική φωνή SAPI5. Οι φωνές OneCore και SAPI5 είναι ξεχωριστές. Εκκρεμούν δοκιμές ακρόασης σε Windows. Κρατήστε ενεργές την αξιόπιστη γλώσσα φωνής και την κανονικοποίηση Unicode. **Ήχος** στη σωστή ή προεπιλεγμένη συσκευή και διαχωρισμός ήχου απενεργοποιημένος για διάγνωση. Στα **Μαθηματικά**, αφήστε τις ρυθμίσεις MathCAT στις προεπιλογές και κρατήστε απενεργοποιημένο το «Use native math support in Word and Outlook».
 
 Το Word εκθέτει μέσα στην ίδια εξίσωση τόσο δομικό MathML όσο και ένα δικό του αγγλικό «γραμμικό» κείμενο, όπως `χ squared plus 1`. Το NVDA 2026.1.1 μπορεί να χρησιμοποιήσει αυτό το αγγλικό κείμενο κατά την κίνηση ανά χαρακτήρα/λέξη, την ανάγνωση τρέχουσας γραμμής, την πληκτρολόγηση ή άλλες διαδρομές που παρακάμπτουν τον πάροχο μαθηματικών. Η 2.0.0 καλύπτει και το τελικό επίσημο φίλτρο ομιλίας του NVDA, αλλά αλλάζει κείμενο μόνο όταν το UIA ή το μόνο-για-ανάγνωση OMath επιβεβαιώσει ότι ο δρομέας βρίσκεται πράγματι σε εξίσωση Word.
 
@@ -396,9 +400,9 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 
 After installation, math on web pages (Wikipedia, e-learning platforms, MathJax content), in EPUB books, accessible PDF formulas, and Word equations is automatically read in Greek whenever the application exposes MathML to NVDA.
 
-> Requires NVDA 2024.1 or later. Version **2.5.7** declares compatibility through NVDA 2026.1.1. Its Word final-speech filter, added in 2.0.0, is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
+> Requires NVDA 2024.1 or later. Version **2.5.8** declares compatibility through NVDA 2026.1.1. Its Word final-speech filter, added in 2.0.0, is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
 
-> The current version (**2.5.7**) ships on the stable channel by explicit maintainer decision. Review gates for the semantic terminology remain open — see [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md), and [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
+> The current version (**2.5.8**) ships on the stable channel by explicit maintainer decision. Review gates for the semantic terminology remain open — see [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md), and [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
 
 ### Usage
 
@@ -430,7 +434,7 @@ In NVDA 2026.1.1, **Math → Language** deliberately has no Automatic choice and
 
 The **Test Greek math speech** button speaks a sample expression directly, independently of the current application or webpage.
 
-The **Reset settings and repair Greek math** button restores smart verbosity, decimal comma, automatic language switching, disabled native Word math, **Word UI Automation: Always**, and every exclusive routing layer. Restart NVDA and Word afterwards.
+The **Reset settings and repair Greek math** button restores smart verbosity, decimal comma, automatic language switching, and disabled native Word math. It restores exclusive provider routing but preserves Word's UI Automation setting. Restart NVDA and Word.
 
 ### New in version 2.5
 
@@ -450,7 +454,7 @@ In addition to 2.0's structural coverage, the local engine now safely recognizes
 
 Preview modules add intent vocabulary for multivariable analysis, asymptotics, eigenproblems and matrix types, ODE/PDE conditions, statistical inference and stochastic processes; mechanics, electromagnetism, thermodynamics, quantum theory and relativity; and algebra, topology, measure/functional analysis, differential geometry, category theory, distributions, stochastic calculus and mathematical logic. These concepts receive semantic wording only when the author supplies `intent`; otherwise they retain a lossless structural reading. This is deliberate because the same notation can have different meanings across domains.
 
-Recommended: **Speech** using Windows OneCore with Microsoft Stefanos installed, Automatic language switching on, Trust voice language on, and Unicode normalization on. **Audio** using the correct/default device with sound split disabled while troubleshooting. Under **Math**, leave MathCAT speech settings at their defaults and keep “Use native math support in Word and Outlook” unchecked.
+Recommended: **Speech** with an installed Greek voice in eSpeak NG, Windows OneCore, or Microsoft SAPI5. NVDA 2026.1 provides separate SAPI5 32-bit and 64-bit drivers. Install the voice for the selected driver. Before NVDA 2025.1, select the Greek SAPI5 voice directly. OneCore and SAPI5 do not share voice inventories. The add-on uses NVDA's public speech API. Windows audio checks remain open. Keep Trust voice language and Unicode normalization on. **Audio** using the correct/default device with sound split disabled while troubleshooting. Under **Math**, leave MathCAT speech settings at their defaults and keep “Use native math support in Word and Outlook” unchecked.
 
 Word exposes both structural MathML and its own English “linear” text inside the same equation, such as `χ squared plus 1`. NVDA 2026.1.1 can use that stream during character/word movement, current-line reading, typing, or other routes that bypass the math provider. Version 2.0.0 also covers NVDA's official final-speech filter, but changes text only when UIA or read-only native OMath confirms that the caret is genuinely inside a Word equation.
 

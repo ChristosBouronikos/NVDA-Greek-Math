@@ -126,12 +126,14 @@ def isAutoLanguageSwitchingEnabled():
 		return True
 
 
-_hasWarnedLanguageSwitchingOff = False
-_hasWarnedGreekVoiceUnavailable = False
+_warnedLanguageSwitchingOffForSynths = set()
+_warnedGreekVoiceUnavailableForSynths = set()
 
 
 def getGreekVoiceSupport():
-	"""Return whether the current synthesizer can switch to a Greek voice.
+	"""Return whether the current synthesizer advertises a Greek voice.
+
+	Inventory support does not prove voice switching or successful audio.
 
 	``None`` means the capability could not be queried (for example during
 	startup or in the platform-independent test suite).
@@ -142,31 +144,51 @@ def getGreekVoiceSupport():
 		synth = synthDriverHandler.getSynth()
 		if synth is None:
 			return None
-		return bool(synth.languageIsSupported(GREEK_LOCALE))
+		checker = getattr(synth, "languageIsSupported", None)
+		if callable(checker):
+			return bool(checker(GREEK_LOCALE))
+		# NVDA 2024.x drivers do not all expose languageIsSupported. Query
+		# public voice metadata instead, independent of the driver/architecture.
+		languages = getattr(synth, "availableLanguages", None)
+		if languages is None:
+			voices = getattr(synth, "availableVoices", None)
+			if voices is None:
+				return None
+			languages = [getattr(voice, "language", None) for voice in voices.values()]
+		return any(
+			isinstance(language, str) and language.lower().replace("-", "_").split("_")[0] == "el"
+			for language in languages
+		)
 	except Exception:
 		return None
 
 
 def tokensToSpeechSequence(tokens, readingConfig=None):
 	"""Convert engine tokens (str | Pause) to an NVDA speech sequence."""
-	global _hasWarnedLanguageSwitchingOff, _hasWarnedGreekVoiceUnavailable
 	sequence = []
 	forceGreek = bool(config.conf["greekMathReader"]["forceGreekLanguage"])
-	if forceGreek and not isAutoLanguageSwitchingEnabled() and not _hasWarnedLanguageSwitchingOff:
+	try:
+		import synthDriverHandler
+		synth = synthDriverHandler.getSynth()
+		warningKey = (id(synth), getattr(synth, "name", None), str(getattr(synth, "voice", None)))
+	except Exception:
+		warningKey = None
+	if forceGreek and not isAutoLanguageSwitchingEnabled() and warningKey not in _warnedLanguageSwitchingOffForSynths:
 		log.warning(
 			"Greek Math Reader: NVDA's 'Automatic language switching' speech "
 			"setting is disabled, so the Greek language tag on math speech is "
 			"discarded and the current voice reads it with its own language. "
 			"Enable it in NVDA menu -> Preferences -> Settings -> Speech."
 		)
-		_hasWarnedLanguageSwitchingOff = True
+		_warnedLanguageSwitchingOffForSynths.add(warningKey)
 	greekVoiceSupport = getGreekVoiceSupport()
-	if forceGreek and greekVoiceSupport is False and not _hasWarnedGreekVoiceUnavailable:
+	if forceGreek and greekVoiceSupport is False and warningKey not in _warnedGreekVoiceUnavailableForSynths:
 		log.warning(
 			"Greek Math Reader: the current synthesizer has no installed Greek "
-			"voice (el_GR); Greek text will be pronounced by the current voice"
+			"voice (el_GR); select or install a Greek voice for this synthesizer. "
+			"Unsupported Greek language commands will not be sent."
 		)
-		_hasWarnedGreekVoiceUnavailable = True
+		_warnedGreekVoiceUnavailableForSynths.add(warningKey)
 	richTokens = list(tokens)
 	if not any(isinstance(token, Language) for token in richTokens):
 		richTokens = enrich_speech(richTokens, readingConfig or getReadingConfig())
@@ -174,7 +196,7 @@ def tokensToSpeechSequence(tokens, readingConfig=None):
 		if isinstance(token, Pause):
 			sequence.append(BreakCommand(time=token.ms))
 		elif isinstance(token, Language):
-			if forceGreek:
+			if forceGreek and greekVoiceSupport is not False:
 				locale = GREEK_LOCALE if token.locale else None
 				sequence.append(LangChangeCommand(locale))
 		elif isinstance(token, Prosody):
@@ -221,6 +243,9 @@ def _localPreferencesRequired(mathMl=""):
 		or settings.explain_composition or settings.matrix_reading != "whole"
 		or settings.matrix_positions or settings.boundary_sound != 100
 		or settings.gradient_name != "ανάδελτα" or settings.decimal_digits
+		or settings.verbosity != 1 or not settings.decimal_comma
+		or settings.terminology_profile != "standard" or settings.domain_hint != "auto"
+		or settings.terminology_overrides
 		or settings.latin_literal or settings.relative_rate != 100 or settings.pause_factor != 50)
 
 
@@ -249,6 +274,12 @@ class GreekMathProvider(mathPres.MathPresentationProvider):
 			try:
 				sequence = automaticBackend.getSpeechForMathMl(mathMl)
 				if sequence is not None:
+					if config.conf["greekMathReader"]["forceGreekLanguage"]:
+						# Keep delegate language resets from overriding our scoped Greek tag.
+						sequence = [item for item in sequence if not isinstance(item, LangChangeCommand)]
+					sequence = tokensToSpeechSequence(sequence)
+					if not any(isinstance(item, str) and item.strip() for item in sequence):
+						raise ValueError("MathCAT returned no speakable text")
 					self.lastBackend = "mathcat-el"
 					rememberReading(mathMl, "mathml", sequence, "mathcat-el")
 					return sequence
@@ -278,6 +309,9 @@ class GreekMathProvider(mathPres.MathPresentationProvider):
 			self.lastBackend = "local"
 			self.lastEngineDiagnostic = repr(get_last_engine_diagnostics())
 			sequence = tokensToSpeechSequence(tokens)
+			if not any(isinstance(item, str) and item.strip() for item in sequence):
+				log.warning("Greek Math Reader: equation produced no speakable text; " + self.lastInputDiagnostic)
+				sequence = tokensToSpeechSequence(["Δεν υπάρχει διαθέσιμο μαθηματικό περιεχόμενο για ανάγνωση."])
 			rememberReading(mathMl, "mathml", sequence)
 			return sequence
 		except MathMLParseError as error:
