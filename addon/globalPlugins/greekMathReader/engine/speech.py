@@ -156,6 +156,20 @@ _ENGLISH_MATH_MTEXT_REPLACEMENTS = (
 	("start of equation", "αρχή εξίσωσης"),
 	("end of section", "τέλος εξίσωσης"),
 	("start of section", "αρχή εξίσωσης"),
+	# Trigonometric function names from Word's unstructured math speech.
+	("arcsin", "τόξο ημιτόνου"), ("arccos", "τόξο συνημιτόνου"),
+	("arctan", "τόξο εφαπτομένης"), ("arccot", "τόξο συνεφαπτομένης"),
+	("arcsec", "τόξο τέμνουσας"), ("arccsc", "τόξο συντέμνουσας"),
+	("cosec", "συντέμνουσα"), ("sinh", "υπερβολικό ημίτονο"),
+	("cosh", "υπερβολικό συνημίτονο"), ("tanh", "υπερβολική εφαπτομένη"),
+	("coth", "υπερβολική συνεφαπτομένη"), ("sech", "υπερβολική τέμνουσα"),
+	("csch", "υπερβολική συντέμνουσα"),
+	("sin", "ημίτονο"), ("cos", "συνημίτονο"),
+	("tan", "εφαπτομένη"), ("tg", "εφαπτομένη"),
+	("cot", "συνεφαπτομένη"), ("ctg", "συνεφαπτομένη"),
+	("sec", "τέμνουσα"), ("csc", "συντέμνουσα"),
+	("ημ", "ημίτονο"), ("συν", "συνημίτονο"), ("εφ", "εφαπτομένη"),
+	("σφ", "συνεφαπτομένη"), ("τεμ", "τέμνουσα"), ("στεμ", "συντέμνουσα"),
 	("less than or equal to", "μικρότερο ή ίσο του"),
 	("greater than or equal to", "μεγαλύτερο ή ίσο του"),
 	("not equal to", "διάφορο του"),
@@ -242,10 +256,36 @@ _ENGLISH_MATH_TOKEN_TRIGGER_RE = re.compile(
 	re.IGNORECASE,
 )
 _DEGREE_SIGN_MTEXT_RE = re.compile(r"[°∘]")
+_EQUATION_BOUNDARY_REPLACEMENTS = (
+	("end of equation", "Τέλος εξίσωσης"),
+	("end of a section", "Τέλος εξίσωσης"),
+	("end of section", "Τέλος εξίσωσης"),
+	("section one", "Τέλος εξίσωσης"),
+	("section 1", "Τέλος εξίσωσης"),
+	("τμήμα ένα", "Τέλος εξίσωσης"),
+	("τμήμα 1", "Τέλος εξίσωσης"),
+)
+_EQUATION_BOUNDARY_SUFFIX_RE = re.compile(r"^[\s.!?,;:)\]]*$")
+
+
+def normalize_equation_boundary(text):
+	"""Use one Greek announcement for a final equation boundary marker."""
+	if not isinstance(text, str):
+		return text
+	for source, replacement in _EQUATION_BOUNDARY_REPLACEMENTS:
+		match = re.search(
+			rf"(?<!\w){re.escape(source)}(?P<suffix>[\s.!?,;:)\]]*)$",
+			text,
+			flags=re.IGNORECASE,
+		)
+		if match and _EQUATION_BOUNDARY_SUFFIX_RE.fullmatch(match.group("suffix")):
+			return text[:match.start()] + replacement + match.group("suffix")
+	return text
 
 
 def _normalize_english_math_mtext(text):
 	"""Translate only explicit English math vocabulary inside fallback mtext."""
+	text = normalize_equation_boundary(text)
 	if text.casefold() in _ENGLISH_MATH_TOKEN_REPLACEMENTS:
 		return _ENGLISH_MATH_TOKEN_REPLACEMENTS[text.casefold()]
 	knownWords = {

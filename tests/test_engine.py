@@ -30,6 +30,7 @@ from engine import (  # noqa: E402
 	speak_mathml,
 	tokens_to_text,
 	MathMLParseError,
+	normalize_equation_boundary,
 	role_description,
 )
 
@@ -43,6 +44,35 @@ def math(inner):
 
 
 class TestTokens(unittest.TestCase):
+	def test_equation_boundary_variants_use_the_equation_ending_announcement(self):
+		for source in (
+			"end of equation",
+			"end of a section",
+			"end of section",
+			"section one",
+			"section 1",
+			"τμήμα ένα",
+			"τμήμα 1",
+		):
+			with self.subTest(source=source):
+				self.assertEqual(
+					normalize_equation_boundary(source),
+					"Τέλος εξίσωσης",
+				)
+
+	def test_equation_boundary_only_normalizes_final_markers(self):
+		for source in (
+			"section one contains x",
+			"τμήμα ένα και μετά y",
+			"x plus end of equation then y",
+		):
+			with self.subTest(source=source):
+				self.assertEqual(normalize_equation_boundary(source), source)
+		self.assertEqual(
+			normalize_equation_boundary("x plus section one."),
+			"x plus Τέλος εξίσωσης.",
+		)
+
 	def test_simple_addition(self):
 		self.assertEqual(spoken(math("<mn>2</mn><mo>+</mo><mn>3</mn><mo>=</mo><mn>5</mn>")), "2 συν 3 ίσον 5")
 
@@ -83,9 +113,33 @@ class TestTokens(unittest.TestCase):
 			self.assertEqual(spoken(math(inner)), expected)
 
 	def test_flat_fallback_does_not_reinterpret_unsupported_notation(self):
-		for tag, text in (("mtext", "A={1,2}"), ("mtext", "cos x = 0"), ("mn", "1e-3")):
+		for tag, text in (("mtext", "A={1,2}"), ("mtext", "foo x = 0"), ("mn", "1e-3")):
 			with self.subTest(tag=tag, text=text):
 				self.assertEqual(spoken(math(f"<{tag}>{text}</{tag}>")), text)
+
+	def test_word_math_fallback_translates_trigonometric_functions(self):
+		for source, expected in (
+			("sin(x)", "ημίτονο(χι)"),
+			("ημ(x)", "ημίτονο(χι)"),
+			("cos(x)", "συνημίτονο(χι)"),
+			("συν(x)", "συνημίτονο(χι)"),
+			("tan(x)", "εφαπτομένη(χι)"),
+			("εφ(x)", "εφαπτομένη(χι)"),
+			("cot(x)", "συνεφαπτομένη(χι)"),
+			("σφ(x)", "συνεφαπτομένη(χι)"),
+			("sec(x)", "τέμνουσα(χι)"),
+			("τεμ(x)", "τέμνουσα(χι)"),
+			("csc(x)", "συντέμνουσα(χι)"),
+			("στεμ(x)", "συντέμνουσα(χι)"),
+		):
+			with self.subTest(source=source):
+				self.assertEqual(spoken(math(f"<mtext>{source}</mtext>")), expected)
+
+	def test_word_math_fallback_translates_trigonometric_functions_inside_limits(self):
+		self.assertEqual(
+			spoken(math("<mtext>limit sin(x)</mtext>")),
+			"όριο ημίτονο(χι)",
+		)
 
 	def test_deep_flat_grouping_does_not_exhaust_recursion(self):
 		for opening, closing in (("{", "}"), ("(", ")")):

@@ -3,6 +3,14 @@
 These gates record the evidence still required for reviewed semantic and voice
 quality. A blank approval is not an implicit pass.
 
+## Status of 2.6.0 stable (2026-10-19)
+
+Version 2.6.0 fixes final equation-boundary announcements and unstructured Word
+math fallback translation for Latin and Greek trigonometric functions,
+including limits. Automated tests and package checks pass. The declared last
+tested NVDA version remains 2026.1.1; NVDA 2026.2 and 2026.3 beta have not
+received manual Windows/NVDA validation, and NVDA 2027.1 is not yet available.
+
 ## Status of 2.5.9 stable (2026-10-19)
 
 Version 2.5.9 fixes a configuration snapshot crash introduced in 2.5.0. The reproduction uses NVDA's actual `AggregatedSection`: the provider raised `ValueError` before the fix and returned Greek speech afterward. Provider and Settings tests now use an NVDA-style configuration contract instead of plain dictionaries. This release also automatically selects Word UI Automation **Default (Where suitable)**. Startup corrections persist, but profile changes do not force a save of unrelated temporary preferences. Windows/NVDA audio checks remain pending.

@@ -39,6 +39,7 @@ from .engine import (
 	ReadingConfig,
 	enrich_speech,
 	get_last_engine_diagnostics,
+	normalize_equation_boundary,
 	speak_mathml,
 )
 from .engine.terminology_el import validate_overrides
@@ -165,6 +166,10 @@ def getGreekVoiceSupport():
 
 def tokensToSpeechSequence(tokens, readingConfig=None):
 	"""Convert engine tokens (str | Pause) to an NVDA speech sequence."""
+	tokens = [
+		normalize_equation_boundary(token) if isinstance(token, str) else token
+		for token in tokens
+	]
 	sequence = []
 	forceGreek = bool(config.conf["greekMathReader"]["forceGreekLanguage"])
 	try:

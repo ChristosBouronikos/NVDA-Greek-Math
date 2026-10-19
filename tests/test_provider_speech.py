@@ -217,6 +217,20 @@ class TestProviderSpeechSequence(unittest.TestCase):
 				self.assertEqual(sequence[0].lang, "el_GR")
 				self.assertIsNone(sequence[-1].lang)
 
+	def test_mathcat_boundary_variants_are_normalized(self):
+		for source in ("section one", "section 1", "τμήμα ένα", "τμήμα 1", "end of a section"):
+			with self.subTest(source=source):
+				sequence = self.provider.tokensToSpeechSequence([source])
+				self.assertEqual(
+					[item for item in sequence if isinstance(item, str)],
+					["Τέλος εξίσωσης"],
+				)
+		sequence = self.provider.tokensToSpeechSequence(["section one contains x"])
+		self.assertEqual(
+			[item for item in sequence if isinstance(item, str)],
+			["section one contains x"],
+		)
+
 	def test_greek_voice_metadata_supports_driver_names_and_locale_variants(self):
 		# API contract checks, not execution of the Windows synthesizers.
 		for name, locale in (("espeak", "el"), ("oneCore", "el-GR"), ("sapi5", "el_GR"), ("sapi5_32", "el")):
