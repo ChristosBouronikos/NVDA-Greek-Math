@@ -4,9 +4,9 @@
 
 [Ελληνικά](#ελληνικά) · [English](#english)
 
-> **2.5.8 — maintenance fix:** operators in flat equation text now become Greek words before NVDA processes punctuation. Installation and Repair preserve Word's UI Automation setting. Windows/NVDA checks remain open. See [CHANGELOG.md](CHANGELOG.md).
+> **2.5.9 — equation speech crash fix:** fixes the configuration snapshot error introduced in 2.5.0 that prevented speech in Word and PDF math. Tests now use NVDA-style configuration objects. Word UI Automation also resets automatically to **Default (Where suitable)**. Restart NVDA and Word after installation. Windows/NVDA audio checks remain open. See [CHANGELOG.md](CHANGELOG.md).
 >
-> **2.5.8 — διορθωτική έκδοση:** οι τελεστές σε γραμμικό κείμενο εξισώσεων μετατρέπονται σε ελληνικές λέξεις πριν από την επεξεργασία στίξης. Η εγκατάσταση και η Επιδιόρθωση διατηρούν τη ρύθμιση Αυτοματισμού UI του Word. Εκκρεμούν οι δοκιμές σε Windows/NVDA.
+> **2.5.9 — διόρθωση σφάλματος εκφώνησης:** διορθώνει το σφάλμα καταγραφής ρυθμίσεων της 2.5.0 που εμπόδιζε την ομιλία σε εξισώσεις Word και PDF. Οι δοκιμές χρησιμοποιούν πλέον αντικείμενα ρυθμίσεων με τη συμπεριφορά του NVDA. Ο Αυτοματισμός UI του Word επανέρχεται επίσης αυτόματα σε **Προεπιλογή (όπου είναι κατάλληλο)**. Επανεκκινήστε NVDA και Word μετά την εγκατάσταση. Εκκρεμούν δοκιμές ήχου σε Windows/NVDA.
 
 ---
 
@@ -25,9 +25,9 @@
 
 Μετά την εγκατάσταση, τα μαθηματικά στις ιστοσελίδες (Βικιπαίδεια, πλατφόρμες τηλεκπαίδευσης, περιεχόμενο MathJax), στα βιβλία EPUB, στις προσβάσιμες εξισώσεις PDF και στις εξισώσεις του Word διαβάζονται αυτόματα στα ελληνικά όταν η εφαρμογή εκθέτει MathML στο NVDA.
 
-> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση **2.5.8** δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word, που προστέθηκε στην 2.0.0, χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
+> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση **2.5.9** δηλώνει συμβατότητα έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word, που προστέθηκε στην 2.0.0, χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
 
-> Η τρέχουσα έκδοση (**2.5.8**) κυκλοφορεί στο σταθερό κανάλι, ύστερα από ρητή απόφαση του συντηρητή. Οι πύλες ελέγχου της νέας σημασιολογικής ορολογίας παραμένουν ανοιχτές — δείτε [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md) και [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
+> Η τρέχουσα έκδοση (**2.5.9**) κυκλοφορεί στο σταθερό κανάλι, ύστερα από ρητή απόφαση του συντηρητή. Οι πύλες ελέγχου της νέας σημασιολογικής ορολογίας παραμένουν ανοιχτές — δείτε [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md) και [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
 
 ### Χρήση
 
@@ -59,7 +59,7 @@
 
 Το κουμπί **Δοκιμή ελληνικής εκφώνησης μαθηματικών** εκφωνεί απευθείας μια ενδεικτική παράσταση, χωρίς να εξαρτάται από την τρέχουσα εφαρμογή ή ιστοσελίδα.
 
-Το κουμπί **Επαναφορά ρυθμίσεων και επιδιόρθωση ελληνικών μαθηματικών** επαναφέρει έξυπνη λεπτομέρεια, δεκαδικό κόμμα, αυτόματη εναλλαγή γλώσσας, απενεργοποιημένη εγγενή ανάγνωση Word και όλα τα επίπεδα αποκλειστικής δρομολόγησης. Διατηρεί τη ρύθμιση Αυτοματισμού UI του Word. Μετά την επαναφορά επανεκκινήστε NVDA και Word.
+Το κουμπί **Επαναφορά ρυθμίσεων και επιδιόρθωση ελληνικών μαθηματικών** επαναφέρει έξυπνη λεπτομέρεια, δεκαδικό κόμμα, αυτόματη εναλλαγή γλώσσας, απενεργοποιημένη εγγενή ανάγνωση Word και όλα τα επίπεδα αποκλειστικής δρομολόγησης. Ορίζει τον Αυτοματισμό UI του Word σε **Προεπιλογή (όπου είναι κατάλληλο)**. Μετά την επαναφορά επανεκκινήστε NVDA και Word.
 
 ### Νέα στην έκδοση 2.5
 
@@ -400,9 +400,9 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 
 After installation, math on web pages (Wikipedia, e-learning platforms, MathJax content), in EPUB books, accessible PDF formulas, and Word equations is automatically read in Greek whenever the application exposes MathML to NVDA.
 
-> Requires NVDA 2024.1 or later. Version **2.5.8** declares compatibility through NVDA 2026.1.1. Its Word final-speech filter, added in 2.0.0, is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
+> Requires NVDA 2024.1 or later. Version **2.5.9** declares compatibility through NVDA 2026.1.1. Its Word final-speech filter, added in 2.0.0, is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
 
-> The current version (**2.5.8**) ships on the stable channel by explicit maintainer decision. Review gates for the semantic terminology remain open — see [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md), and [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
+> The current version (**2.5.9**) ships on the stable channel by explicit maintainer decision. Review gates for the semantic terminology remain open — see [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md), and [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
 
 ### Usage
 
@@ -434,7 +434,7 @@ In NVDA 2026.1.1, **Math → Language** deliberately has no Automatic choice and
 
 The **Test Greek math speech** button speaks a sample expression directly, independently of the current application or webpage.
 
-The **Reset settings and repair Greek math** button restores smart verbosity, decimal comma, automatic language switching, and disabled native Word math. It restores exclusive provider routing but preserves Word's UI Automation setting. Restart NVDA and Word.
+The **Reset settings and repair Greek math** button restores smart verbosity, decimal comma, automatic language switching, and disabled native Word math. It restores exclusive provider routing and sets Word UI Automation to **Default (Where suitable)**. Restart NVDA and Word.
 
 ### New in version 2.5
 

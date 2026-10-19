@@ -221,18 +221,27 @@ def rememberReading(source, inputFormat, sequence, backend="local", section=None
 	try:
 		import synthDriverHandler
 		synth = synthDriverHandler.getSynth()
-	except (ImportError, AttributeError):
+	except Exception:
 		synth = None
-	section = dict(config.conf["greekMathReader"] if section is None else section)
-	lastReading = {
-		"expression": source, "format": inputFormat,
-		"actualSpeech": " ".join(item for item in sequence if isinstance(item, str)), "backend": backend,
-		"preset": section.get("terminologyProfile", "standard"),
-		"context": section.get("domainHint", "auto"),
-		"voice": str(getattr(synth, "voice", "unavailable")),
-		"synthesizer": str(getattr(synth, "name", "unavailable")),
-		"settings": section,
-	}
+	try:
+		# NVDA's AggregatedSection iterates keys but has no keys() method.
+		# dict(section) treats those strings as key/value pairs and raises.
+		# Its public items() API works for both NVDA sections and plain dicts.
+		section = dict((config.conf["greekMathReader"] if section is None else section).items())
+		lastReading = {
+			"expression": source, "format": inputFormat,
+			"actualSpeech": " ".join(item for item in sequence if isinstance(item, str)), "backend": backend,
+			"preset": section.get("terminologyProfile", "standard"),
+			"context": section.get("domainHint", "auto"),
+			"voice": str(getattr(synth, "voice", "unavailable")),
+			"synthesizer": str(getattr(synth, "name", "unavailable")),
+			"settings": section,
+		}
+	except Exception as error:
+		# This optional Settings record must never prevent speech, including
+		# the error announcement produced when equation rendering itself fails.
+		lastReading = None
+		log.warning(f"Greek Math Reader: could not record last reading; speech continues: {error!r}")
 
 
 def _localPreferencesRequired(mathMl=""):

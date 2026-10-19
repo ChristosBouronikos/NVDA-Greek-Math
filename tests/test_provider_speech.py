@@ -27,6 +27,39 @@ PACKAGE_NAME = "greekMathReaderProviderSpeechTest"
 _MISSING = object()
 
 
+class NVDAStyleConfigSection:
+	"""Match AggregatedSection's items API without a dict keys() method.
+
+	A plain dict fixture concealed the 2.5.0 last-reading speech regression.
+	"""
+	def __init__(self, values):
+		self.values = dict(values)
+
+	def __iter__(self):
+		return iter(self.values)
+
+	def __getitem__(self, key):
+		return self.values[key]
+
+	def __setitem__(self, key, value):
+		self.values[key] = value
+
+	def get(self, key, default=None):
+		return self.values.get(key, default)
+
+	def items(self):
+		return self.values.items()
+
+	def update(self, *args, **kwargs):
+		self.values.update(*args, **kwargs)
+
+	def copy(self):
+		return dict(self.items())
+
+	def __eq__(self, other):
+		return hasattr(other, "items") and dict(self.items()) == dict(other.items())
+
+
 class TestProviderSpeechSequence(unittest.TestCase):
 	def setUp(self):
 		self.savedModules = {}
@@ -38,11 +71,11 @@ class TestProviderSpeechSequence(unittest.TestCase):
 
 		config = types.ModuleType("config")
 		config.conf = {
-			"greekMathReader": {
+			"greekMathReader": NVDAStyleConfigSection({
 				"verbosity": 1,
 				"decimalComma": True,
 				"forceGreekLanguage": True,
-			},
+			}),
 			"speech": {"autoLanguageSwitching": True},
 		}
 		self.config = config.conf
@@ -131,6 +164,34 @@ class TestProviderSpeechSequence(unittest.TestCase):
 			del builtins._
 		else:
 			builtins._ = self.savedTranslation
+
+	def test_nvda_config_contract_does_not_support_direct_dict_conversion(self):
+		section = self.config["greekMathReader"]
+		self.assertFalse(hasattr(section, "keys"))
+		with self.assertRaises(ValueError):
+			dict(section)
+		self.assertEqual(dict(section.items())["verbosity"], 1)
+
+	def test_last_reading_works_with_nvda_configuration_section(self):
+		self.provider.automaticBackend.configure(None, enabled=False)
+		source = "<math><mn>3</mn><mo>+</mo><mn>5</mn></math>"
+		sequence = self.provider.GreekMathProvider().getSpeechForMathMl(source)
+		self.assertEqual(" ".join(item for item in sequence if isinstance(item, str)), "3 συν 5")
+		self.assertEqual(self.provider.lastReading["actualSpeech"], "3 συν 5")
+		self.assertEqual(self.provider.lastReading["settings"], dict(self.config["greekMathReader"].items()))
+
+	def test_optional_reading_record_failure_cannot_suppress_equation_or_error_speech(self):
+		self.provider.automaticBackend.configure(None, enabled=False)
+		class BrokenSnapshot(NVDAStyleConfigSection):
+			def items(self):
+				raise RuntimeError("Configuration snapshot unavailable")
+		self.config["greekMathReader"] = BrokenSnapshot(dict(self.config["greekMathReader"].items()))
+		provider = self.provider.GreekMathProvider()
+		for source in ("<math><mn>3</mn><mo>+</mo><mn>5</mn></math>", "<math><"):
+			with self.subTest(source=source):
+				sequence = provider.getSpeechForMathMl(source)
+				self.assertTrue(any(isinstance(item, str) and item.strip() for item in sequence))
+				self.assertIsNone(self.provider.lastReading)
 
 	def test_decimal_digit_preference_reaches_speech(self):
 		self.config["greekMathReader"]["decimalDigits"] = True
@@ -286,10 +347,10 @@ class TestProviderSpeechSequence(unittest.TestCase):
 			("domainHint", "quantum_physics"),
 			("terminologyOverrides", '{"power": "δοκιμή"}'),
 		)
-		defaults = dict(self.config["greekMathReader"])
+		defaults = dict(self.config["greekMathReader"].items())
 		for setting, value in preferences:
 			with self.subTest(setting=setting, value=value):
-				self.config["greekMathReader"] = dict(defaults, **{setting: value})
+				self.config["greekMathReader"] = NVDAStyleConfigSection(dict(defaults, **{setting: value}))
 				_delegate, requests = self._configureDelegate(["English delegate speech"])
 				provider = self.provider.GreekMathProvider()
 				sequence = provider.getSpeechForMathMl('<math><mi>x</mi><mo>+</mo><mn>1</mn></math>')

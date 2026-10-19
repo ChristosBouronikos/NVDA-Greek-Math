@@ -29,7 +29,7 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 3. Open **Available add-ons** and search for **Greek Math Reader**.
 4. Select the add-on, choose **Install**, and restart NVDA when prompted.
 
-Version 2.5.8 contains fixes for flat equation text. Windows/NVDA checks remain open. Review gates for semantic terminology remain open, tracked in `RELEASE_GATES.md`, `TERMINOLOGY_REVIEW.md`, and `TTS_ENGINE_RESEARCH.md` in the source repository.
+Version 2.5.9 fixes a configuration snapshot crash that prevented equation speech in 2.5.0 through 2.5.8. It also automatically repairs the Word UI Automation setting. Windows/NVDA checks remain open. Review gates for semantic terminology remain open, tracked in `RELEASE_GATES.md`, `TERMINOLOGY_REVIEW.md`, and `TTS_ENGINE_RESEARCH.md` in the source repository.
 
 ## Usage
 
@@ -84,7 +84,7 @@ If all speech is silent, check NVDA's speech mode, synthesizer volume, and outpu
 Word exposes two accessibility representations inside a modern equation: structural MathML on the enclosing equation and an English linear speech stream such as `χ squared plus 1`. NVDA 2026.1.1 can choose that English stream during character/word movement, current-line reading, typing, selection, or cached Say All speech and skip every math provider. Version 2.0.0 covers both the TextInfo route and NVDA's official final-speech filter.
 
 1. Keep NVDA's **"Use native math support in Word and Outlook" unchecked**. The health check reports a bad setting and **Repair** changes it explicitly.
-2. Keep the Word UI Automation option in **Advanced** at **Default (Where suitable)** unless your system requires another choice. If 2.5.7 caused a regression with **Always**, select **Default (Where suitable)**. Restart NVDA and Word. Version 2.5.8 preserves this choice. Repair also preserves this choice.
+2. Restart NVDA and Word after installation. Version 2.5.9 automatically sets Word UI Automation to **Default (Where suitable)**. It saves the startup correction and clears cached UIA decisions. It also repairs this setting after a configuration profile switch. You do not need to open Advanced settings.
 3. Greek speech and interaction are exclusive while the add-on is installed. **NVDA+Alt+G** repairs the routing instead of turning Greek reading off.
 4. Use a **normal .docx document** with modern (OMath) equations, in a recent Word 365. Documents in **compatibility mode (.doc)** contain old Equation 3.0 or MathType objects, which Word may not expose as MathML — convert the document (File → Info → Convert) and, if needed, re-create those equations with Insert → Equation.
 
@@ -104,7 +104,7 @@ In NVDA 2026.1.1, **Math → Language** has no Automatic choice and normally def
 * **Decimal comma**: read "3.14" as "3,14" (τρία κόμμα δεκατέσσερα).
 * **Health check / Repair**: checking is read-only; repair changes the required NVDA settings explicitly.
 * **Listen to example / current expression**: previews unsaved settings with a transcript. Choose examples for capitals, fractions, tensors, matrices and unknown symbols. This does not run Repair. “Current expression” means the most recently read equation or interaction part; read it before opening Settings.
-* **Reset settings and repair Greek math** restores smart verbosity, decimal comma, automatic language switching, disabled native Word math, and exclusive provider hooks. It preserves the Word UI Automation setting.
+* **Reset settings and repair Greek math** restores smart verbosity, decimal comma, automatic language switching, disabled native Word math, and exclusive provider hooks. It sets Word UI Automation to **Default (Where suitable)**.
 * **Copy diagnostics**: copies the exact add-on build, module path, active provider, Word TextInfo/notification route, UIA or OMath fallback result, Windows/Office details, focused object, last MathML exposure, and installed Greek OneCore voices.
 
 ### Personal reading preferences

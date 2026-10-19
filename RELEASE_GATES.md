@@ -3,6 +3,10 @@
 These gates record the evidence still required for reviewed semantic and voice
 quality. A blank approval is not an implicit pass.
 
+## Status of 2.5.9 stable (2026-10-19)
+
+Version 2.5.9 fixes a configuration snapshot crash introduced in 2.5.0. The reproduction uses NVDA's actual `AggregatedSection`: the provider raised `ValueError` before the fix and returned Greek speech afterward. Provider and Settings tests now use an NVDA-style configuration contract instead of plain dictionaries. This release also automatically selects Word UI Automation **Default (Where suitable)**. Startup corrections persist, but profile changes do not force a save of unrelated temporary preferences. Windows/NVDA audio checks remain pending.
+
 ## Status of 2.5.8 stable (2026-10-19)
 
 The maintainer requested publication of version 2.5.8. This maintenance release fixes flat equation operators, silent backend output, and voice compatibility diagnostics. Automated tests and package checks pass. Windows audio checks, Word integration checks, and semantic terminology approvals remain pending. Publication does not establish successful audio with every synthesizer.

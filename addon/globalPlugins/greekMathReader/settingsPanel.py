@@ -534,7 +534,7 @@ class GreekMathSettingsPanel(SettingsPanel):
 	# 	self.neuralVoicesCheckbox.SetValue(bool(config.conf["greekMathReader"].get("neuralVoicesEnabled", True)))
 
 	def _pendingSection(self):
-		section = dict(config.conf["greekMathReader"])
+		section = dict(config.conf["greekMathReader"].items())
 		section.update({
 			"verbosity": self.verbosityChoice.GetSelection(),
 			"announceCapitals": self.announceCapitalsCheckbox.GetValue(),

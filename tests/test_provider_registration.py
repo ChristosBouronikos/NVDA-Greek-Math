@@ -41,6 +41,12 @@ class _FakeConfig(dict):
 			UIA={"allowInMSWord": 0},
 		)
 		self.spec = {}
+		self.saveCalls = 0
+		self.savedWordUiaValues = []
+
+	def save(self):
+		self.saveCalls += 1
+		self.savedWordUiaValues.append(self["UIA"]["allowInMSWord"])
 
 
 class _FakeMathPres(types.ModuleType):
@@ -525,14 +531,56 @@ class TestProviderRegistration(unittest.TestCase):
 			self.module.ADDON_VERSION,
 		)
 
-	def test_install_and_repair_preserve_each_word_accessibility_choice(self):
+	def test_install_and_repair_force_exact_word_uia_default(self):
 		for choice in (0, 1, 2, 3):
 			with self.subTest(choice=choice):
 				self.config["UIA"]["allowInMSWord"] = choice
-				self.config["greekMathReader"]["settingsAppliedVersion"] = "2.5.7"
+				self.config["greekMathReader"]["settingsAppliedVersion"] = "2.5.8"
 				self.module._applyRequiredSettingsOnInstallOrUpdate()
+				self.assertEqual(self.config["UIA"]["allowInMSWord"], 0)
+				self.assertEqual(self.config.savedWordUiaValues[-1], 0)
+				self.config["UIA"]["allowInMSWord"] = choice
 				self.module.repairRequiredNvdaSettings()
-				self.assertEqual(self.config["UIA"]["allowInMSWord"], choice)
+				self.assertEqual(self.config["UIA"]["allowInMSWord"], 0)
+
+	def test_same_version_repairs_word_uia_and_preserves_other_preferences(self):
+		self.config["greekMathReader"]["settingsAppliedVersion"] = self.module.ADDON_VERSION
+		self.config["UIA"]["allowInMSWord"] = 3
+		self.config["speech"] = {"autoLanguageSwitching": False, "synth": "sapi5_32"}
+		self.config["greekMathReader"]["relativeRate"] = 75
+		self.assertTrue(self.module._applyRequiredSettingsOnInstallOrUpdate())
+		self.assertEqual(self.config["UIA"]["allowInMSWord"], 0)
+		self.assertEqual(self.config.saveCalls, 1)
+		self.assertEqual(self.config.savedWordUiaValues, [0])
+		self.assertFalse(self.config["speech"]["autoLanguageSwitching"])
+		self.assertEqual(self.config["speech"]["synth"], "sapi5_32")
+		self.assertEqual(self.config["greekMathReader"]["relativeRate"], 75)
+		self.assertFalse(self.module._applyRequiredSettingsOnInstallOrUpdate())
+		self.assertEqual(self.config.saveCalls, 1)
+
+	def test_word_uia_repair_clears_cached_window_decisions(self):
+		uia = types.ModuleType("UIAHandler")
+		uia.handler = types.SimpleNamespace(UIAWindowHandleCache={1234: True})
+		self._savedModules["UIAHandler"] = sys.modules.get("UIAHandler", _MISSING)
+		sys.modules["UIAHandler"] = uia
+		self.config["UIA"]["allowInMSWord"] = 3
+		self.assertTrue(self.module._ensureWordUIADefault())
+		self.assertEqual(uia.handler.UIAWindowHandleCache, {})
+		self.assertEqual(self.config.saveCalls, 0)
+
+	def test_profile_switch_repairs_word_uia_default(self):
+		plugin = self.module.GlobalPlugin()
+		try:
+			self.config["UIA"]["allowInMSWord"] = 3
+			self.config.setdefault("speech", {})["synth"] = "temporary-voice-choice"
+			savesBeforeSwitch = self.config.saveCalls
+			plugin._handleConfigProfileSwitch()
+			self.assertEqual(self.config["UIA"]["allowInMSWord"], 0)
+			self.assertEqual(self.config.saveCalls, savesBeforeSwitch)
+			self.assertEqual(self.config["speech"]["synth"], "temporary-voice-choice")
+			self.assertTrue(self.module.isProviderActive())
+		finally:
+			plugin.terminate()
 
 	def test_restart_on_same_version_keeps_user_changes(self):
 		self.config["greekMathReader"]["settingsAppliedVersion"] = self.module.ADDON_VERSION

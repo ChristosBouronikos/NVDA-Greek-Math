@@ -33,8 +33,9 @@ from .provider import GreekMathProvider, getGreekVoiceSupport, tokensToSpeechSeq
 
 addonHandler.initTranslation()
 
-ADDON_VERSION = "2.5.8"
-BUILD_ID = "20261019-flat-math-multisynth-silence-fix"
+ADDON_VERSION = "2.5.9"
+BUILD_ID = "20261019-nvda-config-speech-regression-fix"
+_WORD_UIA_DEFAULT = 0
 _WORD_UIA_ALWAYS = 3
 
 CONFIG_SPEC = {
@@ -1246,6 +1247,41 @@ def applyProviderRegistration():
 	return isProviderActive()
 
 
+def _ensureWordUIADefault(persist=False):
+	"""Select NVDA's Default (Where suitable), not Always or explicit UIA.
+
+	Clear cached UIA decisions. Save at startup only when the value changes.
+	Profile switches use normal NVDA persistence instead of saving unrelated
+	temporary preferences. An open Word document can still require a restart.
+	"""
+	try:
+		section = config.conf["UIA"]
+		previous = section["allowInMSWord"]
+		if int(previous) == _WORD_UIA_DEFAULT:
+			return False
+		section["allowInMSWord"] = _WORD_UIA_DEFAULT
+	except (KeyError, TypeError, ValueError):
+		return False
+	try:
+		import UIAHandler
+
+		handler = UIAHandler.handler
+		if handler is not None:
+			handler.UIAWindowHandleCache.clear()
+	except (ImportError, AttributeError):
+		pass
+	if persist:
+		try:
+			config.conf.save()
+		except Exception:
+			log.exception("Greek Math Reader: could not save Word UI Automation default")
+	log.info(
+		f"Greek Math Reader: Word UI Automation changed from {previous!r} "
+		"to 0 (Default: Where suitable). Restart Word if it is already open."
+	)
+	return True
+
+
 def _enforceRequiredNvdaSettings():
 	"""Explicitly repair settings which can let English math bypass us."""
 	section = config.conf["greekMathReader"]
@@ -1259,21 +1295,22 @@ def _enforceRequiredNvdaSettings():
 		config.conf["math"]["other"]["useWordNativeMath"] = False
 	except (KeyError, TypeError, ValueError):
 		pass
-	# Do not force Word UIA. NVDA's compatibility checks deliberately choose
-	# the legacy object model on older systems; native OMath still works there.
+	# Use NVDA's compatibility decision instead of retaining a forced Always,
+	# When necessary, or explicit Where suitable choice from an older profile.
+	_ensureWordUIADefault()
 
 
 def _applyRequiredSettingsOnInstallOrUpdate():
 	"""Apply the required NVDA settings once per installed add-on version.
 
-	Enable Greek language commands and provider-based Word math without
-	changing Word's accessibility implementation. NVDA deliberately avoids UIA
-	on some Windows/Office combinations; native OMath is our fallback there.
-	Add-on reading preferences and the user's Word UIA choice are preserved.
+	Enable Greek language commands and provider-based Word math. Word UIA is
+	also repaired on every startup, even if this version already ran, because
+	an earlier version or configuration profile can have retained Always.
+	Other add-on reading preferences remain unchanged.
 	"""
 	section = config.conf["greekMathReader"]
 	if section.get("settingsAppliedVersion", "") == ADDON_VERSION:
-		return False
+		return _ensureWordUIADefault(persist=True)
 	_enforceRequiredNvdaSettings()
 	section["settingsAppliedVersion"] = ADDON_VERSION
 	try:
@@ -1284,7 +1321,7 @@ def _applyRequiredSettingsOnInstallOrUpdate():
 		f"Greek Math Reader: applied required NVDA settings for version {ADDON_VERSION}; "
 		f"autoLanguageSwitching={_isAutoLanguageSwitchingEnabled()}; "
 		f"wordNativeMath={_isWordNativeMathEnabled()}; "
-		f"wordUIAAlways={_isWordUIAAlwaysEnabled()}"
+		f"wordUIADefault={_isWordUIADefaultEnabled()}"
 	)
 	return True
 
@@ -1295,6 +1332,7 @@ def getHealthCheck():
 		"providerActive": isProviderActive(),
 		"automaticLanguageSwitching": _isAutoLanguageSwitchingEnabled(),
 		"wordNativeMathDisabled": not _isWordNativeMathEnabled(),
+		"wordUIADefault": _isWordUIADefaultEnabled(),
 	}
 	checks["healthy"] = all(checks.values())
 	checks["issues"] = [
@@ -1357,6 +1395,14 @@ def _isWordNativeMathEnabled():
 	try:
 		return bool(config.conf["math"]["other"]["useWordNativeMath"])
 	except KeyError:
+		return False
+
+
+def _isWordUIADefaultEnabled():
+	"""Whether the Advanced Word UIA option is exactly Default (Where suitable)."""
+	try:
+		return int(config.conf["UIA"]["allowInMSWord"]) == _WORD_UIA_DEFAULT
+	except (KeyError, TypeError, ValueError):
 		return False
 
 
@@ -1553,7 +1599,7 @@ def buildDiagnostics():
 			f"finalSpeechFilterOwned={_finalSpeechFilterExtension is not None and _finalWordSpeechFilter is not None and any(handler is _finalWordSpeechFilter for handler in _finalSpeechFilterExtension.handlers)}",
 			f"autoLanguageSwitching={_isAutoLanguageSwitchingEnabled()}",
 			f"wordNativeMath={_isWordNativeMathEnabled()}",
-			f"wordUIAAlways={_isWordUIAAlwaysEnabled()}",
+			f"wordUIADefault={_isWordUIADefaultEnabled()}; wordUIAAlways={_isWordUIAAlwaysEnabled()}",
 			f"translateUnconfirmedWordMath={bool(config.conf['greekMathReader'].get('translateUnconfirmedWordMath', True))}",
 			f"neuralVoices={_getNeuralVoiceDiagnostics()}",
 			f"health={health!r}",
@@ -1606,7 +1652,7 @@ def speakSelfTest():
 		f"greekVoiceSupported={getGreekVoiceSupport()}; "
 		f"autoLanguageSwitching={_isAutoLanguageSwitchingEnabled()}; "
 		f"useWordNativeMath={_isWordNativeMathEnabled()}; "
-		f"wordUIAAlways={_isWordUIAAlwaysEnabled()}; "
+		f"wordUIADefault={_isWordUIADefaultEnabled()}; wordUIAAlways={_isWordUIAAlwaysEnabled()}; "
 		f"version={ADDON_VERSION}; build={BUILD_ID}"
 	)
 	speech.speak(_provider.getSpeechForMathMl(_SELF_TEST_MATHML))
@@ -2208,6 +2254,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _handleConfigProfileSwitch(self, **kwargs):
 		"""Prevent a Word-specific profile from restoring the English route."""
 		if not self._terminating:
+			_ensureWordUIADefault()
 			applyProviderRegistration()
 
 	def terminate(self):

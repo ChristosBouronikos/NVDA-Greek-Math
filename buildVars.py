@@ -41,11 +41,11 @@ three verbosity levels, configurable pronunciations and matrix reading, unsaved 
 and voice download options for OneCore and Vocalizer Expressive."""
 	),
 	# version
-	addon_version="2.5.8",
+	addon_version="2.5.9",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.5.8 fixes missing operators and mixed-language output in flat equation text. It preserves the Word accessibility mode and restricts MathCAT delegation to a provider with explicit Greek support."""
+		"""Version 2.5.9 fixes the NVDA configuration snapshot crash that stopped equation speech after version 2.2. It also automatically selects Word UI Automation Default (Where suitable). Restart NVDA and Word after installation."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",

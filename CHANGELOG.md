@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.5.9 — 2026-10-19
+
+* Fixes a shared equation-speech crash introduced in 2.5.0 by the last-reading feature. NVDA's `AggregatedSection` supports `items()` but not `keys()`. Direct `dict(section)` conversion raised `ValueError` after speech generation. The error handler repeated the conversion and raised again, preventing the speech sequence from returning.
+* Uses `dict(section.items())` for last-reading records and unsaved Settings previews. Optional reading-history failures no longer interrupt equation speech or its error announcement.
+* Replaces plain-dictionary provider fixtures with an NVDA-style configuration object. A separate reproduction with NVDA's actual `AggregatedSection` failed before the fix and returned `3 συν 5` afterward.
+* Automatically sets **Use UI Automation to access Microsoft Word document controls** to **Default (Where suitable)**. The stored value is exactly `0`, not Always (`3`) or explicit Where suitable (`2`).
+* Repairs this setting at startup, after a configuration profile switch, and through Repair, Reset, or the self-test. The user does not need to open Advanced settings.
+* Clears cached UIA window decisions and saves startup corrections. Profile switches use NVDA's normal persistence policy instead of automatically saving unrelated temporary preferences. An already-open Word document can still require Word to restart.
+* Checks the exact default value in Health check. Repeated checks do not write the configuration when the value is already correct.
+
+This replaces 2.5.8's preservation of the existing Word UIA setting. The configuration crash is independent of UIA and affects shared speech paths, including Word and PDF math. Windows/NVDA audio checks remain pending.
+
 ## 2.5.8 — 2026-10-19
 
 * Fixes missing operators in flat equation text, including `3+5=8` inside `mtext`, `mi`, or `mn`. The engine converts operators to Greek words before NVDA applies punctuation preferences.
