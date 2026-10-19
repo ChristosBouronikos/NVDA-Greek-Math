@@ -41,11 +41,11 @@ three verbosity levels, configurable pronunciations and matrix reading, unsaved 
 and voice download options for OneCore and Vocalizer Expressive."""
 	),
 	# version
-	addon_version="2.5.6",
+	addon_version="2.5.7",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.5.6: moves math speech rate and pauses into General settings alongside an editable, prefilled speech preview transcript, while deferring experimental neural voices from active options."""
+		"""Version 2.5.7: on first install and after every update, automatically applies the NVDA settings Greek math reading depends on (Word UI Automation, automatic language switching, Word native math off), so equations are read for new users without pressing Repair."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",

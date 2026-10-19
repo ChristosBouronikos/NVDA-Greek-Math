@@ -3,6 +3,10 @@
 These gates record the evidence still required for reviewed semantic and voice
 quality. A blank approval is not an implicit pass.
 
+## Status of 2.5.7 stable (2026-10-19)
+
+**Version 2.5.7 is being released on the stable channel to apply the required NVDA settings automatically on first install and after every update, so new users hear equations without pressing Repair.** Automated engine, packaging and lifecycle checks pass. Manual review gates for semantic terminology remain pending as documented below.
+
 ## Status of 2.5.6 stable (2026-09-11)
 
 **Version 2.5.6 is being released on the stable channel to scratch and defer experimental neural voices from active settings and synthesizer options, cleanly removing relative controls from the settings panel while preserving the codebase for future releases.** Automated engine, packaging and lifecycle checks pass. Manual review gates for semantic terminology remain pending as documented below.

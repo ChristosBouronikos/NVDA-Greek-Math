@@ -507,6 +507,46 @@ class TestProviderRegistration(unittest.TestCase):
 		self.assertEqual(len(ui.messages), 1)
 		self.assertIn("no Greek voice installed", ui.messages[0])
 
+	def _setUnsafeNvdaDefaults(self):
+		self.config["speech"] = {"autoLanguageSwitching": False}
+		self.config["math"] = {"other": {"useWordNativeMath": True}}
+		self.config["UIA"] = {"allowInMSWord": 0}
+
+	def test_first_start_forces_required_nvda_settings(self):
+		self._setUnsafeNvdaDefaults()
+
+		self.module.GlobalPlugin()
+
+		self.assertTrue(self.config["speech"]["autoLanguageSwitching"])
+		self.assertFalse(self.config["math"]["other"]["useWordNativeMath"])
+		self.assertEqual(self.config["UIA"]["allowInMSWord"], 3)
+		self.assertEqual(
+			self.config["greekMathReader"]["settingsAppliedVersion"],
+			self.module.ADDON_VERSION,
+		)
+
+	def test_restart_on_same_version_keeps_user_changes(self):
+		self.config["greekMathReader"]["settingsAppliedVersion"] = self.module.ADDON_VERSION
+		self._setUnsafeNvdaDefaults()
+
+		self.module.GlobalPlugin()
+
+		self.assertFalse(self.config["speech"]["autoLanguageSwitching"])
+		self.assertTrue(self.config["math"]["other"]["useWordNativeMath"])
+		self.assertEqual(self.config["UIA"]["allowInMSWord"], 0)
+
+	def test_update_forces_required_nvda_settings_again(self):
+		self.config["greekMathReader"]["settingsAppliedVersion"] = "2.5.5"
+		self.config["greekMathReader"]["verbosity"] = 2
+		self._setUnsafeNvdaDefaults()
+
+		self.module.GlobalPlugin()
+
+		self.assertTrue(self.config["speech"]["autoLanguageSwitching"])
+		self.assertFalse(self.config["math"]["other"]["useWordNativeMath"])
+		self.assertEqual(self.config["UIA"]["allowInMSWord"], 3)
+		self.assertEqual(self.config["greekMathReader"]["verbosity"], 2)
+
 	def test_delayed_startup_registration_recovers_from_later_addon(self):
 		plugin = self.module.GlobalPlugin()
 		self.assertEqual(len(self.callLaterHandles), 1)

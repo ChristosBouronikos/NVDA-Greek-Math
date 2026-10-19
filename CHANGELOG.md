@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.5.7 — 2026-10-19
+
+Maintenance release on the stable channel.
+
+* Fixes equations not being read at all for new users: on first install and on the first start after every update, the add-on now applies the NVDA settings it depends on (Microsoft Word UI Automation set to Always, automatic language switching on, Word native math off) and saves them. Previously these were only applied by Repair, Reset or the self-test.
+* The settings are applied once per version, so later deliberate changes by the user are kept; Greek Math Reader reading preferences are never reset by an update.
+
 ## 2.5.6 — 2026-09-11
 
 Maintenance release on the stable channel.

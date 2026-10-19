@@ -33,8 +33,8 @@ from .provider import GreekMathProvider, getGreekVoiceSupport, tokensToSpeechSeq
 
 addonHandler.initTranslation()
 
-ADDON_VERSION = "2.5.6"
-BUILD_ID = "20260911-defer-neural-voices"
+ADDON_VERSION = "2.5.7"
+BUILD_ID = "20261019-force-settings-on-install"
 _WORD_UIA_ALWAYS = 3
 
 CONFIG_SPEC = {
@@ -72,6 +72,10 @@ CONFIG_SPEC = {
 	# unless the user turns this on and picks a voice. While it is off, the
 	# synthesizer does not appear in NVDA's synthesizer list at all.
 	"neuralVoicesEnabled": "boolean(default=False)",
+	# Add-on version whose required NVDA settings were last applied. Empty on a
+	# fresh install, so the first start (and the first start after every
+	# update) repairs the settings that otherwise leave equations silent.
+	"settingsAppliedVersion": "string(default='')",
 }
 
 config.conf.spec["greekMathReader"] = CONFIG_SPEC
@@ -1264,6 +1268,32 @@ def _enforceRequiredNvdaSettings():
 		pass
 
 
+def _applyRequiredSettingsOnInstallOrUpdate():
+	"""Apply the required NVDA settings once per installed add-on version.
+
+	A new user never presses Repair, and NVDA's defaults (for example Word UIA
+	"where suitable", which does not use UIA on Windows 10 or older Office
+	builds) mean Word never exposes equation MathML at all. Add-on reading
+	preferences are left untouched so updates keep the user's choices.
+	"""
+	section = config.conf["greekMathReader"]
+	if section.get("settingsAppliedVersion", "") == ADDON_VERSION:
+		return False
+	_enforceRequiredNvdaSettings()
+	section["settingsAppliedVersion"] = ADDON_VERSION
+	try:
+		config.conf.save()
+	except Exception:
+		log.exception("Greek Math Reader: could not save the required NVDA settings")
+	log.info(
+		f"Greek Math Reader: applied required NVDA settings for version {ADDON_VERSION}; "
+		f"autoLanguageSwitching={_isAutoLanguageSwitchingEnabled()}; "
+		f"wordNativeMath={_isWordNativeMathEnabled()}; "
+		f"wordUIAAlways={_isWordUIAAlwaysEnabled()}"
+	)
+	return True
+
+
 def getHealthCheck():
 	"""Return a read-only health report; never alter NVDA configuration."""
 	checks = {
@@ -2113,6 +2143,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			f"Greek Math Reader: startup; version={ADDON_VERSION}; build={BUILD_ID}; "
 			f"module={__file__}"
 		)
+		_applyRequiredSettingsOnInstallOrUpdate()
 		applyProviderRegistration()
 		# If a neural voice has already been downloaded and is ready on disk, ensure
 		# neuralVoicesEnabled is True so the synthesizer is immediately offered.

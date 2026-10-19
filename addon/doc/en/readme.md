@@ -29,7 +29,7 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 3. Open **Available add-ons** and search for **Greek Math Reader**.
 4. Select the add-on, choose **Install**, and restart NVDA when prompted.
 
-This version (2.5.6) ships on the stable channel by explicit maintainer decision. Review gates for semantic terminology remain open, tracked in `RELEASE_GATES.md`, `TERMINOLOGY_REVIEW.md`, and `TTS_ENGINE_RESEARCH.md` in the source repository.
+This version (2.5.7) ships on the stable channel by explicit maintainer decision. Review gates for semantic terminology remain open, tracked in `RELEASE_GATES.md`, `TERMINOLOGY_REVIEW.md`, and `TTS_ENGINE_RESEARCH.md` in the source repository.
 
 ## Usage
 
