@@ -241,6 +241,16 @@ class TestProviderSpeechSequence(unittest.TestCase):
 		)
 		self.assertIs(sequence[2], pause)
 
+	def test_split_mathml_fallback_only_normalizes_the_final_boundary(self):
+		sequence = self.provider.GreekMathProvider().getSpeechForMathMl(
+			"<math><mtext>τμήμα ένα</mtext><mtext>και μετά</mtext>"
+			"<mi>x</mi><mtext>τμήμα ένα</mtext></math>"
+		)
+		self.assertEqual(
+			[item for item in sequence if isinstance(item, str)],
+			["τμήμα ένα", "και μετά", "χί", "Τέλος εξίσωσης"],
+		)
+
 	def test_greek_voice_metadata_supports_driver_names_and_locale_variants(self):
 		# API contract checks, not execution of the Windows synthesizers.
 		for name, locale in (("espeak", "el"), ("oneCore", "el-GR"), ("sapi5", "el_GR"), ("sapi5_32", "el")):

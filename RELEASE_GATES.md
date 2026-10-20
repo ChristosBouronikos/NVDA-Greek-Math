@@ -7,13 +7,14 @@ quality. A blank approval is not an implicit pass.
 
 Reviewed the production changes from tag `v2.5.6` through `v2.6.0`. Version
 2.6.1 fixes the ambiguous Greek addition/letter-name fallback and normalization
-of non-final equation-boundary speech items. Regression tests cover both
+of non-final equation-boundary speech items across MathCAT, MathML and native
+Word fallback. Regression tests cover both
 failures and retain explicit trigonometric function calls. The provider also
 produced and recorded Greek speech with NVDA's actual `AggregatedSection`
 class extracted from source; the historical `dict(section)` failure was
 reproduced separately.
 
-Automated validation: 542 tests ran (534 passed, 8 skipped for deferred neural
+Automated validation: 544 tests ran (536 passed, 8 skipped for deferred neural
 features), generated MathCAT assets are current, the Greek message catalogue
 passes format checks, the demo preview runs, and the built 2.6.1 package passes
 Store metadata, structure and ZIP integrity checks.

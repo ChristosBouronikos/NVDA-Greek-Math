@@ -993,6 +993,12 @@ class TestProviderRegistration(unittest.TestCase):
 		self.assertEqual(self.module._normalizeWordNativeMathText("3+5=8"), "3 συν 5 ίσον 8")
 		self.assertEqual(self.module._normalizeWordNativeMathText("x squared + 1"), "χι στο τετράγωνο συν 1")
 
+	def test_native_fallback_only_normalizes_the_final_boundary(self):
+		sequence = ["τμήμα ένα", "και μετά", "section one"]
+		normalized, changed = self.module._normalizeWordNativeSpeechSequence(sequence)
+		self.assertTrue(changed)
+		self.assertEqual(normalized, ["τμήμα ένα", "και μετά", "Τέλος εξίσωσης"])
+
 	def test_math_object_without_mathml_or_fallback_explains_missing_content(self):
 		self.speechCore.getObjectSpeech = self.speech.getObjectSpeech = lambda *args, **kwargs: []
 		plugin = self.module.GlobalPlugin()

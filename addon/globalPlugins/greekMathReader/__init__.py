@@ -1792,6 +1792,8 @@ def _normalizeWordNativeMathText(text):
 
 def _normalizeWordNativeSpeechSequence(sequence):
 	"""Normalize strings and discard conflicting language tags only if changed."""
+	from .engine import normalize_equation_boundary
+
 	try:
 		from speech.commands import LangChangeCommand
 	except ImportError:
@@ -1809,6 +1811,12 @@ def _normalizeWordNativeSpeechSequence(sequence):
 			normalized.append(item)
 		else:
 			normalized.append(item)
+	for index in range(len(normalized) - 1, -1, -1):
+		if isinstance(normalized[index], str) and normalized[index].strip():
+			boundary = normalize_equation_boundary(normalized[index])
+			changed = changed or boundary != normalized[index]
+			normalized[index] = boundary
+			break
 	if changed and LangChangeCommand:
 		normalized = [item for item in normalized if not isinstance(item, LangChangeCommand)]
 	return normalized, changed

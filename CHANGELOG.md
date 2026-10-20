@@ -3,7 +3,7 @@
 ## 2.6.1 — 2026-10-20
 
 * Fixes a 2.6.0 fallback regression that read Greek addition (`3 συν 5`) as cosine and the letter name `εφ` as tangent. These ambiguous abbreviations are translated only in explicit function calls such as `συν(x)` and `εφ(x)`.
-* Normalizes an equation-ending announcement only in the final non-empty speech item. Earlier references to “section one” remain unchanged, including when pauses separate the speech items.
+* Normalizes an equation-ending announcement only in the final non-empty speech item across MathCAT, MathML and native Word fallback. Earlier references to “section one” or “τμήμα ένα” remain unchanged, including when pauses separate the speech items.
 * Corrects the version history and submission metadata, and documents that experimental neural voices have been deferred since 2.5.6.
 * Retains the declared last-tested NVDA version of 2026.1.1. Manual Windows/NVDA, Word and PDF listening checks remain pending.
 

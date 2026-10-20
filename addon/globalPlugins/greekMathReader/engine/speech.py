@@ -257,6 +257,7 @@ _ENGLISH_MATH_TOKEN_TRIGGER_RE = re.compile(
 )
 _DEGREE_SIGN_MTEXT_RE = re.compile(r"[°∘]")
 _EQUATION_BOUNDARY_REPLACEMENTS = (
+	("τέλος εξίσωσης", "Τέλος εξίσωσης"),
 	("end of equation", "Τέλος εξίσωσης"),
 	("end of a section", "Τέλος εξίσωσης"),
 	("end of section", "Τέλος εξίσωσης"),
@@ -285,7 +286,8 @@ def normalize_equation_boundary(text):
 
 def _normalize_english_math_mtext(text):
 	"""Translate only explicit English math vocabulary inside fallback mtext."""
-	text = normalize_equation_boundary(text)
+	# Only the caller has the complete utterance and can identify its final
+	# boundary; this text node may precede more equation or explanatory text.
 	if text.casefold() in _ENGLISH_MATH_TOKEN_REPLACEMENTS:
 		return _ENGLISH_MATH_TOKEN_REPLACEMENTS[text.casefold()]
 	knownWords = {
