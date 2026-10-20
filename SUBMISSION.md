@@ -52,13 +52,13 @@ development documentation that says "GPL version 2" predates NVDA's move to
 
 1. Merge or push the commit containing version 2.6.1 to `main`.
 2. Complete the Windows/NVDA checks below and record the tested versions.
-3. Create and push tag `v2.6.1`. The release workflow builds the package, runs
+3. Create and push tag `2.6.1`. The release workflow builds the package, runs
    tests, creates the GitHub Release, and attaches both the `.nvda-addon` file
    and `sha256.txt`.
 4. Confirm that this permanent direct URL downloads the release asset and ends
    in `.nvda-addon`:
 
-   `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.6.1/greekMathReader-2.6.1.nvda-addon`
+   `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/2.6.1/greekMathReader-2.6.1.nvda-addon`
 
 5. Confirm the package manifest matches the values above and the package
    contains `LICENSE.md` (complete GPL-3.0 text plus §7 attribution terms),
@@ -74,7 +74,7 @@ every field below is filled in from the query string, matching the field IDs
 in [nvaccess/addon-datastore's actual issue
 form](https://github.com/nvaccess/addon-datastore/blob/master/.github/ISSUE_TEMPLATE/registerAddon.yml):
 
-<https://github.com/nvaccess/addon-datastore/issues/new?template=registerAddon.yml&title=%5BSubmit+add-on%5D%3A+Greek+Math+Reader+2.6.1&download-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math%2Freleases%2Fdownload%2Fv2.6.1%2FgreekMathReader-2.6.1.nvda-addon&source-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math&publisher=Bouronikos+Christos&channel=stable&license-name=GPL-3.0-or-later&license-url=https%3A%2F%2Fwww.gnu.org%2Flicenses%2Fgpl-3.0.html>
+<https://github.com/nvaccess/addon-datastore/issues/new?template=registerAddon.yml&title=%5BSubmit+add-on%5D%3A+Greek+Math+Reader+2.6.1&download-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math%2Freleases%2Fdownload%2F2.6.1%2FgreekMathReader-2.6.1.nvda-addon&source-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math&publisher=Bouronikos+Christos&channel=stable&license-name=GPL-3.0-or-later&license-url=https%3A%2F%2Fwww.gnu.org%2Flicenses%2Fgpl-3.0.html>
 
 GitHub issue-form pre-fill does not always populate a dropdown field (Channel
 here) reliably, so confirm every field against this table before submitting,
@@ -82,7 +82,7 @@ and fill in by hand anything that came through blank:
 
 | Issue-form field | Value |
 |---|---|
-| Download URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.6.1/greekMathReader-2.6.1.nvda-addon` |
+| Download URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/2.6.1/greekMathReader-2.6.1.nvda-addon` |
 | Source URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math` |
 | Publisher | `Bouronikos Christos` |
 | Channel | `stable` |

@@ -1,13 +1,13 @@
 name: Release
 
-# Publishing a version tag (v1.0.0) builds the add-on and attaches it to the
+# Publishing a version tag (1.0.0) builds the add-on and attaches it to the
 # GitHub release. The release asset URL (ending in .nvda-addon) is what gets
 # submitted to the NVDA Add-on Store — see SUBMISSION.md.
 
 on:
   push:
     tags:
-      - "v*"
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 permissions:
   contents: write
@@ -44,5 +44,6 @@ jobs:
           files: |
             *.nvda-addon
             sha256.txt
+          name: ${{ github.ref_name }}
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-') }}

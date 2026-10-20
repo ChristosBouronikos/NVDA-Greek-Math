@@ -5,7 +5,7 @@ quality. A blank approval is not an implicit pass.
 
 ## Status of 2.6.1 stable (2026-10-20)
 
-Reviewed the production changes from tag `v2.5.6` through `v2.6.0`. Version
+Reviewed the production changes from tag `2.5.6` through `2.6.0`. Version
 2.6.1 fixes the ambiguous Greek addition/letter-name fallback and normalization
 of non-final equation-boundary speech items across MathCAT, MathML and native
 Word fallback. Regression tests cover both
