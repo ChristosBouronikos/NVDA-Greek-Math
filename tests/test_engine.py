@@ -141,6 +141,17 @@ class TestTokens(unittest.TestCase):
 			"όριο ημίτονο(χι)",
 		)
 
+	def test_greek_addition_and_letter_names_are_not_trigonometric_functions(self):
+		for text in ("3 συν 5", "χι συν (1)", "εφ του χι", "η διαφορά είναι 3 συν 5"):
+			with self.subTest(text=text):
+				self.assertEqual(spoken(math(f"<mtext>{text}</mtext>")), text)
+
+	def test_mixed_greek_math_keeps_addition_between_function_calls(self):
+		self.assertEqual(
+			spoken(math("<mtext>ημ(x) συν συν(x)</mtext>")),
+			"ημίτονο(χι) συν συνημίτονο(χι)",
+		)
+
 	def test_deep_flat_grouping_does_not_exhaust_recursion(self):
 		for opening, closing in (("{", "}"), ("(", ")")):
 			text = opening * 400 + "3+5" + closing * 400

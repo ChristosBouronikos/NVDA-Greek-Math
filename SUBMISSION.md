@@ -20,7 +20,7 @@ only the automated URL/manifest/SHA256/VirusTotal validation described below.
 | Field | Value |
 |---|---|
 | Add-on ID / manifest name | `greekMathReader` |
-| Version | `2.5.7` |
+| Version | `2.6.1` |
 | Display name / manifest summary | `Greek Math Reader` |
 | Publisher | `Bouronikos Christos` |
 | Source and homepage | `https://github.com/ChristosBouronikos/NVDA-Greek-Math` |
@@ -50,15 +50,15 @@ development documentation that says "GPL version 2" predates NVDA's move to
 
 ## Before creating the Store issue
 
-1. Merge or push the commit containing version 2.5.7 to `main`.
+1. Merge or push the commit containing version 2.6.1 to `main`.
 2. Complete the Windows/NVDA checks below and record the tested versions.
-3. Create and push tag `v2.5.7`. The release workflow builds the package, runs
+3. Create and push tag `v2.6.1`. The release workflow builds the package, runs
    tests, creates the GitHub Release, and attaches both the `.nvda-addon` file
    and `sha256.txt`.
 4. Confirm that this permanent direct URL downloads the release asset and ends
    in `.nvda-addon`:
 
-   `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.5.7/greekMathReader-2.5.7.nvda-addon`
+   `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.6.1/greekMathReader-2.6.1.nvda-addon`
 
 5. Confirm the package manifest matches the values above and the package
    contains `LICENSE.md` (complete GPL-3.0 text plus §7 attribution terms),
@@ -74,7 +74,7 @@ every field below is filled in from the query string, matching the field IDs
 in [nvaccess/addon-datastore's actual issue
 form](https://github.com/nvaccess/addon-datastore/blob/master/.github/ISSUE_TEMPLATE/registerAddon.yml):
 
-<https://github.com/nvaccess/addon-datastore/issues/new?template=registerAddon.yml&title=%5BSubmit+add-on%5D%3A+Greek+Math+Reader+2.5.7&download-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math%2Freleases%2Fdownload%2Fv2.5.7%2FgreekMathReader-2.5.7.nvda-addon&source-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math&publisher=Bouronikos+Christos&channel=stable&license-name=GPL-3.0-or-later&license-url=https%3A%2F%2Fwww.gnu.org%2Flicenses%2Fgpl-3.0.html>
+<https://github.com/nvaccess/addon-datastore/issues/new?template=registerAddon.yml&title=%5BSubmit+add-on%5D%3A+Greek+Math+Reader+2.6.1&download-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math%2Freleases%2Fdownload%2Fv2.6.1%2FgreekMathReader-2.6.1.nvda-addon&source-url=https%3A%2F%2Fgithub.com%2FChristosBouronikos%2FNVDA-Greek-Math&publisher=Bouronikos+Christos&channel=stable&license-name=GPL-3.0-or-later&license-url=https%3A%2F%2Fwww.gnu.org%2Flicenses%2Fgpl-3.0.html>
 
 GitHub issue-form pre-fill does not always populate a dropdown field (Channel
 here) reliably, so confirm every field against this table before submitting,
@@ -82,14 +82,14 @@ and fill in by hand anything that came through blank:
 
 | Issue-form field | Value |
 |---|---|
-| Download URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.5.7/greekMathReader-2.5.7.nvda-addon` |
+| Download URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math/releases/download/v2.6.1/greekMathReader-2.6.1.nvda-addon` |
 | Source URL | `https://github.com/ChristosBouronikos/NVDA-Greek-Math` |
 | Publisher | `Bouronikos Christos` |
 | Channel | `stable` |
 | License Name | `GPL-3.0-or-later` |
 | License URL | `https://www.gnu.org/licenses/gpl-3.0.html` |
 
-Suggested issue title suffix: `Greek Math Reader 2.5.7` (already in the
+Suggested issue title suffix: `Greek Math Reader 2.6.1` (already in the
 pre-filled link above).
 
 If the pre-filled link ever breaks (NV Access renames a field ID or the
@@ -104,7 +104,7 @@ text is ready to use:
 
 > Hello NVDA Add-on Store team,
 >
-> I would kindly like to submit Greek Math Reader 2.5.7, a maintenance update to
+> I would kindly like to submit Greek Math Reader 2.6.1, a maintenance update to
 > the already-published add-on, for inclusion in the
 > NVDA Add-on Store. Greek Math Reader helps Greek-speaking blind and visually
 > impaired users access mathematical content in natural Greek. It supports
@@ -112,10 +112,11 @@ text is ready to use:
 > selected or copied LaTeX. It also provides interactive navigation so users
 > can explore an expression one part at a time.
 >
-> This update fixes equations not being read for new users: on first install and
-> after every update, the add-on now applies the NVDA settings it depends on
-> (Word UI Automation, automatic language switching, Word native math off) once
-> per version, instead of only when the user presses Repair.
+> This update preserves Greek addition and letter names in Word math fallback
+> text and normalizes equation-ending labels only in the final speech item.
+> It includes the earlier equation-speech crash fix and automatically selects
+> Word UI Automation Default (Where suitable). Manual Windows/NVDA validation
+> remains pending, as recorded in RELEASE_GATES.md.
 >
 > The repository includes English and Greek documentation, automated tests,
 > release metadata, and the GPL-3.0-or-later license. Artificial intelligence tools
@@ -133,7 +134,7 @@ submit the form again as directed by the automation.
 
 ## Windows and NVDA pre-release checks
 
-- [ ] Install `greekMathReader-2.5.7.nvda-addon` in NVDA 2024.1, the oldest
+- [ ] Install `greekMathReader-2.6.1.nvda-addon` in NVDA 2024.1, the oldest
       declared version; restart NVDA and check the log for errors.
 - [ ] Install it in NVDA 2026.1.1, the last tested version; restart NVDA and
       check the log for errors.
@@ -149,14 +150,13 @@ submit the form again as directed by the automation.
 - [ ] Verify capital announcements, course-specific symbol pronunciations,
       unsaved previews, every matrix-reading mode, rate/pause samples, and the
       local reading-problem report and mail draft.
-- [ ] Download a Greek neural voice, select **Greek Math Reader neural voices**
-      as NVDA's synthesizer, and verify startup, speech, interruption, character
-      echo, high-rate intelligibility, removal, and restart with both supported
-      Windows/NVDA architectures where available.
 - [ ] Verify the installed help opens in English and Greek and contains the
       author, email, GitHub, donation, and license information.
 - [ ] Disable or uninstall the add-on and confirm NVDA's previous math speech
       and interaction providers are restored.
+
+Neural voice installation and synthesizer selection are deferred from active
+options since 2.5.6; they are outside this release's acceptance checks.
 
 ## Later updates
 

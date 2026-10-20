@@ -4,9 +4,9 @@
 
 [Ελληνικά](#ελληνικά) · [English](#english)
 
-> **2.6.0 — equation speech fixes:** fixes final equation-boundary announcements and translates Latin and Greek trigonometric functions in Word math fallback text, including limits. Restart NVDA and Word after installation. Windows/NVDA audio checks remain open. See [CHANGELOG.md](CHANGELOG.md).
+> **2.6.1 — equation speech fixes:** preserves Greek addition and letter names in Word math fallback text, and normalizes equation-ending labels only in the final speech item. Restart NVDA and Word after installation. Windows/NVDA audio checks remain open. See [CHANGELOG.md](CHANGELOG.md).
 >
-> **2.6.0 — διορθώσεις εκφώνησης εξισώσεων:** διορθώνει τις ανακοινώσεις τέλους εξίσωσης και μεταφράζει τις λατινικές και ελληνικές τριγωνομετρικές συναρτήσεις στο εφεδρικό κείμενο μαθηματικών του Word, συμπεριλαμβανομένων των ορίων. Επανεκκινήστε NVDA και Word μετά την εγκατάσταση. Εκκρεμούν δοκιμές ήχου σε Windows/NVDA.
+> **2.6.1 — διορθώσεις εκφώνησης εξισώσεων:** διατηρεί την ελληνική πρόσθεση και τα ονόματα γραμμάτων στο εφεδρικό κείμενο μαθηματικών του Word και κανονικοποιεί την αναγγελία τέλους εξίσωσης μόνο στο τελευταίο τμήμα ομιλίας. Επανεκκινήστε NVDA και Word μετά την εγκατάσταση. Εκκρεμούν δοκιμές ήχου σε Windows/NVDA.
 
 ---
 
@@ -25,9 +25,9 @@
 
 Μετά την εγκατάσταση, τα μαθηματικά στις ιστοσελίδες (Βικιπαίδεια, πλατφόρμες τηλεκπαίδευσης, περιεχόμενο MathJax), στα βιβλία EPUB, στις προσβάσιμες εξισώσεις PDF και στις εξισώσεις του Word διαβάζονται αυτόματα στα ελληνικά όταν η εφαρμογή εκθέτει MathML στο NVDA.
 
-> Απαιτείται NVDA 2024.1 ή νεότερο. Η έκδοση **2.6.0** έχει δοκιμαστεί έως το NVDA 2026.1.1. Το τελικό φίλτρο ομιλίας Word, που προστέθηκε στην 2.0.0, χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
+> Απαιτείται NVDA 2024.1 ή νεότερο. Η δηλωμένη τελευταία δοκιμασμένη έκδοση NVDA παραμένει η 2026.1.1· εκκρεμούν οι χειροκίνητες δοκιμές της 2.6.1 σε Windows/NVDA. Το τελικό φίλτρο ομιλίας Word, που προστέθηκε στην 2.0.0, χρησιμοποιείται ειδικά στο NVDA 2026.1.1· οι παλαιότερες εκδόσεις συνεχίζουν με τις διαθέσιμες διαδρομές παρόχου/TextInfo.
 
-> Η τρέχουσα έκδοση (**2.6.0**) κυκλοφορεί στο σταθερό κανάλι, ύστερα από ρητή απόφαση του συντηρητή. Οι πύλες ελέγχου της νέας σημασιολογικής ορολογίας παραμένουν ανοιχτές — δείτε [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md) και [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
+> Η τρέχουσα έκδοση (**2.6.1**) κυκλοφορεί στο σταθερό κανάλι, ύστερα από ρητή απόφαση του συντηρητή. Οι πύλες ελέγχου της νέας σημασιολογικής ορολογίας παραμένουν ανοιχτές — δείτε [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md) και [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
 
 ### Χρήση
 
@@ -67,11 +67,9 @@
 
 Προστίθενται οι εγκεκριμένες αποδόσεις για δείκτες τανυστών, αρχικές συνθήκες, κατά τμήματα ορισμούς, κανονικές κατανομές, συνάρτηση Γάμα, δέλτα του Ντιράκ, ασφαλώς αναγνωρισμένους μετασχηματισμούς Φουριέ και επιλεγμένη σημειογραφία φυσικής. Το `G/g` εκφωνείται «τζί», το ελληνικό `α` παραμένει «άλφα» και το λατινικό `a` «έι». Τα διαφορικά ολοκληρώματος ακολουθούν την πραγματική μεταβλητή (`dx`, `dy`, `dz`). Για αμφίσημες έννοιες, όπως ομάδα πηλίκο ή πίνακας, απαιτείται επαρκής δομή ή ρητό `intent`.
 
-### Προαιρετικές νευρωνικές φωνές
+### Νευρωνικές φωνές σε αναμονή
 
-Η 2.5 περιλαμβάνει έναν προαιρετικό synthesizer NVDA, **Greek Math Reader neural voices**, με τοπικό backend `sherpa-onnx` 1.13.7 σε CPU. Είναι απενεργοποιημένος από προεπιλογή και δεν κατεβάζει τίποτα χωρίς ενέργεια του χρήστη. Από τη **Διαχείριση νευρωνικών φωνών** μπορείτε να εγκαταστήσετε το κατάλληλο runtime και μία φωνή, με HTTPS, έλεγχο μεγέθους και SHA-256 πριν από την αποσυμπίεση. Τα αρχεία αποθηκεύονται στον κατάλογο ρυθμίσεων του NVDA και η σύνθεση λειτουργεί offline μετά τη λήψη.
-
-Ο synthesizer αντικαθιστά τη φωνή για ολόκληρο το NVDA, όχι μόνο για τα μαθηματικά. Οι ελληνικές επιλογές περιλαμβάνουν εκδόσεις Piper/Mimic 3 της Rapunzelina και το πολύγλωσσο Supertonic 3· το Kokoro αναγράφεται ρητά ότι δεν υποστηρίζει ελληνικά. Οι φωνές παραμένουν πειραματικές ώσπου να ολοκληρωθούν πραγματικές δοκιμές σε Windows/NVDA για ποιότητα, καθυστέρηση, διακοπή και υψηλές ταχύτητες ομιλίας.
+Από την 2.5.6, ο πειραματικός synthesizer και η διαχείριση νευρωνικών φωνών έχουν αποσυρθεί από τις ενεργές επιλογές. Ο κώδικας διατηρείται για μελλοντική ανάπτυξη. Χρησιμοποιήστε μια εγκατεστημένη ελληνική φωνή eSpeak NG, Windows OneCore ή Microsoft SAPI5· η καρτέλα **Φωνές και εργαλεία** παρέχει επίσης συνδέσμους λήψης για OneCore και Vocalizer Expressive.
 
 ### Σημασιολογική κάλυψη
 
@@ -400,9 +398,9 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 
 After installation, math on web pages (Wikipedia, e-learning platforms, MathJax content), in EPUB books, accessible PDF formulas, and Word equations is automatically read in Greek whenever the application exposes MathML to NVDA.
 
-> Requires NVDA 2024.1 or later. Version **2.6.0** has been tested through NVDA 2026.1.1. Its Word final-speech filter, added in 2.0.0, is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
+> Requires NVDA 2024.1 or later. The declared last-tested NVDA version remains 2026.1.1; manual Windows/NVDA validation of 2.6.1 remains pending. Its Word final-speech filter, added in 2.0.0, is specific to NVDA 2026.1.1; older NVDA versions continue using the provider/TextInfo routes available to them.
 
-> The current version (**2.6.0**) ships on the stable channel by explicit maintainer decision. Review gates for the semantic terminology remain open — see [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md), and [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
+> The current version (**2.6.1**) ships on the stable channel by explicit maintainer decision. Review gates for the semantic terminology remain open — see [RELEASE_GATES.md](RELEASE_GATES.md), [TERMINOLOGY_REVIEW.md](TERMINOLOGY_REVIEW.md), and [TTS_ENGINE_RESEARCH.md](TTS_ENGINE_RESEARCH.md).
 
 ### Usage
 
@@ -442,11 +440,9 @@ Version 2.5 adds independent capital announcements, course-specific symbol pronu
 
 It adds the approved readings for tensor indices, initial conditions, piecewise definitions, normal distributions, Euler's Gamma function, the Dirac delta, safely recognized Fourier transforms, and selected physics notation. Latin `G/g` is «τζί»; Greek `α` remains «άλφα» and Latin `a` «έι». Integral differentials follow the actual variable (`dx`, `dy`, or `dz`). Ambiguous meanings such as quotient groups or matrix-specific operations still require sufficient structure or explicit author `intent`.
 
-### Optional offline neural voices
+### Deferred neural voices
 
-Version 2.5 includes an optional NVDA synthesizer named **Greek Math Reader neural voices**, powered locally by the CPU-based `sherpa-onnx` 1.13.7 backend. It is disabled by default and downloads nothing until requested. **Manage neural voices** downloads the runtime matching NVDA's Python/Windows architecture and the selected model over HTTPS, verifies the declared size and SHA-256, and stores the extracted files in NVDA's configuration directory. Speech runs offline after installation.
-
-This synthesizer voices all NVDA speech, not only mathematics. Greek-capable choices include Piper/Mimic 3 Rapunzelina builds and multilingual Supertonic 3; Kokoro is explicitly labelled as not supporting Greek. These voices remain experimental until real Windows/NVDA listening, latency, interruption, character-echo and high-rate tests are completed.
+Since 2.5.6, the experimental neural synthesizer and voice manager have been removed from active options. Their code is retained for future development. Use an installed Greek voice with eSpeak NG, Windows OneCore or Microsoft SAPI5; **Voices & Tools** also provides download links for OneCore and Vocalizer Expressive.
 
 ### Semantic coverage
 

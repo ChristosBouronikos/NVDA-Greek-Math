@@ -33,8 +33,8 @@ from .provider import GreekMathProvider, getGreekVoiceSupport, tokensToSpeechSeq
 
 addonHandler.initTranslation()
 
-ADDON_VERSION = "2.6.0"
-BUILD_ID = "20261019-equation-boundary-trig-fix"
+ADDON_VERSION = "2.6.1"
+BUILD_ID = "20261020-greek-fallback-regression-fix"
 _WORD_UIA_DEFAULT = 0
 _WORD_UIA_ALWAYS = 3
 

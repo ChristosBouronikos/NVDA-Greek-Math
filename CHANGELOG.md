@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.6.1 — 2026-10-20
+
+* Fixes a 2.6.0 fallback regression that read Greek addition (`3 συν 5`) as cosine and the letter name `εφ` as tangent. These ambiguous abbreviations are translated only in explicit function calls such as `συν(x)` and `εφ(x)`.
+* Normalizes an equation-ending announcement only in the final non-empty speech item. Earlier references to “section one” remain unchanged, including when pauses separate the speech items.
+* Corrects the version history and submission metadata, and documents that experimental neural voices have been deferred since 2.5.6.
+* Retains the declared last-tested NVDA version of 2026.1.1. Manual Windows/NVDA, Word and PDF listening checks remain pending.
+
 ## 2.6.0 — 2026-10-19
 
 * Normalizes final equation boundary announcements, including “section one”, “end of section”, and “τμήμα ένα”, to «Τέλος εξίσωσης» without rewriting embedded explanatory text.
@@ -8,8 +15,6 @@
 
 ## 2.5.9 — 2026-10-19
 
-* Normalizes MathCAT and Word equation boundary announcements such as “section one” and “τμήμα ένα” to «Τέλος εξίσωσης», preventing the section label from being spoken at the end of every equation.
-* Translates Latin and Greek trigonometric names in unstructured Word equation text, including `sin(x)`, `ημ(x)`, and trigonometric expressions inside limits.
 * Fixes a shared equation-speech crash introduced in 2.5.0 by the last-reading feature. NVDA's `AggregatedSection` supports `items()` but not `keys()`. Direct `dict(section)` conversion raised `ValueError` after speech generation. The error handler repeated the conversion and raised again, preventing the speech sequence from returning.
 * Uses `dict(section.items())` for last-reading records and unsaved Settings previews. Optional reading-history failures no longer interrupt equation speech or its error announcement.
 * Replaces plain-dictionary provider fixtures with an NVDA-style configuration object. A separate reproduction with NVDA's actual `AggregatedSection` failed before the fix and returned `3 συν 5` afterward.

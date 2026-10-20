@@ -311,8 +311,11 @@ def _normalize_english_math_mtext(text):
 		or _ENGLISH_MATH_TOKEN_TRIGGER_RE.search(text)):
 		return text
 	for source, replacement in _ENGLISH_MATH_MTEXT_REPLACEMENTS:
+		# Greek συν and εφ also name addition and the letter f in speech.
+		# Expand them only in explicit function calls, such as συν(x).
+		functionCall = r"(?=\()" if source in ("συν", "εφ") else ""
 		text = re.sub(
-			rf"(?<!\w){re.escape(source)}(?!\w)",
+			rf"(?<!\w){re.escape(source)}(?!\w){functionCall}",
 			replacement,
 			text,
 			flags=re.IGNORECASE,

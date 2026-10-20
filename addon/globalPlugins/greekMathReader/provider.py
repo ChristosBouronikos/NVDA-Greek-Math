@@ -166,10 +166,11 @@ def getGreekVoiceSupport():
 
 def tokensToSpeechSequence(tokens, readingConfig=None):
 	"""Convert engine tokens (str | Pause) to an NVDA speech sequence."""
-	tokens = [
-		normalize_equation_boundary(token) if isinstance(token, str) else token
-		for token in tokens
-	]
+	tokens = list(tokens)
+	for index in range(len(tokens) - 1, -1, -1):
+		if isinstance(tokens[index], str) and tokens[index].strip():
+			tokens[index] = normalize_equation_boundary(tokens[index])
+			break
 	sequence = []
 	forceGreek = bool(config.conf["greekMathReader"]["forceGreekLanguage"])
 	try:

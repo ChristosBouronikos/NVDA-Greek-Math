@@ -231,6 +231,16 @@ class TestProviderSpeechSequence(unittest.TestCase):
 			["section one contains x"],
 		)
 
+	def test_equation_boundary_does_not_rewrite_an_earlier_speech_item(self):
+		pause = self.commands.BreakCommand(time=100)
+		self._configureDelegate(["section one", pause, "contains x", "section one", pause])
+		sequence = self.provider.GreekMathProvider().getSpeechForMathMl("<math/>")
+		self.assertEqual(
+			[item for item in sequence if isinstance(item, str)],
+			["section one", "contains x", "Τέλος εξίσωσης"],
+		)
+		self.assertIs(sequence[2], pause)
+
 	def test_greek_voice_metadata_supports_driver_names_and_locale_variants(self):
 		# API contract checks, not execution of the Windows synthesizers.
 		for name, locale in (("espeak", "el"), ("oneCore", "el-GR"), ("sapi5", "el_GR"), ("sapi5_32", "el")):

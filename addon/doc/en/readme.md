@@ -29,7 +29,7 @@ Install Greek Math Reader only from the **NVDA Add-on Store**:
 3. Open **Available add-ons** and search for **Greek Math Reader**.
 4. Select the add-on, choose **Install**, and restart NVDA when prompted.
 
-Version 2.5.9 fixes a configuration snapshot crash that prevented equation speech in 2.5.0 through 2.5.8. It also automatically repairs the Word UI Automation setting. Windows/NVDA checks remain open. Review gates for semantic terminology remain open, tracked in `RELEASE_GATES.md`, `TERMINOLOGY_REVIEW.md`, and `TTS_ENGINE_RESEARCH.md` in the source repository.
+Version 2.6.1 preserves Greek addition and letter names in Word math fallback text, and normalizes equation-ending labels only in the final speech item. It includes the 2.5.9 fix for a configuration snapshot crash that prevented equation speech in 2.5.0 through 2.5.8. It also automatically repairs the Word UI Automation setting. Windows/NVDA checks remain open. Review gates for semantic terminology remain open, tracked in `RELEASE_GATES.md`, `TERMINOLOGY_REVIEW.md`, and `TTS_ENGINE_RESEARCH.md` in the source repository.
 
 ## Usage
 

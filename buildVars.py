@@ -41,11 +41,11 @@ three verbosity levels, configurable pronunciations and matrix reading, unsaved 
 and voice download options for OneCore and Vocalizer Expressive."""
 	),
 	# version
-	addon_version="2.6.0",
+	addon_version="2.6.1",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_(
-		"""Version 2.6.0 fixes Greek equation boundary announcements and translates Latin and Greek trigonometric functions in Word math fallback text, including limits. Restart NVDA and Word after installation."""
+		"""Version 2.6.1 preserves Greek addition and letter names in Word math fallback text and limits equation-ending normalization to the final speech item. Includes the equation speech fixes from 2.5.7 through 2.6.0. Restart NVDA and Word after installation."""
 	),
 	# Author(s)
 	addon_author="Bouronikos Christos <chrisbouronikos@gmail.com>",
